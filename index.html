@@ -1,0 +1,963 @@
+<title>Curds & Whey Daily</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a lab-bench practice app — header band, tab rail, one working question card beside a Babcock-bottle score gauge */
+:root{
+  --bg:#F2F6FA; --surface:#FFFFFF; --sunk:#E7EEF6; --ink:#13243A; --muted:#55667F; --line:#D2DCE7;
+  --accent:#1C5BBF; --accent-ink:#FFFFFF; --butter:#E8B21F; --butter-soft:#FBF0CB;
+  --good:#167A4B; --good-soft:#DFF3E8; --bad:#B53A32; --bad-soft:#FAE5E2; --part:#94650F; --part-soft:#FBEFD8;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1522; --surface:#142033; --sunk:#0F1A2A; --ink:#E5EDF7; --muted:#97A7BC; --line:#26374E;
+    --accent:#7AAAF2; --accent-ink:#0B1420; --butter:#F0C445; --butter-soft:#3A3118;
+    --good:#5BCB94; --good-soft:#123426; --bad:#F27C72; --bad-soft:#3B1D1B; --part:#E9B85C; --part-soft:#3A2D14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1522; --surface:#142033; --sunk:#0F1A2A; --ink:#E5EDF7; --muted:#97A7BC; --line:#26374E;
+  --accent:#7AAAF2; --accent-ink:#0B1420; --butter:#F0C445; --butter-soft:#3A3118;
+  --good:#5BCB94; --good-soft:#123426; --bad:#F27C72; --bad-soft:#3B1D1B; --part:#E9B85C; --part-soft:#3A2D14;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-bottom:14px}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,40px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.brand h1 .amp{color:var(--butter)}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:14.5px}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seglabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.streak{display:inline-flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:8px;background:var(--butter-soft);font-weight:700;font-size:14px}
+.streak b{font-family:var(--f-mono);font-size:16px}
+
+.tabs-wrap{overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:22px}
+.tabs{display:flex;gap:2px;min-width:max-content}
+.tab{border:0;background:none;padding:10px 14px 9px;font-family:var(--f-display);font-weight:600;font-size:16px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .tmr{font-family:var(--f-mono);font-size:12.5px;margin-left:6px;color:var(--bad)}
+
+/* shared */
+h2{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1.15;margin:0 0 4px;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:700;font-size:18px;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:15px;max-width:68ch}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:8px;padding:10px 16px;font-weight:700;font-size:15px;background:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn.small{padding:6px 11px;font-size:13.5px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;font-size:12.5px;line-height:1.3;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:700}
+.chip.lv{background:var(--sunk);border-color:transparent;color:var(--ink)}
+.chip.past{background:var(--butter-soft);border-color:transparent;color:var(--ink)}
+.chip.ref{border-style:dashed}
+.chip.pts{font-family:var(--f-mono);font-weight:600}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;color:var(--muted)}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+/* question card */
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px clamp(16px,3vw,26px) 24px;min-width:0}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.qnum{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.qtext{font-size:19px;line-height:1.45;font-weight:700;margin:12px 0 18px;max-width:66ch;white-space:pre-line}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:16px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .key{flex:none;width:26px;height:26px;display:grid;place-items:center;border-radius:6px;background:var(--sunk);font-family:var(--f-mono);font-size:13px;font-weight:600}
+.opt[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.opt[aria-pressed="true"] .key{background:var(--accent);color:var(--accent-ink)}
+.opt.ok{border-color:var(--good);background:var(--good-soft);box-shadow:none}
+.opt.ok .key{background:var(--good);color:var(--surface)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft);box-shadow:none}
+.opt.no .key{background:var(--bad);color:var(--surface)}
+.opt.miss{border-style:dashed;border-color:var(--good)}
+.tfrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px}
+.inrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.inrow input[type=text]{font-family:var(--f-mono);font-size:18px;padding:9px 12px;width:13ch;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.inrow input.wide{width:min(100%,28ch);font-family:var(--f-body)}
+.unit{font-family:var(--f-mono);color:var(--muted);font-size:15px}
+textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+.hint{color:var(--muted);font-size:13.5px}
+
+.fb{margin-top:16px;padding:14px 16px;border-radius:8px;background:var(--sunk)}
+.fb .verdict{font-family:var(--f-display);font-weight:700;font-size:17px;margin-bottom:4px}
+.fb.good{background:var(--good-soft)} .fb.good .verdict{color:var(--good)}
+.fb.bad{background:var(--bad-soft)} .fb.bad .verdict{color:var(--bad)}
+.fb.part{background:var(--part-soft)} .fb.part .verdict{color:var(--part)}
+.fb p{margin:6px 0 0;max-width:70ch}
+.work{font-family:var(--f-mono);font-size:14px;white-space:pre-wrap;margin-top:8px;padding:10px 12px;background:var(--surface);border-radius:6px;border:1px solid var(--line);overflow-x:auto}
+.model{margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.model .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:4px}
+.kp{display:grid;gap:6px;margin-top:10px}
+.kp label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
+.kp input{margin-top:3px;accent-color:var(--good);width:17px;height:17px;flex:none}
+.yours{font-style:italic;color:var(--muted);white-space:pre-wrap;margin-top:6px}
+
+/* today */
+.today{display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;align-items:start}
+.dayhead{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+.gauge{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;flex-direction:column;align-items:center;gap:10px}
+.gauge .glabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:center}
+.bottle{display:flex;flex-direction:column;align-items:center}
+.neckrow{display:flex;gap:8px;align-items:stretch}
+.scale{display:flex;flex-direction:column;justify-content:space-between;height:280px;font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right;padding-block:0}
+.scale span{line-height:0}
+.neck{position:relative;width:34px;height:280px;border:2px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;overflow:hidden;
+  background:repeating-linear-gradient(to top,transparent 0 27px,var(--line) 27px 28px),var(--surface)}
+.fat{position:absolute;left:0;right:0;bottom:0;height:var(--fill,0%);background:var(--butter);transition:height .6s ease}
+.fat::after{content:"";position:absolute;left:0;right:0;top:-3px;height:6px;border-radius:50%;background:var(--butter)}
+.bulb{width:96px;height:96px;margin-top:-4px;border:2px solid var(--line);border-radius:50%;background:var(--sunk);display:grid;place-items:center;text-align:center}
+.bulb .big{font-family:var(--f-mono);font-weight:600;font-size:22px;line-height:1}
+.bulb .sm{font-size:11px;color:var(--muted);margin-top:3px}
+.dots{display:grid;grid-template-columns:repeat(6,18px);gap:6px;justify-content:center}
+.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--surface);padding:0}
+.dot.cur{border-color:var(--accent)}
+.dot.r{background:var(--good);border-color:var(--good)}
+.dot.p{background:var(--butter);border-color:var(--butter)}
+.dot.w{background:var(--bad);border-color:var(--bad)}
+.gnote{font-size:12px;color:var(--muted);text-align:center;max-width:150px}
+.summary .bigscore{font-family:var(--f-display);font-weight:800;font-size:48px;line-height:1}
+.qlist{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+.qlist li{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:8px;background:var(--sunk)}
+.qlist .mk{font-family:var(--f-mono);font-weight:600;width:42px;flex:none}
+.qlist .mk.r{color:var(--good)} .qlist .mk.p{color:var(--part)} .qlist .mk.w{color:var(--bad)}
+.qlist .tx{min-width:0;overflow-wrap:anywhere}
+
+@media (max-width:720px){
+  .today{grid-template-columns:1fr;gap:16px}
+  .gauge{position:static;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:12px}
+  .bottle{flex-direction:row-reverse;width:100%;max-width:520px}
+  .scale{display:none}
+  .neckrow{flex:1}
+  .neck{width:100%;height:30px;border:2px solid var(--line);border-left:0;border-radius:0 15px 15px 0;
+    background:repeating-linear-gradient(to right,transparent 0 9.6%,var(--line) 9.6% 10%),var(--surface)}
+  .fat{top:0;bottom:0;right:auto;height:auto;width:var(--fill,0%);transition:width .6s ease}
+  .fat::after{display:none}
+  .bulb{width:64px;height:64px;margin-top:0;margin-right:-4px;flex:none}
+  .bulb .big{font-size:16px}
+  .dots{grid-template-columns:repeat(12,18px)}
+  .gauge .glabel,.gnote{display:none}
+}
+@media (max-width:420px){ .dots{grid-template-columns:repeat(6,18px)} }
+
+/* practice / lab */
+.filters{display:grid;gap:12px;margin-bottom:18px}
+.flabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:6px}
+.tally{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+.tally b{color:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.side h3{margin-top:0}
+.side ul{padding-left:18px;margin:6px 0 0}
+.side li{margin:4px 0}
+.formula{font-family:var(--f-mono);font-size:13px;background:var(--sunk);padding:8px 10px;border-radius:6px;margin:6px 0 10px;overflow-x:auto;white-space:pre}
+
+/* mock */
+.timerbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:18px}
+.clock{font-family:var(--f-mono);font-size:24px;font-weight:600}
+.clock.low{color:var(--bad)}
+.section{margin:26px 0 12px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.section h3{margin:0}
+.mocklist{display:grid;gap:14px}
+.secscore{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.secscore div{background:var(--sunk);border-radius:8px;padding:10px 12px}
+.secscore .n{font-family:var(--f-mono);font-size:20px;font-weight:600}
+.secscore .l{font-size:13px;color:var(--muted)}
+
+/* progress */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
+.cell{aspect-ratio:1;max-width:100%;border-radius:6px;background:var(--sunk);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;color:var(--muted);position:relative}
+.cell.done{background:var(--butter);color:var(--ink)}
+.cell.part{background:var(--butter-soft);color:var(--ink)}
+.cell.today{outline:2px solid var(--accent);outline-offset:1px}
+.bars{display:grid;gap:9px;margin-top:8px}
+.bar{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 52px;gap:10px;align-items:center;font-size:14px}
+.bar .track{height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
+.bar .fill{height:100%;background:var(--accent)}
+.bar .fill.lowv{background:var(--bad)}
+.bar .fill.midv{background:var(--butter)}
+.bar .v{font-family:var(--f-mono);font-size:13px;text-align:right;color:var(--muted)}
+.statline{display:flex;flex-wrap:wrap;gap:22px;margin-top:6px}
+.stat .n{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1}
+.stat .l{font-size:13px;color:var(--muted)}
+.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;max-width:80ch}
+.confirm{margin-top:10px;padding:12px;border-radius:8px;background:var(--bad-soft)}
+@media (prefers-reduced-motion: reduce){ .fat{transition:none} }
+/* lock screen */
+.lock{min-height:100vh;display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+.lock-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:26px 24px}
+.lock-card h1{font-family:var(--f-display);font-weight:800;font-size:32px;line-height:1;margin:0 0 6px}
+.lock-card h1 .amp{color:var(--butter)}
+.lock-card p{color:var(--muted);margin:0 0 16px;font-size:15px}
+.lock-card label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.lock-card input[type=password]{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.lock-card .rem{display:flex;gap:8px;align-items:center;font-weight:400;margin:12px 0 16px;color:var(--muted)}
+.lock-card .err{color:var(--bad);font-weight:700;font-size:14px;min-height:1.4em;margin:8px 0 0}
+
+</style>
+
+<div class="lock" id="lockScreen">
+  <form class="lock-card" id="lockForm" autocomplete="off">
+    <h1>Curds <span class="amp">&amp;</span> Whey</h1>
+    <p>Food Science: Dairy practice. Enter the team code to open it.</p>
+    <label for="lockPass">Team code</label>
+    <input type="password" id="lockPass" name="lockPass" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" required>
+    <label class="rem" for="lockRem"><input type="checkbox" id="lockRem" checked> Remember on this device</label>
+    <button class="btn" type="submit" id="lockBtn">Unlock</button>
+    <p class="err" id="lockErr" role="alert"></p>
+  </form>
+</div>
+<div class="wrap" id="appWrap" hidden>
+  <header class="top">
+    <div class="brand">
+      <h1>Curds <span class="amp">&amp;</span> Whey</h1>
+      <p>Food Science: Dairy · Science Olympiad practice in the style of past tests</p>
+    </div>
+    <div class="controls">
+      <span class="seglabel" id="divlbl">Division</span>
+      <div class="seg" role="group" aria-labelledby="divlbl">
+        <button type="button" id="lvB" data-lv="B">Div B</button>
+        <button type="button" id="lvC" data-lv="C">Div C</button>
+      </div>
+      <button type="button" class="btn ghost small" id="forgetCode" title="Forget the team code on this device">Lock</button>
+      <span class="streak" title="Days in a row you finished the daily set"><b id="streakN">0</b> day streak</span>
+    </div>
+  </header>
+
+  <div class="tabs-wrap">
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-today" data-view="today">Daily set</button>
+      <button class="tab" role="tab" id="tab-practice" data-view="practice">Practice by topic</button>
+      <button class="tab" role="tab" id="tab-lab" data-view="lab">Lab calcs</button>
+      <button class="tab" role="tab" id="tab-mock" data-view="mock">Mock test<span class="tmr" id="tabTimer"></span></button>
+      <button class="tab" role="tab" id="tab-progress" data-view="progress">Progress</button>
+    </nav>
+  </div>
+
+  <main id="view"></main>
+
+  <p class="foot">Question formats follow five real Food Science B tests (2022 SO National Invitational, 2022 UChicago, 2021 UT Austin, 2021 Troy, 2021 BirdSO): 1-point multiple choice, 2-point select-all with partial credit, true/false, one-word answers, scenario free response, and calculations graded on value and significant figures. Dairy content comes from the team study guides, Walstra’s <i>Dairy Science and Technology</i>, and the Tetra Pak <i>Dairy Processing Handbook</i>, following the 2027 Food Science: Dairy topics. Questions live in <code>questions.js</code>. Progress is saved in this browser only.</p>
+</div>
+
+<script src="data.js"></script>
+<script>
+window.__fsStart=function(){
+const {TOPICS,SRC,BANK}=window.CW;
+
+/* ---------------- utilities ---------------- */
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return (h>>>0)}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function rngFor(s){return mulberry(hashStr(s))}
+function ri(r,a,b){return a+Math.floor(r()*(b-a+1))}
+function pick(r,arr){return arr[Math.floor(r()*arr.length)]}
+function shuffle(arr,r){for(let i=arr.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+
+function sigFigs(str){
+  let s=String(str).trim().replace(/^[+-]/,'').replace(/,/g,'');
+  if(/e/i.test(s)) s=s.split(/e/i)[0];
+  if(!/^(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  if(s.includes('.')){const d=s.replace('.','').replace(/^0+/,'');return d.length||1}
+  const d=s.replace(/^0+/,'').replace(/0+$/,'');return d.length||1;
+}
+function fmtSF(x,n){
+  if(!isFinite(x)) return String(x);
+  if(x===0) return n>1?(0).toFixed(n-1):'0';
+  let p=Math.floor(Math.log10(Math.abs(x)));
+  let dec=n-1-p;
+  let v=Math.round(x*Math.pow(10,dec))/Math.pow(10,dec);
+  if(Math.abs(v)>=Math.pow(10,p+1)){p++;dec=n-1-p;v=Math.round(x*Math.pow(10,dec))/Math.pow(10,dec)}
+  return dec>0?v.toFixed(dec):String(v);
+}
+/* display form: adds a trailing "." (e.g. 90.) or switches to scientific notation (1.2 × 10²) so the sig figs are unambiguous */
+function fmtShow(x,n){
+  const s=fmtSF(x,n); if(s.includes('.')||!/0$/.test(s)) return s;
+  const zeros=s.length-s.replace(/0+$/,'').length, digits=s.replace(/^-/,'').length;
+  if(digits-zeros>=n) return s;
+  if(digits===n) return s+'.';
+  return fmtSci(x,n);
+}
+function fmtAns(q){ if(q.dp!=null) return q.a.toFixed(q.dp); if(q.sci) return fmtSci(q.a,q.sf); if(q.sf) return fmtShow(q.a,q.sf); return String(Math.round(q.a*100)/100); }
+function parseNum(s){
+  const t=String(s).replace(/,/g,'').replace(/[−–]/g,'-').trim();
+  const m=t.match(/([-+]?(?:\d+\.?\d*|\.\d+))\s*(?:[x×*]\s*10\s*\^?\s*([-+]?\d+)|e([-+]?\d+))?/i);
+  if(!m) return null; const ex=m[2]!=null?m[2]:m[3];
+  return {v:ex!=null?parseFloat(m[1])*Math.pow(10,parseInt(ex)):parseFloat(m[1]),str:m[1]};
+}
+function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9β\-]/g,'').replace(/-/g,'')}
+function ptsOf(q){return q.k==='short'?q.kp.length:q.k==='multi'?2:1}
+
+/* ---------------- grading ---------------- */
+function grade(q,resp){
+  if(resp==null||resp==='') return {frac:0,blank:true};
+  switch(q.k){
+    case 'mc': case 'tf': return {frac:resp===q.a?1:0};
+    case 'multi':{let r=0,w=0;resp.forEach(i=>q.a.includes(i)?r++:w++);return {frac:Math.max(0,(r-w)/q.a.length),r,w}}
+    case 'fill':{const n=norm(resp);return {frac:q.acc.some(a=>norm(a)===n)?1:0}}
+    case 'num':{
+      const p=parseNum(resp); if(!p) return {frac:0,note:'That isn’t a number.'};
+      let v=p.v; if(q.abs) v=Math.abs(v);
+      const err=Math.abs(v-q.a)/Math.abs(q.a);
+      if(q.dp!=null){const dec=(p.str.split('.')[1]||'').length, same=v.toFixed(q.dp)===q.a.toFixed(q.dp);
+        if(same&&dec===q.dp) return {frac:1,dpOk:true,givenDp:dec};
+        if(Math.abs(v-q.a)<=0.02) return {frac:0.75,dpOk:dec===q.dp,givenDp:dec,rounding:dec===q.dp};
+        return {frac:0,wrongValue:true,givenDp:dec};}
+      if(!q.sf){return {frac:err<=(q.tol??0.01)?1:0}}
+      const given=sigFigs(p.str); const sfOk=given===q.sf;
+      const exact=Number(fmtSF(v,q.sf))===Number(fmtSF(q.a,q.sf));
+      if(sfOk&&exact) return {frac:1,sfOk:true,given};
+      if(err<=0.01) return {frac:0.75,sfOk,given,rounding:sfOk&&!exact};
+      return {frac:0,sfOk,given,wrongValue:true};
+    }
+    case 'short':{if(!resp.hits) return {frac:0};return {frac:resp.hits.filter(Boolean).length/q.kp.length}}
+  }
+  return {frac:0};
+}
+
+/* ---------------- lab-calc generators ---------------- */
+const GROUPS={lab:'Lab tasks',milk:'Milk testing',nutr:'Nutrition & energy',fat:'Fats & oils',chem:'Chemistry',kin:'Enzymes & heat kill'};
+const sfmin=(...a)=>Math.min(...a.map(x=>typeof x==='number'?x:sigFigs(x)));
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function sup(n){return String(n).split('').map(c=>SUP[c]??c).join('')}
+function fmtSci(x,n){const [m,e]=x.toExponential(n-1).split('e');return m+' × 10'+sup(parseInt(e))}
+const GEN={
+  fat:{name:'Babcock: grams of fat',g:'lab',lv:'B',make(r){
+    const m=(ri(r,1200,3200)/10).toFixed(1), p=(ri(r,180,450)/10).toFixed(1);
+    const a=(+p/100)*(+m), sf=sfmin(m,p);
+    return {k:'num',t:'lab',lv:'B',u:'g',sf,a,q:`A ${m} g cream sample reads ${p}% fat on a Babcock test. How many grams of milk fat does the sample contain?`,
+      x:`Mass of fat = (% fat ÷ 100) × sample mass\n= (${p} ÷ 100) × ${m} g = ${fmtShow(a,sf)} g\nSig figs: ${p} has ${sigFigs(p)}, ${m} has ${sigFigs(m)} → keep ${sf}.`};}},
+  fatpct:{name:'Babcock: % fat',g:'lab',lv:'B',make(r){
+    const s=(ri(r,150,600)/10).toFixed(1), tp=ri(r,180,450)/10, f=(+s*tp/100).toFixed(2);
+    const a=(+f)/(+s)*100, sf=sfmin(f,s);
+    return {k:'num',t:'lab',lv:'B',u:'%',sf,a,q:`A ${s} g cream sample is run through a Babcock test, and the fat in it has a mass of ${f} g. What is the percent fat?`,
+      x:`% fat = fat mass ÷ sample mass × 100\n= ${f} g ÷ ${s} g × 100 = ${fmtShow(a,sf)}%\nSig figs: ${f} has ${sigFigs(f)}, ${s} has ${sigFigs(s)} → keep ${sf}.`};}},
+  curd:{name:'Curd yield',g:'lab',lv:'B',make(r){
+    const m=(ri(r,5000,15000)/10).toFixed(1), y=ri(r,110,220)/1000, c=(+m*y).toFixed(1);
+    const a=(+c)/(+m)*100, sf=sfmin(c,m);
+    return {k:'num',t:'lab',lv:'B',u:'%',sf,a,q:`You coagulate ${m} g of milk and drain off ${c} g of curd. What is the percent curd yield?`,
+      x:`Curd yield = curd mass ÷ milk mass × 100\n= ${c} g ÷ ${m} g × 100 = ${fmtShow(a,sf)}%\nSig figs: ${c} has ${sigFigs(c)}, ${m} has ${sigFigs(m)} → keep ${sf}.`};}},
+  ovV:{name:'Overrun (volume)',g:'lab',lv:'B',make(r){
+    const mix=pick(r,[1.25,1.50,1.75,2.00,2.25,2.50]), rr=ri(r,40,105)/100;
+    const fin=Math.round(mix*(1+rr)*100)/100, mS=mix.toFixed(2), fS=fin.toFixed(2), dS=(+fS - +mS).toFixed(2);
+    const a=(+dS)/(+mS)*100, sf=sfmin(dS,mS);
+    return {k:'num',t:'lab',lv:'B',u:'%',sf,a,q:`${mS} L of ice cream mix is churned into ${fS} L of finished ice cream. Calculate the overrun.`,
+      x:`Overrun = (ice cream vol − mix vol) ÷ mix vol × 100\n= (${fS} − ${mS}) ÷ ${mS} × 100\n= ${dS} ÷ ${mS} × 100 = ${fmtShow(a,sf)}%\nSig figs: the subtraction keeps 2 decimal places, so ${dS} has ${sigFigs(dS)} sig figs; ${mS} has ${sigFigs(mS)} → keep ${sf}.`};}},
+  ovW:{name:'Overrun (weight)',g:'lab',lv:'C',make(r){
+    const mw=(ri(r,1300,1650)/10).toFixed(1), rr=ri(r,50,105)/100, iw=(+mw/(1+rr)).toFixed(1), dS=(+mw - +iw).toFixed(1);
+    const a=(+dS)/(+iw)*100, sf=sfmin(dS,iw);
+    return {k:'num',t:'lab',lv:'C',u:'%',sf,a,q:`A cup holds ${mw} g of ice cream mix. The same cup filled with finished ice cream weighs ${iw} g. Calculate the overrun.`,
+      x:`Overrun = (mix wt − ice cream wt) ÷ ice cream wt × 100\n= (${mw} − ${iw}) ÷ ${iw} × 100\n= ${dS} ÷ ${iw} × 100 = ${fmtShow(a,sf)}%\nSig figs: ${dS} has ${sigFigs(dS)}, ${iw} has ${sigFigs(iw)} → keep ${sf}.`};}},
+  fpd:{name:'Freezing-point drop',g:'lab',lv:'C',make(r){
+    const salt=r()<0.5, M=salt?58.44:342.30, i=salt?2:1, name=salt?'NaCl':'sucrose';
+    const mass=salt?(ri(r,50,250)/10).toFixed(1):(ri(r,200,900)/10).toFixed(1), w=pick(r,['100.0','150.0','200.0','250.0']);
+    const mol=+mass/M, molal=mol/(+w/1000), a=i*1.86*molal, sf=sfmin(mass,3,w);
+    return {k:'num',t:'lab',lv:'C',u:'°C',sf,a,abs:true,q:`${mass} g of ${name} (${M.toFixed(2)} g/mol) is dissolved in ${w} g of water. Using Kf = 1.86 °C·kg/mol, by how many degrees is the freezing point lowered (ΔTf)?`,
+      x:`mol ${name} = ${mass} ÷ ${M.toFixed(2)} = ${mol.toPrecision(4)} mol\nm = ${mol.toPrecision(4)} mol ÷ ${(+w/1000).toFixed(4)} kg = ${molal.toPrecision(4)} mol/kg\nΔTf = i · Kf · m = ${i} × 1.86 × ${molal.toPrecision(4)} = ${fmtShow(a,sf)} °C\n(i = ${i}: ${salt?'NaCl splits into Na⁺ + Cl⁻':'sucrose stays as one particle'})\nSig figs: ${mass} has ${sigFigs(mass)}, Kf has 3 → keep ${sf}.`};}},
+  pearson:{name:'Pearson square',g:'milk',lv:'C',make(r){
+    const M=pick(r,['50.0','100.0','250.0','500.0']), T=pick(r,['1.00','2.00','3.00','3.25']), R=(ri(r,380,460)/100).toFixed(2), L=pick(r,['0.05','0.10']);
+    const dR=(+T - +L).toFixed(2), dS=(+R - +T).toFixed(2), dT=(+R - +L).toFixed(2);
+    const a=(+M)*(+dR)/(+dT), sf=sfmin(M,dR,dT);
+    return {k:'num',t:'lab',lv:'C',u:'kg',sf,a,q:`Using a Pearson square, how many kg of ${R}% milk must be blended with ${L}% skim milk to make ${M} kg of ${T}% milk?`,
+      x:`Parts of ${R}% milk = ${T} − ${L} = ${dR}\nParts of skim = ${R} − ${T} = ${dS}\nTotal parts = ${R} − ${L} = ${dT}\nMilk = ${M} × ${dR} ÷ ${dT} = ${fmtShow(a,sf)} kg (the rest is skim)\nSig figs: ${dR} has ${sigFigs(dR)}, ${dT} has ${sigFigs(dT)}, ${M} has ${sigFigs(M)} → keep ${sf}.`};}},
+  ta:{name:'Titratable acidity',g:'milk',lv:'C',make(r){
+    const g=(ri(r,100,250)/10).toFixed(1), pct=ri(r,12,30)/100, mL=(pct*(+g)/(0.100*9.008)).toFixed(2);
+    const a=(+mL)*0.100*9.008/(+g), sf=sfmin(mL,3,g);
+    return {k:'num',t:'lab',lv:'C',u:'% lactic acid',sf,a,q:`A ${g} g milk sample needs ${mL} mL of 0.100 N NaOH to reach the phenolphthalein endpoint. What is its titratable acidity? (% lactic acid = mL × N × 9.008 ÷ g sample)`,
+      x:`% lactic acid = ${mL} × 0.100 × 9.008 ÷ ${g} = ${fmtShow(a,sf)}%\nFresh milk is about 0.14–0.16%; higher means it is souring.\nSig figs: ${mL} has ${sigFigs(mL)}, 0.100 has 3, ${g} has ${sigFigs(g)} → keep ${sf}.`};}},
+  kjN:{name:'Kjeldahl: %N → protein',g:'milk',lv:'B',make(r){
+    const N=(ri(r,45,62)/100).toFixed(2), a=+N*6.38, sf=sigFigs(N);
+    return {k:'num',t:'lab',lv:'B',u:'% protein',sf,a,q:`Kjeldahl analysis finds ${N}% nitrogen in a milk sample. What is the % protein? (Milk factor = 6.38)`,
+      x:`% protein = % N × 6.38 = ${N} × 6.38 = ${fmtShow(a,sf)}%\n(6.38 because milk protein is about 15.67% nitrogen.)\nSig figs: ${N} has ${sf}.`};}},
+  kjT:{name:'Kjeldahl titration',g:'milk',lv:'C',make(r){
+    const g=pick(r,['5.000','10.00']), Vb=pick(r,['0.20','0.25','0.30']), prot=ri(r,290,380)/100;
+    const net=prot/6.38/100*(+g)*1000/(0.1000*14.007), Vs=(net + +Vb).toFixed(2), nS=(+Vs - +Vb).toFixed(2);
+    const mg=(+nS)*0.1000*14.007, N=mg/((+g)*1000)*100, a=N*6.38, sf=sfmin(nS,'0.1000',g,3);
+    return {k:'num',t:'lab',lv:'C',u:'% protein',sf,a,q:`A ${g} g milk sample is digested and its ammonia titrated with 0.1000 M HCl. The sample needs ${Vs} mL; the blank needs ${Vb} mL. Find the % protein. (N = 14.007 g/mol; milk factor 6.38)`,
+      x:`Net HCl = ${Vs} − ${Vb} = ${nS} mL\nmmol N = ${nS} × 0.1000 = ${((+nS)*0.1).toFixed(4)} mmol → × 14.007 = ${mg.toFixed(2)} mg N\n% N = ${mg.toFixed(2)} mg ÷ (${g} g × 1000) × 100 = ${N.toFixed(4)}%\n% protein = ${N.toFixed(4)} × 6.38 = ${fmtShow(a,sf)}%\nSig figs: limited by the 6.38 factor → ${sf}.`};}},
+  addw:{name:'Added water (freezing point)',g:'milk',lv:'C',make(r){
+    const s=(ri(r,440,515)/1000).toFixed(3), d=(0.530 - +s).toFixed(3), a=(+d)/0.530*100, sf=sfmin(d,'0.530');
+    return {k:'num',t:'lab',lv:'C',u:'% added water',sf,a,q:`Normal milk freezes at −0.530 °C. A sample freezes at −${s} °C. About what percent water was added? (% = (normal − sample) ÷ normal × 100, using the sizes of the temperatures)`,
+      x:`(0.530 − ${s}) ÷ 0.530 × 100 = ${d} ÷ 0.530 × 100 = ${fmtShow(a,sf)}%\nSig figs: the subtraction keeps 3 decimals, so ${d} has ${sigFigs(d)} sig figs → keep ${sf}.`};}},
+  cal:{name:'Calories from a label',g:'nutr',lv:'B',make(r){
+    const it=pick(r,[{n:'1 cup of chocolate milk',f:[5,9],c:[24,32],p:[8,9]},{n:'1 container of vanilla yogurt',f:[2,5],c:[20,30],p:[5,9]},{n:'1 oz of cheddar cheese',f:[8,10],c:[0,1],p:[6,8]},{n:'½ cup of ice cream',f:[6,9],c:[14,18],p:[2,4]},{n:'1 cup of skim milk',f:[0,0],c:[12,13],p:[8,9]},{n:'1 cup of soy milk',f:[3,5],c:[3,9],p:[7,8]}]);
+    const f=ri(r,it.f[0],it.f[1]),c=ri(r,it.c[0],it.c[1]),p=ri(r,it.p[0],it.p[1]); const a=9*f+4*c+4*p;
+    return {k:'num',t:'nutr',lv:'B',u:'kcal',sf:null,tol:0.001,a,q:`A label for ${it.n} lists ${f} g fat, ${c} g carbohydrate, and ${p} g protein. Using 9-4-4 kcal/g, how many calories is one serving?`,
+      x:`Fat: ${f} × 9 = ${9*f}\nCarbs: ${c} × 4 = ${4*c}\nProtein: ${p} × 4 = ${4*p}\nTotal = ${a} kcal (a label would round this to the nearest 10 above 50 kcal)`};}},
+  dv:{name:'% Daily Value',g:'nutr',lv:'B',make(r){
+    if(r()<0.6){let mg=ri(r,121,459); if(mg%10===0) mg+=3; const a=mg/1300*100, sf=sigFigs(String(mg));
+      return {k:'num',t:'nutr',lv:'B',u:'%',sf,a,q:`A serving of milk has ${mg} mg of calcium. The Daily Value for calcium is 1,300 mg. What %DV is this?`,
+        x:`%DV = amount ÷ DV × 100 = ${mg} ÷ 1,300 × 100 = ${fmtShow(a,sf)}%\nThe DV is a defined (exact) value, so ${mg} mg (${sf} sig figs) sets the sig figs.`};}
+    const mc=(ri(r,12,59)/10).toFixed(1), a=+mc/20*100, sf=sigFigs(mc);
+    return {k:'num',t:'nutr',lv:'B',u:'%',sf,a,q:`A cup of fortified milk has ${mc} mcg of vitamin D. The Daily Value is 20 mcg. What %DV is this?`,
+      x:`%DV = ${mc} ÷ 20 × 100 = ${fmtShow(a,sf)}%\nThe DV is exact, so ${mc} mcg (${sf} sig figs) sets the sig figs.`};}},
+  dvback:{name:'Amount from %DV',g:'nutr',lv:'B',make(r){
+    const n=pick(r,[{n:'calcium',dv:1300,u:'mg'},{n:'potassium',dv:4700,u:'mg'},{n:'iron',dv:18,u:'mg'},{n:'vitamin D',dv:20,u:'mcg'},{n:'sodium',dv:2300,u:'mg'}]);
+    const p=pick(r,[10,15,20,25,30,35,40]), a=p/100*n.dv;
+    return {k:'num',t:'nutr',lv:'B',u:n.u,sf:null,tol:0.001,a,q:`A label lists ${p}% DV for ${n.n}. The Daily Value is ${n.dv.toLocaleString()} ${n.u}. How much ${n.n} is in one serving?`,
+      x:`amount = (%DV ÷ 100) × DV = ${p/100} × ${n.dv.toLocaleString()} = ${Math.round(a*100)/100} ${n.u}`};}},
+  heat:{name:'Heat: q = mcΔT',g:'nutr',lv:'B',make(r){
+    const m=pick(r,['150.0','250.0','400.0','500.0']), T1=(ri(r,40,250)/10).toFixed(1), T2=pick(r,['63.0','72.0','85.0']), dT=(+T2 - +T1).toFixed(1);
+    const a=(+m)*4.184*(+dT)/1000, sf=sfmin(m,dT,'4.184');
+    return {k:'num',t:'nutr',lv:'B',u:'kJ',sf,a,q:`How much heat, in kJ, is needed to warm ${m} g of water from ${T1} °C to ${T2} °C? (c = 4.184 J/g·°C)`,
+      x:`ΔT = ${T2} − ${T1} = ${dT} °C\nq = m × c × ΔT = ${m} × 4.184 × ${dT} = ${((+m)*4.184*(+dT)).toFixed(0)} J = ${fmtShow(a,sf)} kJ\nSig figs: ${dT} has ${sigFigs(dT)}, ${m} has ${sigFigs(m)} → keep ${sf}.`};}},
+  bomb:{name:'Bomb calorimeter',g:'nutr',lv:'C',make(r){
+    const C=pick(r,['9.80','10.25','10.50']), mass=(ri(r,800,1500)/1000).toFixed(3), dT=(ri(r,150,380)/100).toFixed(2);
+    const q=(+C)*(+dT), a=q/(+mass)/4.184, sf=sfmin(C,mass,dT);
+    return {k:'num',t:'nutr',lv:'C',u:'kcal/g',sf,a,q:`A ${mass} g food sample burns in a bomb calorimeter (C = ${C} kJ/°C) and the temperature rises ${dT} °C. What is its energy in kcal per gram? (1 kcal = 4.184 kJ)`,
+      x:`q = C × ΔT = ${C} × ${dT} = ${q.toPrecision(4)} kJ\nPer gram: ${q.toPrecision(4)} ÷ ${mass} = ${(q/(+mass)).toPrecision(4)} kJ/g\n÷ 4.184 = ${fmtShow(a,sf)} kcal/g\nSig figs: ${C} has ${sigFigs(C)}, ${dT} has ${sigFigs(dT)}, ${mass} has ${sigFigs(mass)} → keep ${sf}.`};}},
+  convert:{name:'kcal ⇄ kJ',g:'nutr',lv:'B',make(r){
+    if(r()<0.5){let k=ri(r,121,489); if(k%10===0) k+=3; const a=k*4.184, sf=sigFigs(String(k));
+      return {k:'num',t:'nutr',lv:'B',u:'kJ',sf,a,q:`Convert ${k} kcal to kilojoules. (1 kcal = 4.184 kJ)`,x:`${k} × 4.184 = ${fmtShow(a,sf)} kJ\n4.184 is a defined factor, so ${k} (${sf} sig figs) sets the sig figs.`};}
+    let j=ri(r,512,2989); if(j%10===0) j+=7; const a=j/4.184, sf=sigFigs(String(j));
+    return {k:'num',t:'nutr',lv:'B',u:'kcal',sf,a,q:`Convert ${j} kJ to kcal. (1 kcal = 4.184 kJ)`,x:`${j} ÷ 4.184 = ${fmtShow(a,sf)} kcal\n4.184 is a defined factor, so ${j} (${sf} sig figs) sets the sig figs.`};}},
+  ivalue:{name:'Iodine value',g:'fat',lv:'C',make(r){
+    const f=pick(r,[{n:'oleic acid',d:1,M:282.47},{n:'linoleic acid',d:2,M:280.45},{n:'α-linolenic acid',d:3,M:278.43},{n:'palmitoleic acid',d:1,M:254.41}]);
+    const a=f.d*253.81/f.M*100;
+    return {k:'num',t:'lip',lv:'C',u:'g I₂/100 g',sf:null,tol:0.003,a,q:`Calculate the iodine value of ${f.n} (${f.d} C=C, ${f.M} g/mol). (I₂ = 253.81 g/mol; IV = number of C=C × 253.81 ÷ M × 100)`,
+      x:`IV = ${f.d} × 253.81 ÷ ${f.M} × 100 = ${a.toFixed(1)}\nIodine values are usually reported to one decimal place.`};}},
+  sapval:{name:'Saponification value',g:'fat',lv:'C',make(r){
+    const t=pick(r,[{n:'tributyrin',M:302.36},{n:'tricaprylin',M:470.65},{n:'tripalmitin',M:807.32},{n:'triolein',M:885.43},{n:'tristearin',M:891.48}]);
+    const a=3*56.1*1000/t.M, sf=3;
+    return {k:'num',t:'lip',lv:'C',u:'mg KOH/g',sf,a,q:`What is the saponification value of pure ${t.n} (${t.M} g/mol)? (SV = 3 × 56.1 × 1000 ÷ M, KOH = 56.1 g/mol)`,
+      x:`SV = 3 × 56.1 × 1000 ÷ ${t.M} = ${fmtShow(a,sf)} mg KOH/g\nShorter chains → more ester bonds per gram → higher SV.\nSig figs: 56.1 has 3 → keep 3.`};}},
+  butter:{name:'Butter yield',g:'fat',lv:'C',make(r){
+    const m=pick(r,['850.0','1000.0','1200.0','1500.0']), f=(ri(r,360,480)/100).toFixed(2), rec=pick(r,['95.0','96.0','97.5']), bf=pick(r,['80.0','82.0']);
+    const a=(+m)*(+f/100)*(+rec/100)/(+bf/100), sf=sfmin(m,f,rec,bf);
+    return {k:'num',t:'lip',lv:'C',u:'kg',sf,a,q:`How many kg of butter (${bf}% fat) can be made from ${m} kg of milk with ${f}% fat, if ${rec}% of the fat is recovered?`,
+      x:`Butter = milk × fat fraction × recovery ÷ butter fat fraction\n= ${m} × ${(+f/100).toFixed(4)} × ${(+rec/100).toFixed(3)} ÷ ${(+bf/100).toFixed(3)} = ${fmtShow(a,sf)} kg\nSig figs: smallest is ${sf}.`};}},
+  fdm:{name:'Fat in dry matter',g:'fat',lv:'C',make(r){
+    const f=(ri(r,200,350)/10).toFixed(1), mo=(ri(r,300,450)/10).toFixed(1), dm=(100 - +mo).toFixed(1);
+    const a=(+f)/(+dm)*100, sf=sfmin(f,dm);
+    return {k:'num',t:'lip',lv:'C',u:'% FDM',sf,a,q:`A cheese has ${f}% fat and ${mo}% moisture. What is its fat in dry matter (FDM)?`,
+      x:`Dry matter = 100 − ${mo} = ${dm}%\nFDM = ${f} ÷ ${dm} × 100 = ${fmtShow(a,sf)}%\n(U.S. cheddar must be at least 50% FDM.)`};}},
+  pH:{name:'pH from [H⁺]',g:'chem',lv:'C',make(r){
+    const m=(ri(r,11,99)/10).toFixed(1), e=ri(r,2,7), a=-Math.log10((+m)*Math.pow(10,-e));
+    return {k:'num',t:'chem',lv:'C',u:'',dp:2,a,q:`What is the pH of a solution with [H⁺] = ${m} × 10${sup(-e)} M?`,
+      x:`pH = −log(${m} × 10${sup(-e)}) = ${a.toFixed(2)}\nLog rule: [H⁺] has 2 sig figs, so the pH gets 2 decimal places.`};}},
+  hpH:{name:'[H⁺] from pH',g:'chem',lv:'C',make(r){
+    const p=(ri(r,300,720)/100).toFixed(2), a=Math.pow(10,-(+p));
+    return {k:'num',t:'chem',lv:'C',u:'M',sf:2,sci:true,a,q:`A solution has pH ${p}. What is [H⁺]?`,
+      x:`[H⁺] = 10^−${p} = ${fmtSci(a,2)} M\nLog rule: 2 decimal places in the pH → 2 sig figs in [H⁺].`};}},
+  hh:{name:'Buffer pH (lactic acid)',g:'chem',lv:'C',make(r){
+    const b=(ri(r,10,90)/10).toFixed(1), c=(ri(r,10,90)/10).toFixed(1), a=3.86+Math.log10((+b)/(+c));
+    return {k:'num',t:'chem',lv:'C',u:'',dp:2,a,q:`Lactic acid has pKa 3.86. What is the pH of a buffer with [lactate] = ${b} mM and [lactic acid] = ${c} mM?`,
+      x:`pH = pKa + log([lactate] ÷ [lactic acid]) = 3.86 + log(${b} ÷ ${c})\n= 3.86 + (${Math.log10((+b)/(+c)).toFixed(2)}) = ${a.toFixed(2)}`};}},
+  titr:{name:'Titration molarity',g:'chem',lv:'C',make(r){
+    const Va=pick(r,['10.00','20.00','25.00']), Vb=(ri(r,1200,3000)/100).toFixed(2), a=0.1000*(+Vb)/(+Va), sf=sfmin(Va,Vb,'0.1000');
+    return {k:'num',t:'chem',lv:'C',u:'M',sf,a,q:`${Va} mL of lactic acid solution is neutralized by ${Vb} mL of 0.1000 M NaOH (1:1). What is the acid’s molarity?`,
+      x:`M(acid) = M(base) × V(base) ÷ V(acid) = 0.1000 × ${Vb} ÷ ${Va} = ${fmtShow(a,sf)} M`};}},
+  molar:{name:'Lactose molarity',g:'chem',lv:'C',make(r){
+    const g=(ri(r,440,520)/100).toFixed(2), a=(+g*10)/342.30, sf=sigFigs(g);
+    return {k:'num',t:'chem',lv:'C',u:'M',sf,a,q:`Milk has ${g} g of lactose (342.30 g/mol) per 100 mL. What is the molarity of lactose?`,
+      x:`${g} g per 100 mL = ${(+g*10).toFixed(1)} g/L\n${(+g*10).toFixed(1)} g/L ÷ 342.30 g/mol = ${fmtShow(a,sf)} M\nSig figs: ${g} has ${sf}.`};}},
+  pep:{name:'Peptide molar mass',g:'chem',lv:'C',make(r){
+    const AA=[['Gly',75.07],['Ala',89.09],['Ser',105.09],['Cys',121.16],['Asp',133.10],['Lys',146.19],['Phe',165.19]];
+    const n=ri(r,2,4), ch=shuffle(AA.slice(),r).slice(0,n), sum=ch.reduce((s,x)=>s+x[1],0), a=sum-(n-1)*18.015;
+    return {k:'num',t:'chem',lv:'C',u:'g/mol',dp:2,a,q:`Find the molar mass of the peptide ${ch.map(x=>x[0]).join('–')}. (${ch.map(x=>x[0]+' '+x[1].toFixed(2)).join(', ')}; H₂O 18.015 g/mol)`,
+      x:`Sum of amino acids = ${sum.toFixed(2)}\n${n} amino acids → ${n-1} peptide bond${n>2?'s':''}, so subtract ${n-1} × 18.015 = ${((n-1)*18.015).toFixed(3)}\nMolar mass = ${a.toFixed(2)} g/mol (round to 2 decimal places when adding)`};}},
+  mm:{name:'Michaelis–Menten',g:'kin',lv:'C',make(r){
+    const V=pick(r,['50.0','80.0','120.0']), K=(ri(r,10,50)/10).toFixed(1), S=(ri(r,10,200)/10).toFixed(1), sum=(+K + +S).toFixed(1);
+    const a=(+V)*(+S)/(+sum), sf=sfmin(V,S,sum);
+    return {k:'num',t:'enz',lv:'C',u:'µmol/min',sf,a,q:`Lactase has Vmax = ${V} µmol/min and Km = ${K} mM. What is the rate at [lactose] = ${S} mM?`,
+      x:`v = Vmax × [S] ÷ (Km + [S]) = ${V} × ${S} ÷ (${K} + ${S}) = ${V} × ${S} ÷ ${sum} = ${fmtShow(a,sf)} µmol/min`};}},
+  q10:{name:'Q₁₀ rate',g:'kin',lv:'C',make(r){
+    const r1=(ri(r,20,90)/10).toFixed(1), T1=pick(r,[5,10,15]), d=pick(r,[10,20,30]), a=(+r1)*Math.pow(2,d/10), sf=sfmin(r1,'2.0');
+    return {k:'num',t:'enz',lv:'C',u:'µmol/h',sf,a,q:`A milk lipase releases ${r1} µmol of fatty acid per hour at ${T1} °C. If Q₁₀ = 2.0, what is its rate at ${T1+d} °C?`,
+      x:`Rate₂ = Rate₁ × Q₁₀^((T₂ − T₁) ÷ 10) = ${r1} × 2.0^${d/10} = ${fmtShow(a,sf)} µmol/h`};}},
+  dlog:{name:'D-value kill time',g:'kin',lv:'C',make(r){
+    const D=pick(r,['0.020','0.030','0.040','0.050']), n=pick(r,[5,6,7,9,12]), a=(+D)*n*60, sf=sigFigs(D);
+    return {k:'num',t:'proc',lv:'C',u:'s',sf,a,q:`A pathogen in milk has D₇₂ = ${D} min. How many seconds at 72 °C give a ${n}-log reduction?`,
+      x:`t = D × (number of log reductions) = ${D} min × ${n} = ${((+D)*n).toFixed(3)} min\n× 60 s/min = ${fmtShow(a,sf)} s\n(Each D-time kills 90%, so ${n} D-times leave 1 in 10${sup(n)}.)`};}},
+  zval:{name:'z-value (new D)',g:'kin',lv:'C',make(r){
+    const D1=pick(r,['0.20','0.25','0.50','1.5']), z=pick(r,[8,10]), d=pick(r,[5,10,15]), a=(+D1)*Math.pow(10,d/z), sf=sigFigs(D1);
+    return {k:'num',t:'proc',lv:'C',u:'min',sf,a,q:`Bacterial spores have D = ${D1} min at 121 °C and z = ${z} °C. What is their D-value at ${121-d} °C?`,
+      x:`Lower temperature → longer D.\nD₂ = D₁ × 10^((T₁ − T₂) ÷ z) = ${D1} × 10^(${d} ÷ ${z}) = ${D1} × ${Math.pow(10,d/z).toPrecision(4)} = ${fmtShow(a,sf)} min`};}},
+};
+function genOne(key,r,tag){const q=GEN[key].make(r);q.id='g:'+key+':'+tag;q.gen=key;return q}
+
+/* ---------------- storage ---------------- */
+const KEY='curds-whey-v1';
+let S={level:'C',days:{},topics:{},missed:[],seen:{},mocks:[]};
+try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);S=Object.assign(S,o)}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function record(q,frac){
+  const pts=ptsOf(q); const t=S.topics[q.t]||[0,0]; t[0]+=frac*pts; t[1]+=pts; S.topics[q.t]=t;
+  if(!q.gen){ S.seen[q.id]=(S.seen[q.id]||0)+1;
+    const i=S.missed.indexOf(q.id);
+    if(frac<1&&i<0) S.missed.push(q.id); if(frac===1&&i>=0) S.missed.splice(i,1); }
+  save();
+}
+function dateKey(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function poolForLevel(){return BANK.filter(q=>S.level==='C'||q.lv==='B')}
+function gensForLevel(){return Object.keys(GEN).filter(k=>S.level==='C'||GEN[k].lv==='B')}
+
+/* ---------------- question renderer ---------------- */
+/* o: {mode:'instant'|'exam'|'review', resp, onAnswer(resp), onChange(resp), label, onHits(hits)} */
+function renderQ(q,o){
+  const card=el('article','qcard');
+  const head=el('div','qhead');
+  head.append(el('span','qnum',o.label||''));
+  const chips=el('div','chips');
+  chips.append(el('span','chip',TOPICS[q.t]), el('span','chip lv','Div '+q.lv));
+  if(q.k==='multi') chips.append(el('span','chip','Select all that apply'));
+  if(q.gen) chips.append(el('span','chip','New numbers each time'));
+  if(q.src&&SRC[q.src]){const s=SRC[q.src]; chips.append(el('span','chip '+(s.past?'past':'ref'),(s.past?'Past-test style · ':'Source · ')+s.label));}
+  const p=ptsOf(q); chips.append(el('span','chip pts',p+(p===1?' pt':' pts')));
+  head.append(chips); card.append(head);
+  card.append(el('p','qtext',q.q));
+  const body=el('div'); card.append(body);
+  const review=o.mode==='review', exam=o.mode==='exam';
+  let resp=o.resp;
+
+  if(q.k==='mc'||q.k==='multi'||q.k==='tf'){
+    const opts=q.k==='tf'?['True','False']:q.o;
+    const box=el('div',q.k==='tf'?'tfrow':'opts');
+    let sel=q.k==='multi'?new Set(resp||[]):resp;
+    const btns=opts.map((txt,i)=>{
+      const val=q.k==='tf'?(i===0):i;
+      const b=el('button','opt'); b.type='button';
+      b.append(el('span','key',q.k==='tf'?(i===0?'T':'F'):String.fromCharCode(65+i)), el('span',null,txt));
+      const isSel=q.k==='multi'?sel.has(i):sel===val;
+      b.setAttribute('aria-pressed',isSel?'true':'false');
+      if(review){
+        b.disabled=true;
+        const correct=q.k==='multi'?q.a.includes(i):q.a===val;
+        if(correct&&isSel) b.classList.add('ok');
+        else if(!correct&&isSel) b.classList.add('no');
+        else if(correct) b.classList.add('miss','ok');
+      } else {
+        b.addEventListener('click',()=>{
+          if(q.k==='multi'){ sel.has(i)?sel.delete(i):sel.add(i); b.setAttribute('aria-pressed',sel.has(i)?'true':'false'); if(exam) o.onChange([...sel].sort()); checkBtn&&(checkBtn.disabled=sel.size===0); }
+          else { sel=val; btns.forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); if(exam) o.onChange(val); else o.onAnswer(val); }
+        });
+      }
+      box.append(b); return b;
+    });
+    body.append(box);
+    var checkBtn=null;
+    if(q.k==='multi'&&!review&&!exam){
+      const act=el('div','actions'); checkBtn=el('button','btn','Check answer'); checkBtn.type='button'; checkBtn.disabled=sel.size===0;
+      checkBtn.addEventListener('click',()=>o.onAnswer([...sel].sort())); act.append(checkBtn, el('span','hint','Partial credit: each wrong pick cancels one right pick.')); body.append(act);
+    }
+  }
+
+  if(q.k==='num'||q.k==='fill'){
+    const row=el('div','inrow'); const inp=el('input'); inp.type='text'; inp.id='in-'+q.id.replace(/[^a-z0-9]/gi,'');
+    inp.setAttribute('aria-label','Your answer'); inp.autocomplete='off';
+    if(q.k==='num'){inp.inputMode=q.sci?'text':'decimal'; inp.placeholder=q.sci?'6.3e-6':'0.00'; if(q.sci) inp.style.width='16ch'} else {inp.className='wide'; inp.placeholder='Type your answer'}
+    if(resp!=null) inp.value=resp;
+    row.append(inp); if(q.u) row.append(el('span','unit',q.u));
+    if(review){inp.disabled=true}
+    else if(exam){inp.addEventListener('input',()=>o.onChange(inp.value.trim()||null))}
+    else { const b=el('button','btn','Check'); b.type='button'; const go=()=>{if(inp.value.trim()) o.onAnswer(inp.value.trim())}; b.addEventListener('click',go); inp.addEventListener('keydown',e=>{if(e.key==='Enter')go()}); row.append(b); }
+    body.append(row);
+    if(q.k==='num'&&!review) body.append(el('p','hint',q.dp!=null?'Give your answer to the correct number of decimal places.':q.sci?'Use scientific notation, like 6.3e-6 or 6.3 x 10^-6, with the correct sig figs.':q.sf?'Give your final answer with the correct number of significant figures.':'Round only at the end; units are shown for you.'));
+  }
+
+  if(q.k==='short'){
+    if(review){
+      if(resp&&resp.text){const y=el('div','model');y.append(el('div','lbl','Your answer'),el('div','yours',resp.text));body.append(y)}
+      body.append(shortKey(q,resp&&resp.hits,o.onHits));
+    } else {
+      const ta=el('textarea'); ta.id='ta-'+q.id; ta.setAttribute('aria-label','Your answer'); ta.placeholder='Write your answer the way you would on the test…';
+      if(resp&&resp.text) ta.value=resp.text;
+      body.append(ta);
+      if(exam){ta.addEventListener('input',()=>o.onChange({text:ta.value,hits:null}))}
+      else{
+        const act=el('div','actions'); const b=el('button','btn','Compare with model answer'); b.type='button'; act.append(b,el('span','hint','You’ll tick off the key points you hit.')); body.append(act);
+        b.addEventListener('click',()=>{
+          b.disabled=true; ta.disabled=true; const hits=q.kp.map(()=>false);
+          const k=shortKey(q,hits,h=>{hits.splice(0,hits.length,...h)}); body.append(k);
+          const a2=el('div','actions'); const s=el('button','btn','Save my score'); s.type='button'; a2.append(s); body.append(a2);
+          s.addEventListener('click',()=>o.onAnswer({text:ta.value,hits:hits.slice()}));
+        });
+      }
+    }
+  }
+
+  if(review) card.append(feedback(q,resp));
+  return card;
+}
+function shortKey(q,hits,onHits){
+  const w=el('div','model'); w.append(el('div','lbl','Model answer'), el('div',null,q.m));
+  const kp=el('div','kp'); const lbl=el('div','lbl',onHits?'Tick each key point your answer included (1 pt each)':'Key points (1 pt each)'); lbl.style.marginTop='10px'; w.append(lbl);
+  q.kp.forEach((t,i)=>{const l=el('label');const c=el('input');c.type='checkbox';c.id='kp-'+q.id+'-'+i;c.checked=!!(hits&&hits[i]);c.disabled=!onHits;
+    c.addEventListener('change',()=>{const h=[...kp.querySelectorAll('input')].map(x=>x.checked);onHits&&onHits(h)});l.append(c,el('span',null,t));kp.append(l)});
+  w.append(kp); return w;
+}
+function feedback(q,resp){
+  const g=grade(q,resp); const pts=ptsOf(q); const earned=Math.round(g.frac*pts*100)/100;
+  const cls=g.frac===1?'good':g.frac>0?'part':'bad';
+  const fb=el('div','fb '+cls);
+  let verdict;
+  if(q.k==='short') verdict=`Self-graded · ${earned} / ${pts} pts`;
+  else if(g.frac===1) verdict=`Correct · +${earned} ${earned===1?'pt':'pts'}`;
+  else if(g.frac>0) verdict=`Partly right · ${earned} / ${pts} pts`;
+  else verdict=g.blank?`No answer · 0 / ${pts}`:`Not quite · 0 / ${pts}`;
+  fb.append(el('div','verdict',verdict));
+  if(q.k==='num'){
+    const ans=fmtAns(q);
+    let line=`Answer: ${ans}${q.u?' '+q.u:''}`;
+    if(q.dp!=null){ line+=` (${q.dp} decimal places).`;
+      if(!g.blank&&g.givenDp!=null&&!g.wrongValue){ if(g.frac===1) line+=' Your decimal places are right.'; else if(!g.dpOk) line+=` Your value is right, but you gave ${g.givenDp} decimal places: ¾ credit.`; else if(g.rounding) line+=' Check your rounding: ¾ credit.'; }
+    } else if(q.sf){ line+=` (${q.sf} sig figs).`;
+      if(!g.blank&&g.given!=null){ if(g.sfOk&&g.frac===1) line+=' Your sig figs are right.'; else if(!g.sfOk&&!g.wrongValue) line+=` Your value is right, but you gave ${g.given} sig figs: ¾ credit.`; else if(g.rounding) line+=' Right sig figs, but check your rounding: ¾ credit.'; }
+    } else line+='.';
+    fb.append(el('p',null,line));
+    fb.append(el('div','work',q.x));
+  } else if(q.k==='fill'){
+    fb.append(el('p',null,'Answer: '+q.ans+'. '+q.x));
+  } else if(q.k==='short'){
+    /* model shown above */
+  } else fb.append(el('p',null,q.x));
+  return fb;
+}
+
+/* ---------------- app shell ---------------- */
+const view=document.getElementById('view');
+let current='today';
+function setLevel(lv){S.level=lv;save();Today.idx=null;document.getElementById('lvB').setAttribute('aria-pressed',lv==='B');document.getElementById('lvC').setAttribute('aria-pressed',lv==='C');Practice.reset();show(current)}
+document.getElementById('lvB').addEventListener('click',()=>setLevel('B'));
+document.getElementById('lvC').addEventListener('click',()=>setLevel('C'));
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>show(t.dataset.view)));
+function show(v){
+  current=v; document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v?'true':'false'));
+  updateStreak(); view.innerHTML=''; ({today:Today.render,practice:Practice.render,lab:Lab.render,mock:Mock.render,progress:Progress.render})[v]();
+}
+function updateStreak(){
+  let n=0; const d=new Date();
+  const doneOn=k=>Object.keys(S.days).some(x=>x.startsWith(k+'|')&&S.days[x].done);
+  if(!doneOn(dateKey(d))) d.setDate(d.getDate()-1);
+  while(doneOn(dateKey(d))){n++;d.setDate(d.getDate()-1)}
+  document.getElementById('streakN').textContent=n;
+}
+
+/* ---------------- Daily set ---------------- */
+const Today={idx:null,
+  build(dk){
+    const r=rngFor('daily|'+dk+'|'+S.level);
+    const pool=shuffle(poolForLevel().slice(),r); const quota={tf:2,short:1,multi:2}; const kc={},tc={}; const out=[];
+    for(const q of pool){ if(out.length>=10) break; if((tc[q.t]||0)>=2) continue; if(q.k==='num') continue;
+      if(quota[q.k]!=null&&(kc[q.k]||0)>=quota[q.k]) continue; out.push(q); tc[q.t]=(tc[q.t]||0)+1; kc[q.k]=(kc[q.k]||0)+1; }
+    const gk=shuffle(gensForLevel(),r).slice(0,2);
+    const g1=genOne(gk[0],r,dk+'a'), g2=genOne(gk[1],r,dk+'b');
+    const si=out.findIndex(q=>q.k==='short'); let sh=null; if(si>=0) sh=out.splice(si,1)[0];
+    out.splice(3,0,g1); out.splice(8,0,g2); if(sh) out.push(sh);
+    return out;
+  },
+  render(){
+    const dk=dateKey(), key=dk+'|'+S.level; const set=Today.build(dk);
+    const day=S.days[key]||(S.days[key]={res:{},done:false});
+    const n=set.length; let earned=0,possible=0,answered=0;
+    set.forEach((q,i)=>{possible+=ptsOf(q);const r=day.res[i];if(r){answered++;earned+=r.frac*ptsOf(q)}});
+    if(Today.idx==null||Today.idx>n) Today.idx=day.done?n:set.findIndex((q,i)=>!day.res[i]);
+    if(Today.idx<0) Today.idx=n;
+
+    const wrap=el('section','today');
+    const dh=el('div','dayhead'); const hl=el('div');
+    const nice=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+    hl.append(el('h2',null,`Daily set for ${nice}`), el('p','sub',`${n} questions, about 15 minutes. Everyone at Div ${S.level} gets the same set today, so your team can compare scores. A new set appears at midnight.`));
+    dh.append(hl); wrap.append(dh);
+
+    // gauge
+    const g=el('aside','gauge'); g.setAttribute('aria-label','Score gauge');
+    g.append(el('div','glabel','Babcock reading'));
+    const bottle=el('div','bottle'); const nr=el('div','neckrow'); const sc=el('div','scale');
+    [100,80,60,40,20,0].forEach(v=>sc.append(el('span',null,v)));
+    const neck=el('div','neck'); const pct=possible?earned/possible*100:0; neck.style.setProperty('--fill',pct.toFixed(1)+'%'); neck.append(el('div','fat'));
+    nr.append(sc,neck); const bulb=el('div','bulb'); const bb=el('div'); bb.append(el('div','big',`${Math.round(earned*10)/10}`),el('div','sm',`of ${possible} pts`)); bulb.append(bb);
+    bottle.append(nr,bulb); g.append(bottle);
+    const dots=el('div','dots');
+    set.forEach((q,i)=>{const d=el('button','dot');d.type='button';d.setAttribute('aria-label',`Question ${i+1}`);const r=day.res[i];if(r)d.classList.add(r.frac===1?'r':r.frac>0?'p':'w');if(i===Today.idx)d.classList.add('cur');d.addEventListener('click',()=>{Today.idx=i;show('today')});dots.append(d)});
+    g.append(dots, el('p','gnote','The fat column is your score, read like a Babcock bottle neck.'));
+    wrap.append(g);
+
+    const main=el('div'); main.style.minWidth='0';
+    if(Today.idx>=n){ main.append(Today.summary(set,day,earned,possible)); }
+    else{
+      const i=Today.idx,q=set[i],r=day.res[i];
+      const card=renderQ(q,{mode:r?'review':'instant',resp:r&&r.resp,label:`QUESTION ${i+1} OF ${n}`,
+        onAnswer:(resp)=>{const gr=grade(q,resp);day.res[i]={resp,frac:gr.frac};record(q,gr.frac);
+          if(Object.keys(day.res).length===n) day.done=true; save(); show('today')}});
+      main.append(card);
+      if(r){const act=el('div','actions');const nx=el('button','btn',answered===n?'See today’s results':'Next question');nx.type='button';
+        nx.addEventListener('click',()=>{const nxt=set.findIndex((q2,j)=>j>i&&!day.res[j]);Today.idx=answered===n?n:(nxt>=0?nxt:set.findIndex((q2,j)=>!day.res[j]));if(Today.idx<0)Today.idx=n;show('today')});act.append(nx);main.append(act);nx.focus({preventScroll:true})}
+    }
+    wrap.append(main); view.append(wrap);
+  },
+  summary(set,day,earned,possible){
+    const p=el('div','panel summary'); const pct=possible?Math.round(earned/possible*100):0;
+    const done=Object.keys(day.res).length===set.length;
+    p.append(el('h2',null,done?'Today’s set is done':'Finish the rest of today’s set'));
+    const big=el('div','row'); big.append(el('div','bigscore',pct+'%'), el('div','sub',`${Math.round(earned*10)/10} of ${possible} points`)); p.append(big);
+    const ul=el('ul','qlist');
+    set.forEach((q,i)=>{const r=day.res[i];const li=el('li');const mk=el('span','mk '+(r?(r.frac===1?'r':r.frac>0?'p':'w'):''),r?(r.frac===1?'✓':r.frac>0?'½':'✗'):'—');const tx=el('span','tx',q.q.length>110?q.q.slice(0,107)+'…':q.q);li.append(mk,tx);li.style.cursor='pointer';li.addEventListener('click',()=>{Today.idx=i;show('today')});ul.append(li)});
+    p.append(ul);
+    const act=el('div','actions');
+    const m=el('button','btn','Practice my missed questions'); m.type='button'; m.addEventListener('click',()=>{Practice.missedOnly=true;Practice.reset();show('practice')});
+    const l=el('button','btn ghost','Drill lab calcs'); l.type='button'; l.addEventListener('click',()=>show('lab'));
+    act.append(m,l); p.append(act); return p;
+  }
+};
+
+/* ---------------- Practice by topic ---------------- */
+const KINDS={mc:'Multiple choice',multi:'Select all',tf:'True / false',fill:'One-word',num:'Calculation',short:'Free response'};
+const Practice={topics:new Set(Object.keys(TOPICS)),kinds:new Set(Object.keys(KINDS)),missedOnly:false,pastOnly:false,queue:null,pos:0,cur:null,resp:null,earned:0,possible:0,count:0,
+  reset(){Practice.queue=null;Practice.cur=null;Practice.resp=null},
+  build(){
+    let pool=poolForLevel().filter(q=>Practice.topics.has(q.t)&&Practice.kinds.has(q.k));
+    if(Practice.missedOnly) pool=pool.filter(q=>S.missed.includes(q.id));
+    if(Practice.pastOnly) pool=pool.filter(q=>q.src&&SRC[q.src]&&SRC[q.src].past);
+    pool=shuffle(pool,rngFor('p'+Date.now()));
+    pool.sort((a,b)=>(S.seen[a.id]?1:0)-(S.seen[b.id]?1:0));
+    Practice.queue=pool; Practice.pos=0; Practice.cur=pool[0]||null; Practice.resp=null;
+  },
+  render(){
+    if(!Practice.queue) Practice.build();
+    const s=el('section'); s.append(el('h2',null,'Practice by topic'), el('p','sub','Pick topics and question types. Questions you haven’t seen come first; anything you miss goes to your review pile.'));
+    const f=el('div','filters');
+    const tf=el('div'); tf.append(el('div','flabel','Topics')); const tc=el('div','chips');
+    const all=el('button','fchip','All topics'); all.type='button'; all.setAttribute('aria-pressed',Practice.topics.size===Object.keys(TOPICS).length);
+    all.addEventListener('click',()=>{Practice.topics=new Set(Object.keys(TOPICS));Practice.reset();show('practice')}); tc.append(all);
+    Object.entries(TOPICS).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';const on=Practice.topics.has(k)&&Practice.topics.size!==Object.keys(TOPICS).length;b.setAttribute('aria-pressed',on);
+      b.addEventListener('click',()=>{if(Practice.topics.size===Object.keys(TOPICS).length) Practice.topics=new Set([k]); else {Practice.topics.has(k)?Practice.topics.delete(k):Practice.topics.add(k); if(!Practice.topics.size) Practice.topics=new Set(Object.keys(TOPICS));} Practice.reset();show('practice')});tc.append(b)});
+    tf.append(tc); f.append(tf);
+    const kf=el('div'); kf.append(el('div','flabel','Question types')); const kc=el('div','chips');
+    Object.entries(KINDS).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Practice.kinds.has(k));
+      b.addEventListener('click',()=>{Practice.kinds.has(k)?Practice.kinds.delete(k):Practice.kinds.add(k); if(!Practice.kinds.size) Practice.kinds=new Set(Object.keys(KINDS)); Practice.reset();show('practice')});kc.append(b)});
+    const mo=el('button','fchip',`Only my missed (${S.missed.length})`); mo.type='button'; mo.setAttribute('aria-pressed',Practice.missedOnly);
+    mo.addEventListener('click',()=>{Practice.missedOnly=!Practice.missedOnly;Practice.reset();show('practice')}); kc.append(mo);
+    const po=el('button','fchip','Past-test style only'); po.type='button'; po.setAttribute('aria-pressed',Practice.pastOnly);
+    po.addEventListener('click',()=>{Practice.pastOnly=!Practice.pastOnly;Practice.reset();show('practice')}); kc.append(po);
+    kf.append(kc); f.append(kf); s.append(f);
+
+    const tally=el('p','tally'); tally.innerHTML=`This session: <b>${Math.round(Practice.earned*10)/10}</b> / ${Practice.possible} pts · ${Practice.count} answered · ${Math.max(0,Practice.queue.length-Practice.pos-(Practice.resp!=null?1:0))} left in this set`;
+    s.append(tally);
+    const q=Practice.cur;
+    if(!q){const p=el('div','panel');p.append(el('h3',null,Practice.missedOnly?'No missed questions here':'No questions match'),el('p','sub',Practice.missedOnly?'Nothing in your review pile matches these filters. Nice work.':'Try turning on more topics or question types.'));s.append(p);view.append(s);return}
+    const card=renderQ(q,{mode:Practice.resp!=null?'review':'instant',resp:Practice.resp,label:`${TOPICS[q.t].toUpperCase()}`,
+      onAnswer:(resp)=>{const g=grade(q,resp);Practice.resp=resp;Practice.earned+=g.frac*ptsOf(q);Practice.possible+=ptsOf(q);Practice.count++;record(q,g.frac);show('practice')}});
+    s.append(card);
+    if(Practice.resp!=null){const act=el('div','actions');const nx=el('button','btn','Next question');nx.type='button';
+      nx.addEventListener('click',()=>{Practice.pos++;if(Practice.pos>=Practice.queue.length){Practice.build()}else{Practice.cur=Practice.queue[Practice.pos];Practice.resp=null}show('practice')});act.append(nx);s.append(act)}
+    view.append(s);
+  }
+};
+
+/* ---------------- Lab calcs ---------------- */
+const FORMULAS={
+  lab:[['Babcock fat','mass fat = (% fat ÷ 100) × sample mass'],['Curd yield','% = curd mass ÷ milk mass × 100'],['Overrun (volume)','% = (V ice cream − V mix) ÷ V mix × 100'],['Overrun (weight)','% = (wt mix − wt ice cream) ÷ wt ice cream × 100',1],['Freezing point','ΔTf = i · Kf · m    Kf(water) = 1.86',1]],
+  milk:[['Pearson square','parts rich = target − low\nparts low = rich − target',1],['Titratable acidity','% LA = mL × N × 9.008 ÷ g sample',1],['Kjeldahl','% protein = % N × 6.38 (milk)'],['Added water','% = (FP normal − FP sample) ÷ FP normal × 100',1]],
+  nutr:[['Calories','kcal = 9·fat + 4·carb + 4·protein'],['% Daily Value','%DV = amount ÷ DV × 100'],['Heat','q = m × c × ΔT   c(water) = 4.184 J/g·°C'],['Bomb calorimeter','q = C × ΔT; energy/g = q ÷ mass',1],['Energy units','1 kcal = 4.184 kJ']],
+  fat:[['Iodine value','IV = #C=C × 253.81 ÷ M × 100',1],['Saponification value','SV = 3 × 56.1 × 1000 ÷ M',1],['Butter yield','milk × fat% × recovery ÷ butter fat%',1],['Fat in dry matter','FDM = fat ÷ (100 − moisture) × 100',1]],
+  chem:[['pH','pH = −log[H⁺]; decimals in pH = sig figs in [H⁺]',1],['Buffer','pH = pKa + log([A⁻] ÷ [HA])',1],['Titration','Ma × Va = Mb × Vb (1:1)',1],['Molarity','M = (g ÷ molar mass) ÷ L',1],['Peptide mass','Σ amino acids − (n − 1) × 18.015',1]],
+  kin:[['Michaelis–Menten','v = Vmax[S] ÷ (Km + [S])',1],['Q₁₀','R₂ = R₁ × Q₁₀^((T₂ − T₁) ÷ 10)',1],['D-value','t = D × (log reductions)',1],['z-value','D₂ = D₁ × 10^((T₁ − T₂) ÷ z)',1]]
+};
+const Lab={group:'all',type:'mix',cur:null,resp:null,earned:0,count:0,sfRight:0,
+  keys(){return gensForLevel().filter(k=>Lab.group==='all'||GEN[k].g===Lab.group)},
+  next(){let keys=Lab.type==='mix'?Lab.keys():[Lab.type];if(!keys.length){Lab.group='all';Lab.type='mix';keys=Lab.keys()}const r=rngFor('lab'+Date.now()+Math.random());Lab.cur=genOne(pick(r,keys),r,String(Date.now()));Lab.resp=null},
+  render(){
+    if(Lab.type!=='mix'&&!gensForLevel().includes(Lab.type)){Lab.type='mix'}
+    if(!Lab.cur||!gensForLevel().includes(Lab.cur.gen)||(Lab.type!=='mix'&&Lab.cur.gen!==Lab.type)||(Lab.type==='mix'&&Lab.group!=='all'&&GEN[Lab.cur.gen].g!==Lab.group)) Lab.next();
+    const s=el('section'); s.append(el('h2',null,'Lab calculations'), el('p','sub',`Fresh numbers every time for the 2027 lab tasks (milk fat from cream, curd mass, ice cream) plus milk testing, nutrition, fat chemistry, pH, and enzyme math. Graded on value and significant figures: the right value with wrong sig figs earns ¾ credit.${S.level==='B'?' Switch to Div C for the harder calculation types.':''}`));
+    const f=el('div','filters');
+    const gr=el('div'); gr.append(el('div','flabel','Area')); const gc=el('div','chips');
+    [['all','All areas']].concat(Object.entries(GROUPS).filter(([k])=>gensForLevel().some(x=>GEN[x].g===k))).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Lab.group===k);b.addEventListener('click',()=>{Lab.group=k;Lab.type='mix';Lab.next();show('lab')});gc.append(b)});
+    gr.append(gc); f.append(gr);
+    if(Lab.group!=='all'){const tr=el('div'); tr.append(el('div','flabel','Problem type')); const tc=el('div','chips');
+      [['mix','Mixed']].concat(Lab.keys().map(k=>[k,GEN[k].name])).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Lab.type===k);b.addEventListener('click',()=>{Lab.type=k;Lab.next();show('lab')});tc.append(b)});
+      tr.append(tc); f.append(tr);}
+    s.append(f);
+    const tally=el('p','tally'); tally.innerHTML=`This session: <b>${Lab.count}</b> solved · <b>${Lab.count?Math.round(Lab.earned/Lab.count*100):0}%</b> credit · sig figs right on <b>${Lab.sfRight}</b>`; s.append(tally);
+    const two=el('div','two'); const left=el('div'); left.style.minWidth='0';
+    const q=Lab.cur;
+    left.append(renderQ(q,{mode:Lab.resp!=null?'review':'instant',resp:Lab.resp,label:(GROUPS[GEN[q.gen].g]+' · '+GEN[q.gen].name).toUpperCase(),
+      onAnswer:(resp)=>{const g=grade(q,resp);Lab.resp=resp;Lab.earned+=g.frac;Lab.count++;if(g.sfOk||g.dpOk||(!q.sf&&q.dp==null&&g.frac===1))Lab.sfRight++;record(q,g.frac);show('lab')}}));
+    const act=el('div','actions');const nx=el('button',Lab.resp!=null?'btn':'btn ghost',Lab.resp!=null?'New problem':'Skip this one');nx.type='button';nx.addEventListener('click',()=>{Lab.next();show('lab')});act.append(nx);left.append(act);
+    two.append(left);
+    const side=el('aside','panel side'); const grp=Lab.group==='all'?GEN[q.gen].g:Lab.group;
+    side.append(el('h3',null,'Formulas · '+GROUPS[grp]));
+    FORMULAS[grp].forEach(([a,b,c])=>{if(S.level==='B'&&c)return;side.append(el('div','flabel',a),el('div','formula',b))});
+    side.append(el('h3',null,'Sig-fig rules'));const ul=el('ul');['× and ÷: keep the fewest sig figs of any measurement.','+ and −: keep the fewest decimal places.','Logs: decimals in pH = sig figs in [H⁺].','Defined values (DV, 100, 9-4-4, 4.184, i) don’t limit sig figs.','Round only at the end.'].forEach(t=>ul.append(el('li',null,t)));side.append(ul);
+    two.append(side); s.append(two); view.append(s);
+  }
+};
+
+/* ---------------- Mock test ---------------- */
+const Mock={phase:'intro',qs:[],resps:[],secs:[],endAt:0,tick:null,recordedShort:false,
+  start(){
+    const r=rngFor('mock'+Date.now()); const pool=shuffle(poolForLevel().slice(),r);
+    const take=(f,n)=>{const out=[];for(const q of pool){if(out.length>=n)break;if(f(q)&&!used.has(q.id)){out.push(q);used.add(q.id)}}return out};
+    const used=new Set();
+    const mc=take(q=>q.k==='mc'||q.k==='fill',14), mu=take(q=>q.k==='multi',3);
+    const tf=take(q=>q.k==='tf',6), nb=take(q=>q.k==='num',2), sh=take(q=>q.k==='short',2);
+    const gk=shuffle(gensForLevel(),r).slice(0,3).map((k,i)=>genOne(k,r,'m'+i+Date.now()));
+    Mock.secs=[{name:'Section I · Multiple choice',qs:mc.concat(mu)},{name:'Section II · True or false',qs:tf},{name:'Section III · Lab calculations',qs:nb.concat(gk)},{name:'Section IV · Free response',qs:sh}];
+    Mock.qs=Mock.secs.flatMap(s=>s.qs); Mock.resps=Mock.qs.map(()=>null);
+    Mock.endAt=Date.now()+50*60*1000; Mock.phase='running'; Mock.recordedShort=false;
+    clearInterval(Mock.tick); Mock.tick=setInterval(Mock.onTick,1000); Mock.onTick();
+  },
+  onTick(){
+    const left=Math.max(0,Mock.endAt-Date.now()); const m=Math.floor(left/60000), s=Math.floor(left%60000/1000); const txt=`${m}:${String(s).padStart(2,'0')}`;
+    const c=document.getElementById('clock'); if(c){c.textContent=txt;c.classList.toggle('low',left<5*60000)}
+    document.getElementById('tabTimer').textContent=Mock.phase==='running'?txt:'';
+    if(left<=0&&Mock.phase==='running') Mock.submit();
+  },
+  submit(){
+    clearInterval(Mock.tick); Mock.phase='done'; document.getElementById('tabTimer').textContent='';
+    Mock.qs.forEach((q,i)=>{if(q.k!=='short') record(q,grade(q,Mock.resps[i]).frac)});
+    Mock.saveScore(); show('mock'); window.scrollTo({top:0});
+  },
+  totals(){let e=0,p=0;const per=Mock.secs.map(s=>{let se=0,sp=0;s.qs.forEach(q=>{const i=Mock.qs.indexOf(q);const g=grade(q,Mock.resps[i]);se+=g.frac*ptsOf(q);sp+=ptsOf(q)});e+=se;p+=sp;return [se,sp]});return {e,p,per}},
+  saveScore(){const t=Mock.totals();const rec={d:dateKey(),e:Math.round(t.e*10)/10,p:t.p,lv:S.level};const last=S.mocks[S.mocks.length-1];if(last&&last.t===Mock.endAt){last.e=rec.e}else{rec.t=Mock.endAt;S.mocks.push(rec)}save()},
+  render(){
+    const s=el('section');
+    if(Mock.phase==='intro'){
+      s.append(el('h2',null,'Mock test'), el('p','sub',`A full 50-minute written test built the way past Food Science B tests are: multiple choice, select-all (2 pts, partial credit), true/false, lab calculations, and scenario free response. Div ${S.level} questions. No feedback until you submit.`));
+      const p=el('div','panel'); const ul=el('ul'); ['Section I · 14 multiple choice + 3 select-all','Section II · 6 true/false','Section III · 5 lab calculations (sig figs count)','Section IV · 2 free response, self-graded against a model answer'].forEach(t=>ul.append(el('li',null,t))); p.append(el('h3',null,'What’s on it'),ul);
+      const tip=el('p','sub','Tip: on test day you and your partner split the booklet. Try doing Sections I–II fast, then spend real time on III–IV.'); tip.style.marginTop='12px'; p.append(tip);
+      const act=el('div','actions');const b=el('button','btn','Start the 50-minute test');b.type='button';b.addEventListener('click',()=>{Mock.start();show('mock')});act.append(b);p.append(act);
+      if(S.mocks.length){const h=el('p','hint');h.textContent='Past mock scores: '+S.mocks.slice(-5).map(m=>`${m.d}: ${Math.round(m.e/m.p*100)}%`).join(' · ');p.append(h)}
+      s.append(p); view.append(s); return;
+    }
+    if(Mock.phase==='running'){
+      const bar=el('div','timerbar'); const lc=el('div'); lc.append(el('span','clock','50:00')); lc.firstChild.id='clock';
+      const answered=Mock.resps.filter(r=>r!=null&&r!=='').length; const st=el('span','tally',`${answered} of ${Mock.qs.length} answered`); st.id='mockCount'; lc.append(document.createTextNode('  '),st);
+      const sb=el('button','btn','Submit test'); sb.type='button';
+      const conf=el('div','row'); conf.hidden=true;
+      conf.append(el('span',null,'Submit now?')); const y=el('button','btn small','Yes, submit');y.type='button';y.addEventListener('click',()=>Mock.submit());const n=el('button','btn ghost small','Keep working');n.type='button';n.addEventListener('click',()=>{conf.hidden=true;sb.hidden=false});conf.append(y,n);
+      sb.addEventListener('click',()=>{sb.hidden=true;conf.hidden=false});
+      const rt=el('div','row'); rt.append(sb,conf);
+      bar.append(lc,rt); s.append(bar);
+      let num=0;
+      Mock.secs.forEach(sec=>{const h=el('div','section');h.append(el('h3',null,sec.name));s.append(h);const list=el('div','mocklist');
+        sec.qs.forEach(q=>{const i=Mock.qs.indexOf(q);num++;list.append(renderQ(q,{mode:'exam',resp:Mock.resps[i],label:`QUESTION ${num}`,onChange:(r)=>{Mock.resps[i]=r;const c=document.getElementById('mockCount');if(c)c.textContent=`${Mock.resps.filter(x=>x!=null&&x!==''&&!(x.text===''&&x.hits===null)).length} of ${Mock.qs.length} answered`}}))});
+        s.append(list)});
+      const act=el('div','actions'); const sb2=el('button','btn','Submit test'); sb2.type='button'; sb2.addEventListener('click',()=>{window.scrollTo({top:0});sb.click()}); act.append(sb2); s.append(act);
+      view.append(s); Mock.onTick(); return;
+    }
+    // done
+    const t=Mock.totals(); const p=el('div','panel summary');
+    p.append(el('h2',null,'Mock test results'));
+    const big=el('div','row'); const scoreEl=el('div','bigscore',Math.round(t.e/t.p*100)+'%'); const pe=el('div','sub',`${Math.round(t.e*10)/10} of ${t.p} points`); big.append(scoreEl,pe); p.append(big);
+    const ss=el('div','secscore'); Mock.secs.forEach((sec,k)=>{const d=el('div');d.append(el('div','n',`${Math.round(t.per[k][0]*10)/10} / ${t.per[k][1]}`),el('div','l',sec.name.replace('Section ','').replace(' · ',' ')));ss.append(d)}); p.append(ss);
+    const note=el('p','hint','Free response starts at 0. Scroll to Section IV and tick the key points you hit; your score updates as you go.'); note.style.marginTop='12px'; p.append(note);
+    const act=el('div','actions'); const again=el('button','btn ghost','Take a new mock test'); again.type='button'; again.addEventListener('click',()=>{Mock.phase='intro';show('mock')}); act.append(again); p.append(act);
+    s.append(p);
+    let num=0;
+    Mock.secs.forEach(sec=>{const h=el('div','section');h.append(el('h3',null,sec.name));s.append(h);const list=el('div','mocklist');
+      sec.qs.forEach(q=>{const i=Mock.qs.indexOf(q);num++;
+        if(q.k==='short'&&(!Mock.resps[i]||!Mock.resps[i].hits)) Mock.resps[i]={text:(Mock.resps[i]&&Mock.resps[i].text)||'',hits:q.kp.map(()=>false)};
+        const holder=el('div');
+        const draw=()=>{holder.innerHTML='';holder.append(renderQ(q,{mode:'review',resp:Mock.resps[i],label:`QUESTION ${num0}`,onHits:q.k==='short'?(h)=>{Mock.resps[i].hits=h;Mock.saveScore();const tt=Mock.totals();scoreEl.textContent=Math.round(tt.e/tt.p*100)+'%';pe.textContent=`${Math.round(tt.e*10)/10} of ${tt.p} points`;ss.lastChild.firstChild.textContent=`${Math.round(tt.per[3][0]*10)/10} / ${tt.per[3][1]}`;const fbv=holder.querySelector('.fb .verdict');if(fbv){const g=grade(q,Mock.resps[i]);fbv.textContent=`Self-graded · ${Math.round(g.frac*ptsOf(q)*100)/100} / ${ptsOf(q)} pts`;holder.querySelector('.fb').className='fb '+(g.frac===1?'good':g.frac>0?'part':'bad')}}:null}))};
+        const num0=num; draw(); list.append(holder)});
+      s.append(list)});
+    const shortQs=Mock.secs[3].qs;
+    if(shortQs.length&&!Mock.recordedShort){const a2=el('div','actions');const b=el('button','btn','Save free-response scores to Progress');b.type='button';b.addEventListener('click',()=>{shortQs.forEach(q=>{const i=Mock.qs.indexOf(q);record(q,grade(q,Mock.resps[i]).frac)});Mock.recordedShort=true;b.disabled=true;b.textContent='Saved to Progress'});a2.append(b);s.append(a2)}
+    view.append(s);
+  }
+};
+
+/* ---------------- Progress ---------------- */
+const Progress={confirm:false,
+  render(){
+    const s=el('section'); s.append(el('h2',null,'Progress'), el('p','sub','Saved in this browser. Topic bars count every question from the daily set, practice, lab calcs, and mock tests.'));
+    const g=el('div','pgrid');
+    // summary
+    const a=el('div','panel'); a.append(el('h3',null,'Daily habit'));
+    const daysDone=new Set(Object.keys(S.days).filter(k=>S.days[k].done).map(k=>k.split('|')[0]));
+    const sl=el('div','statline'); const st=(n,l)=>{const d=el('div','stat');d.append(el('div','n',n),el('div','l',l));return d};
+    sl.append(st(document.getElementById('streakN').textContent,'day streak'),st(daysDone.size,'daily sets finished'),st(Object.values(S.topics).reduce((x,t)=>x+t[1],0).toFixed(0),'points attempted'));
+    a.append(sl);
+    a.append(el('div','flabel','Last 4 weeks')); a.lastChild.style.marginTop='14px';
+    const cal=el('div','cal'); const today=new Date(); const start=new Date(today); start.setDate(start.getDate()-27);
+    for(let i=0;i<28;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=dateKey(d);const c=el('div','cell',d.getDate());
+      const keys=Object.keys(S.days).filter(x=>x.startsWith(k+'|'));const done=keys.some(x=>S.days[x].done);const some=keys.some(x=>Object.keys(S.days[x].res).length);
+      if(done)c.classList.add('done');else if(some)c.classList.add('part');if(k===dateKey(today))c.classList.add('today');c.title=k+(done?' · finished':some?' · started':'');cal.append(c)}
+    a.append(cal); g.append(a);
+    // topics
+    const b=el('div','panel'); b.append(el('h3',null,'Accuracy by topic'));
+    const rows=Object.keys(TOPICS).map(k=>{const t=S.topics[k]||[0,0];return {k,e:t[0],p:t[1]}});
+    const tried=rows.filter(r=>r.p>0).sort((x,y)=>x.e/x.p-y.e/y.p), untried=rows.filter(r=>r.p===0);
+    if(!tried.length) b.append(el('p','sub','Answer a few questions and your weakest topics will rise to the top here.'));
+    const bars=el('div','bars');
+    tried.concat(untried).forEach(r=>{const row=el('div','bar');const pct=r.p?r.e/r.p*100:0;row.append(el('span',null,TOPICS[r.k]));const tr=el('div','track');const fl=el('div','fill'+(r.p&&pct<60?' lowv':r.p&&pct<80?' midv':''));fl.style.width=pct.toFixed(1)+'%';tr.append(fl);row.append(tr,el('span','v',r.p?Math.round(pct)+'%':'—'));bars.append(row)});
+    b.append(bars); g.append(b);
+    // missed
+    const c=el('div','panel'); c.append(el('h3',null,'Review pile'), el('p','sub',`${S.missed.length} question${S.missed.length===1?'':'s'} you haven’t gotten fully right yet. Getting one right in practice removes it.`));
+    const act=el('div','actions'); const pm=el('button','btn','Practice missed questions');pm.type='button';pm.disabled=!S.missed.length;pm.addEventListener('click',()=>{Practice.missedOnly=true;Practice.topics=new Set(Object.keys(TOPICS));Practice.kinds=new Set(Object.keys(KINDS));Practice.reset();show('practice')});act.append(pm);c.append(act);
+    if(S.mocks.length){c.append(el('div','flabel','Mock tests'));c.lastChild.style.marginTop='16px';const ul=el('ul','qlist');S.mocks.slice(-6).reverse().forEach(m=>{const li=el('li');li.append(el('span','mk',Math.round(m.e/m.p*100)+'%'),el('span','tx',`${m.d} · Div ${m.lv} · ${m.e} / ${m.p} pts`));ul.append(li)});c.append(ul)}
+    const rs=el('div','actions'); const rb=el('button','btn ghost small','Reset all progress'); rb.type='button'; rb.addEventListener('click',()=>{Progress.confirm=true;show('progress')}); rs.append(rb); c.append(rs);
+    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, and review pile in this browser. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[]};save();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
+    g.append(c);
+    // bank info
+    const d=el('div','panel'); d.append(el('h3',null,'What’s in the bank'));
+    const counts={};BANK.forEach(q=>{counts[q.k]=(counts[q.k]||0)+1});
+    d.append(el('p','sub',`${BANK.length} written questions (${BANK.filter(q=>q.lv==='B').length} Div B, ${BANK.filter(q=>q.lv==='C').length} Div C-level) plus ${Object.keys(GEN).length} lab-calc generators with unlimited numbers.`));
+    const ul2=el('ul');Object.entries(KINDS).forEach(([k,v])=>ul2.append(el('li',null,`${v}: ${counts[k]||0}`)));d.append(ul2);
+    const bySrc={};BANK.forEach(q=>{if(q.src)bySrc[q.src]=(bySrc[q.src]||0)+1});
+    d.append(el('div','flabel','Where questions come from')); d.lastChild.style.marginTop='12px';
+    const ul3=el('ul');Object.entries(SRC).sort((a,b)=>(b[1].past-a[1].past)||((bySrc[b[0]]||0)-(bySrc[a[0]]||0))).forEach(([k,v])=>{if(bySrc[k])ul3.append(el('li',null,`${v.past?'Past test':'Reference'} · ${v.label}: ${bySrc[k]}`))});d.append(ul3);
+    g.append(d);
+    s.append(g); view.append(s);
+  }
+};
+
+/* ---------------- boot ---------------- */
+document.getElementById('lv'+S.level).setAttribute('aria-pressed','true');
+document.getElementById('lv'+(S.level==='B'?'C':'B')).setAttribute('aria-pressed','false');
+const startView=['today','practice','lab','mock','progress'].includes(location.hash.slice(1))?location.hash.slice(1):'today';
+show(startView);
+
+const fc=document.getElementById('forgetCode'); if(fc){ if(!window.FSLOCK) fc.hidden=true; fc.addEventListener('click',()=>{try{localStorage.removeItem('curds-whey-code')}catch(e){} location.reload();}); }
+};
+</script>
+<script>
+(function(){
+  var KEY='curds-whey-code', form=document.getElementById('lockForm'), inp=document.getElementById('lockPass'), err=document.getElementById('lockErr'), rem=document.getElementById('lockRem'), btn=document.getElementById('lockBtn');
+  function open(){document.getElementById('lockScreen').hidden=true;document.getElementById('appWrap').hidden=false;window.__fsStart();}
+  function stop(m){err.textContent=m;btn.disabled=true;}
+  if(window.CW&&window.CW.BANK){open();return;}                 /* single-file copy: questions are already inside */
+  if(!window.FSLOCK) return stop("Couldn’t load the questions file (data.js). Run build-app.mjs, then upload data.js next to index.html.");
+  if(!(window.crypto&&crypto.subtle&&window.TextEncoder)) return stop("This browser can’t unlock the app. Open the https:// link in Chrome, Safari, Edge or Firefox.");
+  var L=window.FSLOCK;
+  function bytes(b){var s=atob(b),a=new Uint8Array(s.length);for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a;}
+  function unlock(p){
+    return crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveKey"])
+      .then(function(base){return crypto.subtle.deriveKey({name:"PBKDF2",salt:bytes(L.salt),iterations:L.iter,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);})
+      .then(function(key){return crypto.subtle.decrypt({name:"AES-GCM",iv:bytes(L.iv)},key,bytes(L.ct));})
+      .then(function(buf){window.CW=JSON.parse(new TextDecoder().decode(buf));});
+  }
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); var p=inp.value; if(!p) return; btn.disabled=true; btn.textContent='Unlocking…'; err.textContent='';
+    unlock(p).then(function(){ if(rem.checked){try{localStorage.setItem(KEY,p);}catch(x){}} open(); },
+      function(){ btn.disabled=false; btn.textContent='Unlock'; err.textContent='That code didn’t work. Check it with your captain.'; inp.select(); });
+  });
+  var saved=null; try{saved=localStorage.getItem(KEY);}catch(x){}
+  if(saved){ btn.disabled=true; btn.textContent='Unlocking…';
+    unlock(saved).then(open,function(){try{localStorage.removeItem(KEY);}catch(x){} btn.disabled=false; btn.textContent='Unlock'; inp.focus();}); }
+  else inp.focus();
+})();
+</script>
+
