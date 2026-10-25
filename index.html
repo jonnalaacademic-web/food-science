@@ -1,964 +1,459 @@
-<title>Curds & Whey Daily</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><meta name="description" content="Science Olympiad Anatomy & Physiology practice for team members."><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="A&amp;P Practice"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><title>A&amp;P Practice Stations</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
 <style>
-/* Layout: a lab-bench practice app — header band, tab rail, one working question card beside a Babcock-bottle score gauge */
-:root{
-  --bg:#F2F6FA; --surface:#FFFFFF; --sunk:#E7EEF6; --ink:#13243A; --muted:#55667F; --line:#D2DCE7;
-  --accent:#1C5BBF; --accent-ink:#FFFFFF; --butter:#E8B21F; --butter-soft:#FBF0CB;
-  --good:#167A4B; --good-soft:#DFF3E8; --bad:#B53A32; --bad-soft:#FAE5E2; --part:#94650F; --part-soft:#FBEFD8;
-  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
-  --f-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --f-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+/* Layout: a lab-practical station. Station list on the left, the specimen plate (diagram) on a lightbox in the middle, the answer card beside it; everything stacks on a phone. */
+:root {
+  --bg: #F2F4F7;
+  --surface: #FFFFFF;
+  --ink: #142033;
+  --muted: #5A6577;
+  --line: #D8DEE7;
+  --accent: #1F4E79;      /* navy, same as the numbered pins on the plates */
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E4ECF5;
+  --pin: #C2412D;         /* arterial red: marks the structure being asked about */
+  --ok: #1D7A57;
+  --ok-bg: #E2F2EA;
+  --miss: #B0262E;
+  --miss-bg: #FAE6E7;
+  --unseen: #CBD3DE;
+  --plate: #FFFFFF;
+  --plate-ink: #5A6577;  /* text and marks on the white diagram plate, same in both themes */
+  --plate-pin: #C2412D;
+  --plate-ok: #1D7A57;
+  --plate-miss: #B0262E;
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 10px;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0D1522; --surface:#142033; --sunk:#0F1A2A; --ink:#E5EDF7; --muted:#97A7BC; --line:#26374E;
-    --accent:#7AAAF2; --accent-ink:#0B1420; --butter:#F0C445; --butter-soft:#3A3118;
-    --good:#5BCB94; --good-soft:#123426; --bad:#F27C72; --bad-soft:#3B1D1B; --part:#E9B85C; --part-soft:#3A2D14;
-    color-scheme:dark;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1520; --surface: #162131; --ink: #E5EBF3; --muted: #9AA6B8; --line: #2A3A50;
+    --accent: #8FB9E6; --accent-ink: #0E1520; --accent-soft: #1E3049; --pin: #FF7B62;
+    --ok: #63D3A6; --ok-bg: #143429; --miss: #FF8E93; --miss-bg: #3A1D23; --unseen: #3A4A61; --plate: #FBFBF9;
+    color-scheme: dark;
   }
 }
-:root[data-theme="dark"]{
-  --bg:#0D1522; --surface:#142033; --sunk:#0F1A2A; --ink:#E5EDF7; --muted:#97A7BC; --line:#26374E;
-  --accent:#7AAAF2; --accent-ink:#0B1420; --butter:#F0C445; --butter-soft:#3A3118;
-  --good:#5BCB94; --good-soft:#123426; --bad:#F27C72; --bad-soft:#3B1D1B; --part:#E9B85C; --part-soft:#3A2D14;
-  color-scheme:dark;
+:root[data-theme="dark"] {
+  --bg: #0E1520; --surface: #162131; --ink: #E5EBF3; --muted: #9AA6B8; --line: #2A3A50;
+  --accent: #8FB9E6; --accent-ink: #0E1520; --accent-soft: #1E3049; --pin: #FF7B62;
+  --ok: #63D3A6; --ok-bg: #143429; --miss: #FF8E93; --miss-bg: #3A1D23; --unseen: #3A4A61; --plate: #FBFBF9;
+  color-scheme: dark;
 }
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
-button{font:inherit;color:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1440px; margin: 0 auto; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--pin); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 /* header */
-.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-bottom:14px}
-.brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,40px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
-.brand h1 .amp{color:var(--butter)}
-.brand p{margin:6px 0 0;color:var(--muted);font-size:14.5px}
-.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
-.seg button{border:0;background:none;padding:7px 12px;font-weight:700;font-size:14px;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-.seglabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
-.streak{display:inline-flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:8px;background:var(--butter-soft);font-weight:700;font-size:14px}
-.streak b{font-family:var(--f-mono);font-size:16px}
+.top { background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 14px 10px; }
+.brand { display: flex; flex-direction: column; min-width: 0; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.55rem; letter-spacing: -0.01em; line-height: 1.15; text-wrap: balance; }
+.brand-sub { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab { border: 0; background: transparent; padding: 8px 14px; border-radius: 999px; font-weight: 600; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tab .count { font-family: var(--font-mono); font-size: 0.75rem; background: var(--miss-bg); color: var(--miss); border-radius: 999px; padding: 0 7px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding-block: 4px 14px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--bg); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(20, 32, 51, 0.14); font-weight: 600; }
+.sync { margin-left: auto; font-size: 0.8rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.sync::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--unseen); }
+.sync.cloud::before { background: var(--ok); }
 
-.tabs-wrap{overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:22px}
-.tabs{display:flex;gap:2px;min-width:max-content}
-.tab{border:0;background:none;padding:10px 14px 9px;font-family:var(--f-display);font-weight:600;font-size:16px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
-.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
-.tab .tmr{font-family:var(--f-mono);font-size:12.5px;margin-left:6px;color:var(--bad)}
+/* layout */
+.layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 20px; padding-block: 20px 28px; align-items: start; }
+@media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
 
-/* shared */
-h2{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1.15;margin:0 0 4px;text-wrap:balance}
-h3{font-family:var(--f-display);font-weight:700;font-size:18px;margin:0 0 8px}
-.sub{color:var(--muted);margin:0 0 16px;font-size:15px;max-width:68ch}
-.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:8px;padding:10px 16px;font-weight:700;font-size:15px;background:var(--accent);color:var(--accent-ink)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
-.btn.small{padding:6px 11px;font-size:13.5px}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{display:inline-flex;align-items:center;font-size:12.5px;line-height:1.3;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:700}
-.chip.lv{background:var(--sunk);border-color:transparent;color:var(--ink)}
-.chip.past{background:var(--butter-soft);border-color:transparent;color:var(--ink)}
-.chip.ref{border-style:dashed}
-.chip.pts{font-family:var(--f-mono);font-weight:600}
-.fchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;color:var(--muted)}
-.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+/* picker */
+.picker { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.picker h2 { font-family: var(--font-display); font-size: 1.05rem; margin: 0; }
+.tally { font-size: 0.85rem; color: var(--muted); margin: 0; }
+.tally b { color: var(--ink); font-family: var(--font-mono); font-weight: 600; }
+.plist { display: flex; flex-direction: column; gap: 4px; }
+.pitem { text-align: left; border: 1px solid transparent; background: transparent; border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; }
+.pitem:hover { background: var(--bg); }
+.pitem[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.pitem .pt { font-weight: 600; font-size: 0.92rem; line-height: 1.3; }
+.pitem .pm { font-size: 0.76rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.bar { height: 5px; border-radius: 3px; background: var(--unseen); overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; }
+.bar .g { background: var(--ok); } .bar .r { background: var(--miss); }
+@media (max-width: 1000px) {
+  .plist { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  .pitem { min-width: 190px; flex: 0 0 auto; }
+}
+
+/* stage */
+.stage { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+.eyebrow { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.card-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; margin: 2px 0 0; line-height: 1.25; text-wrap: balance; }
+.label-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(260px, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .label-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* the plate */
+.plate { margin: 0; background: var(--plate); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+.plate-in { position: relative; max-width: 100%; margin: 0 auto; }
+.plate-in img { display: block; width: 100%; height: auto; max-width: 100%; user-select: none; -webkit-user-drag: none; }
+.plate.find .plate-in { cursor: crosshair; }
+.hl { position: absolute; border: 3px solid var(--plate-pin); border-radius: 9px; pointer-events: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--plate-pin) 25%, transparent); }
+@media (prefers-reduced-motion: no-preference) { .hl.pulse { animation: pulse 1.6s ease-in-out infinite; } }
+@keyframes pulse { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--plate-pin) 12%, transparent); } }
+.hl.good { border-color: var(--plate-ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--plate-ok) 25%, transparent); animation: none; }
+.mark { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--plate-miss); color: var(--plate); display: grid; place-items: center; font-weight: 700; font-size: 13px; pointer-events: none; }
+.plate figcaption { font-size: 0.72rem; color: var(--plate-ink); margin-top: 8px; line-height: 1.4; }
+
+/* answer side */
+.ask { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.qline { font-size: 1.05rem; margin: 0; }
+.qline .num { display: inline-grid; place-items: center; min-width: 2em; height: 2em; padding: 0 6px; border: 2px solid var(--accent); color: var(--accent); border-radius: 7px; font-family: var(--font-mono); font-weight: 600; margin: 0 4px; }
+.qline .target { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; display: block; margin-top: 4px; }
+.ansrow { display: flex; gap: 8px; }
+.ansrow input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 9px 14px; font-weight: 600; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.quiet { border-color: transparent; background: transparent; color: var(--muted); padding-inline: 8px; }
+.btn.quiet:hover { color: var(--ink); }
+.btn[disabled] { opacity: 0.45; cursor: default; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.fb { border-radius: 8px; padding: 10px 12px; font-size: 0.95rem; }
+.fb.ok { background: var(--ok-bg); }
+.fb.miss { background: var(--miss-bg); }
+.fb .verdict { font-weight: 700; display: block; }
+.fb.ok .verdict { color: var(--ok); } .fb.miss .verdict { color: var(--miss); }
+.fb .also { color: var(--muted); font-size: 0.85rem; display: block; margin-top: 2px; }
+.strip { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { min-width: 30px; height: 28px; padding: 0 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+.chip.g { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.chip.r { background: var(--miss-bg); border-color: var(--miss); color: var(--miss); }
+.chip.cur { outline: 2px solid var(--pin); outline-offset: 1px; color: var(--ink); }
+.small { font-size: 0.82rem; color: var(--muted); }
+details.src summary { cursor: pointer; font-size: 0.82rem; color: var(--muted); }
+details.src p { font-size: 0.8rem; color: var(--muted); margin: 6px 0 0; }
+.ctag { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); vertical-align: 2px; margin-left: 6px; white-space: nowrap; }
 
 /* question card */
-.qcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px clamp(16px,3vw,26px) 24px;min-width:0}
-.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.qnum{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.04em}
-.qtext{font-size:19px;line-height:1.45;font-weight:700;margin:12px 0 18px;max-width:66ch;white-space:pre-line}
-.opts{display:grid;gap:8px}
-.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:16px;line-height:1.4}
-.opt:hover:not(:disabled){border-color:var(--accent)}
-.opt:disabled{cursor:default}
-.opt .key{flex:none;width:26px;height:26px;display:grid;place-items:center;border-radius:6px;background:var(--sunk);font-family:var(--f-mono);font-size:13px;font-weight:600}
-.opt[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.opt[aria-pressed="true"] .key{background:var(--accent);color:var(--accent-ink)}
-.opt.ok{border-color:var(--good);background:var(--good-soft);box-shadow:none}
-.opt.ok .key{background:var(--good);color:var(--surface)}
-.opt.no{border-color:var(--bad);background:var(--bad-soft);box-shadow:none}
-.opt.no .key{background:var(--bad);color:var(--surface)}
-.opt.miss{border-style:dashed;border-color:var(--good)}
-.tfrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px}
-.inrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.inrow input[type=text]{font-family:var(--f-mono);font-size:18px;padding:9px 12px;width:13ch;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
-.inrow input.wide{width:min(100%,28ch);font-family:var(--f-body)}
-.unit{font-family:var(--f-mono);color:var(--muted);font-size:15px}
-textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);resize:vertical}
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
-.hint{color:var(--muted);font-size:13.5px}
+.qcard { max-width: 820px; }
+.prompt { font-size: 1.12rem; line-height: 1.5; margin: 0 0 6px; }
+.subq { font-weight: 600; margin: 0 0 12px; color: var(--muted); }
+.opts { display: grid; gap: 8px; margin: 6px 0 14px; }
+.opt { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; align-items: baseline; }
+.opt:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-soft); }
+.opt .k { font-family: var(--font-mono); font-weight: 600; color: var(--muted); }
+.opt.right { border-color: var(--ok); background: var(--ok-bg); }
+.opt.wrong { border-color: var(--miss); background: var(--miss-bg); }
+.opt[disabled] { cursor: default; }
+textarea { width: 100%; min-height: 84px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); resize: vertical; }
+.model { white-space: pre-wrap; }
+.blank { display: inline-block; width: min(14em, 70vw); margin: 2px 4px; padding: 4px 8px; border: 0; border-bottom: 2px solid var(--accent); background: var(--accent-soft); border-radius: 4px 4px 0 0; }
+.blank:disabled { background: transparent; }
+.qseg { margin: 2px 0 4px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2px; border-radius: 10px; }
+.qseg button { font-size: 0.85rem; padding: 6px 10px; border-radius: 7px; display: flex; justify-content: space-between; gap: 8px; text-align: left; }
+.why { margin-top: 6px; }
+.from { font-size: 0.78rem; color: var(--muted); margin-top: 6px; font-style: italic; }
 
-.fb{margin-top:16px;padding:14px 16px;border-radius:8px;background:var(--sunk)}
-.fb .verdict{font-family:var(--f-display);font-weight:700;font-size:17px;margin-bottom:4px}
-.fb.good{background:var(--good-soft)} .fb.good .verdict{color:var(--good)}
-.fb.bad{background:var(--bad-soft)} .fb.bad .verdict{color:var(--bad)}
-.fb.part{background:var(--part-soft)} .fb.part .verdict{color:var(--part)}
-.fb p{margin:6px 0 0;max-width:70ch}
-.work{font-family:var(--f-mono);font-size:14px;white-space:pre-wrap;margin-top:8px;padding:10px 12px;background:var(--surface);border-radius:6px;border:1px solid var(--line);overflow-x:auto}
-.model{margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
-.model .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:4px}
-.kp{display:grid;gap:6px;margin-top:10px}
-.kp label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
-.kp input{margin-top:3px;accent-color:var(--good);width:17px;height:17px;flex:none}
-.yours{font-style:italic;color:var(--muted);white-space:pre-wrap;margin-top:6px}
+/* summary */
+.score { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; line-height: 1; margin: 6px 0; }
+.foot { font-size: 0.75rem; color: var(--muted); padding-block: 0 24px; }
+.empty { color: var(--muted); }
 
-/* today */
-.today{display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;align-items:start}
-.dayhead{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
-.gauge{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;flex-direction:column;align-items:center;gap:10px}
-.gauge .glabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:center}
-.bottle{display:flex;flex-direction:column;align-items:center}
-.neckrow{display:flex;gap:8px;align-items:stretch}
-.scale{display:flex;flex-direction:column;justify-content:space-between;height:280px;font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right;padding-block:0}
-.scale span{line-height:0}
-.neck{position:relative;width:34px;height:280px;border:2px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;overflow:hidden;
-  background:repeating-linear-gradient(to top,transparent 0 27px,var(--line) 27px 28px),var(--surface)}
-.fat{position:absolute;left:0;right:0;bottom:0;height:var(--fill,0%);background:var(--butter);transition:height .6s ease}
-.fat::after{content:"";position:absolute;left:0;right:0;top:-3px;height:6px;border-radius:50%;background:var(--butter)}
-.bulb{width:96px;height:96px;margin-top:-4px;border:2px solid var(--line);border-radius:50%;background:var(--sunk);display:grid;place-items:center;text-align:center}
-.bulb .big{font-family:var(--f-mono);font-weight:600;font-size:22px;line-height:1}
-.bulb .sm{font-size:11px;color:var(--muted);margin-top:3px}
-.dots{display:grid;grid-template-columns:repeat(6,18px);gap:6px;justify-content:center}
-.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--surface);padding:0}
-.dot.cur{border-color:var(--accent)}
-.dot.r{background:var(--good);border-color:var(--good)}
-.dot.p{background:var(--butter);border-color:var(--butter)}
-.dot.w{background:var(--bad);border-color:var(--bad)}
-.gnote{font-size:12px;color:var(--muted);text-align:center;max-width:150px}
-.summary .bigscore{font-family:var(--f-display);font-weight:800;font-size:48px;line-height:1}
-.qlist{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
-.qlist li{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:8px;background:var(--sunk)}
-.qlist .mk{font-family:var(--f-mono);font-weight:600;width:42px;flex:none}
-.qlist .mk.r{color:var(--good)} .qlist .mk.p{color:var(--part)} .qlist .mk.w{color:var(--bad)}
-.qlist .tx{min-width:0;overflow-wrap:anywhere}
+/* daily set · mock test · progress */
+[hidden] { display: none !important; }
+.mlabel > * { min-width: 0; }
+.mlabel .plate { margin: 0; }
+.layout.full { grid-template-columns: minmax(0, 1fr); }
+.stage-in { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+#modeHead:empty { display: none; }
+.streak { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 11px; border-radius: 999px; background: var(--accent-soft); font-size: 0.85rem; font-weight: 600; }
+.streak b { font-family: var(--font-mono); font-size: 0.95rem; }
+.tab .tmr { font-size: 0.78rem; font-weight: 600; }
+.tab .tmr:empty { display: none; }
+.dayhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 14px 28px; }
+.daytext { min-width: 0; flex: 1 1 340px; }
+.daysub { margin: 6px 0 0; max-width: 64ch; }
+.dayscore { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.dayscore .score { margin: 0; }
+.dayscore .of { font-size: 1rem; color: var(--muted); }
+.dots { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 330px; }
+.dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); padding: 0; }
+.dot.g { background: var(--ok); border-color: var(--ok); }
+.dot.r { background: var(--miss); border-color: var(--miss); }
+.dot.cur { outline: 2px solid var(--pin); outline-offset: 2px; }
+.dot[disabled] { cursor: default; }
+@media (max-width: 640px) { .dayscore { align-items: flex-start; } .dots { justify-content: flex-start; gap: 4px; max-width: none; } .dot { width: 20px; height: 20px; } }
+.qlist { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; }
+.qlist li { display: flex; gap: 12px; align-items: flex-start; padding: 9px 12px; border-radius: 8px; background: var(--bg); }
+.qlist .mk { font-weight: 700; min-width: 2.6em; flex: none; }
+.qlist .mk.g { color: var(--ok); } .qlist .mk.r { color: var(--miss); }
+.qlist .tx { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
+.qlist .qt { font-weight: 500; }
+.qlist .btn { flex: none; align-self: center; }
+.plainlist { padding-left: 20px; margin: 8px 0 12px; } .plainlist li { margin: 4px 0; }
+.timerbar { position: sticky; top: 0; z-index: 5; background: var(--bg); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid var(--line); }
+.clock { font-size: 1.6rem; font-weight: 600; }
+.clock.low { color: var(--miss); }
+.paper { max-width: 900px; }
+.paperhead { border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 4px; }
+.secth { font-family: var(--font-display); font-size: 1.3rem; margin: 26px 0 4px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.parth { font-size: 1rem; margin: 18px 0 2px; color: var(--accent); }
+.mq { padding: 12px 0; border-bottom: 1px dashed var(--line); }
+.mq:last-child { border-bottom: 0; }
+.mq .prompt { margin-bottom: 8px; }
+.qn { font-weight: 600; margin-right: 4px; }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.opt.right[aria-pressed="true"], .opt.right { border-color: var(--ok); background: var(--ok-bg); box-shadow: none; }
+.opt.wrong { box-shadow: none; }
+.tfopts { grid-template-columns: repeat(2, minmax(0, 160px)); }
+.ctag.tb { border-color: var(--pin); color: var(--pin); }
+.mlabel { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(220px, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 760px) { .mlabel { grid-template-columns: minmax(0, 1fr); } }
+.lrows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.lrow { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; }
+.lrow.ok { background: var(--ok-bg); } .lrow.miss { background: var(--miss-bg); }
+.lrow .num { display: inline-grid; place-items: center; min-width: 2em; height: 2em; padding: 0 6px; border: 2px solid var(--accent); color: var(--accent); border-radius: 7px; font-family: var(--font-mono); font-weight: 600; flex: none; }
+.lrow input { flex: 1; min-width: 0; width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.lrow .lans { min-width: 0; overflow-wrap: anywhere; }
+.fb.half { background: color-mix(in srgb, var(--ok-bg) 50%, var(--miss-bg)); }
+.yours { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; white-space: pre-wrap; margin-bottom: 8px; }
+.secscore { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 10px; }
+.secscore > div { background: var(--bg); border-radius: 8px; padding: 9px 12px; }
+.secscore .n { font-size: 1.15rem; font-weight: 600; }
+.secscore .l { font-size: 0.82rem; color: var(--muted); }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 14px; align-items: start; }
+.ph { font-family: var(--font-display); font-size: 1.15rem; margin: 0 0 8px; }
+.statline { display: flex; flex-wrap: wrap; gap: 22px; }
+.stat .n { font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1; }
+.stat .l { font-size: 0.82rem; color: var(--muted); }
+.flabel { font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 14px 0 6px; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.cell { aspect-ratio: 1; border-radius: 6px; background: var(--bg); display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.cell.done { background: var(--ok); color: var(--surface); }
+.cell.part { background: var(--ok-bg); color: var(--ink); }
+.cell.today { outline: 2px solid var(--pin); outline-offset: 1px; }
+.sysblock { margin-top: 10px; }
+.sysname { font-weight: 700; font-size: 0.92rem; margin-bottom: 4px; }
+.hbar { display: grid; grid-template-columns: 110px minmax(0, 1fr) 44px; gap: 4px 10px; align-items: center; font-size: 0.88rem; margin: 5px 0; }
+.hbar .track { height: 10px; border-radius: 5px; background: var(--unseen); overflow: hidden; display: block; }
+.hbar .track i { display: block; height: 100%; }
+.hbar .track i.hi { background: var(--ok); } .hbar .track i.mid { background: #C9922A; } .hbar .track i.lo { background: var(--miss); }
+.hbar .v { text-align: right; font-size: 0.82rem; }
+.hbar .cov { grid-column: 2 / 4; margin-top: -3px; }
+.btn.danger { background: var(--miss); border-color: var(--miss); color: var(--surface); }
+.confirm { margin-top: 10px; padding: 12px; border-radius: 8px; background: var(--miss-bg); }
+.confirm p { margin: 0 0 8px; }
 
-@media (max-width:720px){
-  .today{grid-template-columns:1fr;gap:16px}
-  .gauge{position:static;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:12px}
-  .bottle{flex-direction:row-reverse;width:100%;max-width:520px}
-  .scale{display:none}
-  .neckrow{flex:1}
-  .neck{width:100%;height:30px;border:2px solid var(--line);border-left:0;border-radius:0 15px 15px 0;
-    background:repeating-linear-gradient(to right,transparent 0 9.6%,var(--line) 9.6% 10%),var(--surface)}
-  .fat{top:0;bottom:0;right:auto;height:auto;width:var(--fill,0%);transition:width .6s ease}
-  .fat::after{display:none}
-  .bulb{width:64px;height:64px;margin-top:0;margin-right:-4px;flex:none}
-  .bulb .big{font-size:16px}
-  .dots{grid-template-columns:repeat(12,18px)}
-  .gauge .glabel,.gnote{display:none}
-}
-@media (max-width:420px){ .dots{grid-template-columns:repeat(6,18px)} }
-
-/* practice / lab */
-.filters{display:grid;gap:12px;margin-bottom:18px}
-.flabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:6px}
-.tally{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
-.tally b{color:var(--ink)}
-.two{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start}
-@media (max-width:860px){.two{grid-template-columns:1fr}}
-.side h3{margin-top:0}
-.side ul{padding-left:18px;margin:6px 0 0}
-.side li{margin:4px 0}
-.formula{font-family:var(--f-mono);font-size:13px;background:var(--sunk);padding:8px 10px;border-radius:6px;margin:6px 0 10px;overflow-x:auto;white-space:pre}
-
-/* mock */
-.timerbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:18px}
-.clock{font-family:var(--f-mono);font-size:24px;font-weight:600}
-.clock.low{color:var(--bad)}
-.section{margin:26px 0 12px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.section h3{margin:0}
-.mocklist{display:grid;gap:14px}
-.secscore{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
-.secscore div{background:var(--sunk);border-radius:8px;padding:10px 12px}
-.secscore .n{font-family:var(--f-mono);font-size:20px;font-weight:600}
-.secscore .l{font-size:13px;color:var(--muted)}
-
-/* progress */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
-.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
-.cell{aspect-ratio:1;max-width:100%;border-radius:6px;background:var(--sunk);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;color:var(--muted);position:relative}
-.cell.done{background:var(--butter);color:var(--ink)}
-.cell.part{background:var(--butter-soft);color:var(--ink)}
-.cell.today{outline:2px solid var(--accent);outline-offset:1px}
-.bars{display:grid;gap:9px;margin-top:8px}
-.bar{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 52px;gap:10px;align-items:center;font-size:14px}
-.bar .track{height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
-.bar .fill{height:100%;background:var(--accent)}
-.bar .fill.lowv{background:var(--bad)}
-.bar .fill.midv{background:var(--butter)}
-.bar .v{font-family:var(--f-mono);font-size:13px;text-align:right;color:var(--muted)}
-.statline{display:flex;flex-wrap:wrap;gap:22px;margin-top:6px}
-.stat .n{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1}
-.stat .l{font-size:13px;color:var(--muted)}
-.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;max-width:80ch}
-.confirm{margin-top:10px;padding:12px;border-radius:8px;background:var(--bad-soft)}
-@media (prefers-reduced-motion: reduce){ .fat{transition:none} }
-/* lock screen */
-[hidden]{display:none!important}
-.lock{min-height:100vh;display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
-.lock-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:26px 24px}
-.lock-card h1{font-family:var(--f-display);font-weight:800;font-size:32px;line-height:1;margin:0 0 6px}
-.lock-card h1 .amp{color:var(--butter)}
-.lock-card p{color:var(--muted);margin:0 0 16px;font-size:15px}
-.lock-card label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
-.lock-card input[type=password]{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-.lock-card .rem{display:flex;gap:8px;align-items:center;font-weight:400;margin:12px 0 16px;color:var(--muted)}
-.lock-card .err{color:var(--bad);font-weight:700;font-size:14px;min-height:1.4em;margin:8px 0 0}
-
+.lock { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--bg); }
+.lock-card { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 26px 22px 22px; box-shadow: 0 8px 28px rgba(20, 32, 51, 0.08); }
+.lock-mark { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); margin-bottom: 14px; }
+.lock-card h1 { font-family: var(--font-display); font-size: 1.45rem; line-height: 1.2; margin: 0 0 4px; }
+.lock-sub { color: var(--muted); margin: 0 0 18px; font-size: 0.92rem; }
+.lock-card label.fld { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
+.lock-card input[type=password] { width: 100%; font: inherit; font-size: 16px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); color: var(--ink); }
+.lock-card input[type=password]:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.lock-rem { display: flex; align-items: center; gap: 8px; margin: 12px 0 16px; font-size: 0.9rem; color: var(--muted); }
+.lock-rem input { width: 18px; height: 18px; accent-color: var(--accent); }
+.lock-btn { width: 100%; font: inherit; font-weight: 600; padding: 11px 14px; border: 0; border-radius: 9px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.lock-btn:disabled { opacity: 0.6; cursor: default; }
+.lock-err { color: var(--miss); min-height: 1.4em; margin: 10px 0 0; font-size: 0.9rem; }
+.lock-note { color: var(--muted); font-size: 0.8rem; margin: 14px 0 0; }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
 </style>
 
-<div class="lock" id="lockScreen">
-  <form class="lock-card" id="lockForm" autocomplete="off">
-    <h1>Curds <span class="amp">&amp;</span> Whey</h1>
-    <p>Food Science: Dairy practice. Enter the team code to open it.</p>
-    <label for="lockPass">Team code</label>
-    <input type="password" id="lockPass" name="lockPass" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" required>
-    <label class="rem" for="lockRem"><input type="checkbox" id="lockRem" checked> Remember on this device</label>
-    <button class="btn" type="submit" id="lockBtn">Unlock</button>
-    <p class="err" id="lockErr" role="alert"></p>
-  </form>
-</div>
-<div class="wrap" id="appWrap" hidden>
-  <header class="top">
+</head><body><div id='appShell' hidden>
+<header class="top">
+  <div class="wrap top-in">
     <div class="brand">
-      <h1>Curds <span class="amp">&amp;</span> Whey</h1>
-      <p>Food Science: Dairy · Science Olympiad practice in the style of past tests</p>
+      <span class="brand-name">A&amp;P Practice Stations</span>
+      <span class="brand-sub">Science Olympiad 2026–27 · Respiratory · Digestive · Immune</span>
     </div>
-    <div class="controls">
-      <span class="seglabel" id="divlbl">Division</span>
-      <div class="seg" role="group" aria-labelledby="divlbl">
-        <button type="button" id="lvB" data-lv="B">Div B</button>
-        <button type="button" id="lvC" data-lv="C">Div C</button>
-      </div>
-      <button type="button" class="btn ghost small" id="forgetCode" title="Forget the team code on this device">Lock</button>
-      <span class="streak" title="Days in a row you finished the daily set"><b id="streakN">0</b> day streak</span>
-    </div>
-  </header>
-
-  <div class="tabs-wrap">
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button class="tab" role="tab" id="tab-today" data-view="today">Daily set</button>
-      <button class="tab" role="tab" id="tab-practice" data-view="practice">Practice by topic</button>
-      <button class="tab" role="tab" id="tab-lab" data-view="lab">Lab calcs</button>
-      <button class="tab" role="tab" id="tab-mock" data-view="mock">Mock test<span class="tmr" id="tabTimer"></span></button>
-      <button class="tab" role="tab" id="tab-progress" data-view="progress">Progress</button>
+    <nav class="tabs" role="tablist" aria-label="Practice type">
+      <button class="tab" role="tab" id="tab-daily" data-mode="daily">Daily set</button>
+      <button class="tab" role="tab" id="tab-label" data-mode="label">Labeling</button>
+      <button class="tab" role="tab" id="tab-path" data-mode="path">Pathology</button>
+      <button class="tab" role="tab" id="tab-bank" data-mode="bank">Question bank</button>
+      <button class="tab" role="tab" id="tab-review" data-mode="review">Review missed <span class="count" id="missCount" hidden>0</span></button>
+      <button class="tab" role="tab" id="tab-mock" data-mode="mock">Mock test <span class="tmr mono" id="mockTimer"></span></button>
+      <button class="tab" role="tab" id="tab-progress" data-mode="progress">Progress</button>
     </nav>
   </div>
+  <div class="wrap filters">
+    <div class="seg" id="sysSeg" aria-label="Body system">
+      <button data-sys="respiratory">Respiratory</button>
+      <button data-sys="digestive">Digestive</button>
+      <button data-sys="immune">Immune</button>
+    </div>
+    <div class="seg" id="divSeg" aria-label="Division">
+      <button data-div="B" title="Hides Division C-only items">Div B</button>
+      <button data-div="C" title="Includes Division C items">Div C</button>
+    </div>
+    <span class="streak" title="Days in a row you finished the daily set"><b id="streakN">0</b> day streak</span>
+    <span class="sync" id="sync">Progress saved on this device</span>
+  </div>
+</header>
 
-  <main id="view"></main>
+<main class="wrap layout" id="main">
+  <aside class="picker" id="picker" aria-label="Choose what to practice"></aside>
+  <section class="stage">
+    <div id="modeHead"></div>
+    <div class="stage-in" id="stage" aria-live="polite"></div>
+  </section>
+</main>
+<div class="wrap foot">Diagrams adapted from OpenStax <i>Anatomy and Physiology 2e</i> (CC BY 4.0), plus two public-domain drawings from <i>Gray's Anatomy</i>. Every pathology and question-bank item is reworded from a topic that past Science Olympiad tests asked about; each one lists its source tests.</div>
 
-  <p class="foot">Question formats follow five real Food Science B tests (2022 SO National Invitational, 2022 UChicago, 2021 UT Austin, 2021 Troy, 2021 BirdSO): 1-point multiple choice, 2-point select-all with partial credit, true/false, one-word answers, scenario free response, and calculations graded on value and significant figures. Dairy content comes from the team study guides, Walstra’s <i>Dairy Science and Technology</i>, and the Tetra Pak <i>Dairy Processing Handbook</i>, following the 2027 Food Science: Dairy topics. Questions live in <code>questions.js</code>. Progress is saved in this browser only.</p>
 </div>
 
+<div class="lock" id="lock" hidden>
+  <form class="lock-card" id="lockForm" autocomplete="off">
+    <div class="lock-mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h1>A&amp;P Practice Stations</h1>
+    <p class="lock-sub">Team only. Enter the team passcode to start.</p>
+    <label class="fld" for="lockPass">Team passcode</label>
+    <input type="password" id="lockPass" name="lockPass" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" required>
+    <label class="lock-rem"><input type="checkbox" id="lockRem" checked> Remember on this device</label>
+    <button class="lock-btn" id="lockBtn" type="submit">Unlock</button>
+    <p class="lock-err" id="lockErr" role="alert"></p>
+    <p class="lock-note">Don't know it? Ask your Science Olympiad captain.</p>
+  </form>
+</div>
+<noscript><p style="padding:16px">This practice app needs JavaScript. Please open it in Chrome, Safari, Edge or Firefox.</p></noscript>
 <script src="data.js"></script>
+<script>window.__apStart=function(){var Zs=Object.defineProperty,te=Object.defineProperties;var se=Object.getOwnPropertyDescriptors;var ws=Object.getOwnPropertySymbols;var ee=Object.prototype.hasOwnProperty,ne=Object.prototype.propertyIsEnumerable;var xs=(N,T,E)=>T in N?Zs(N,T,{enumerable:!0,configurable:!0,writable:!0,value:E}):N[T]=E,Wt=(N,T)=>{for(var E in T||(T={}))ee.call(T,E)&&xs(N,E,T[E]);if(ws)for(var E of ws(T))ne.call(T,E)&&xs(N,E,T[E]);return N},Qt=(N,T)=>te(N,se(T));(()=>{const N=window.APDATA,T=["respiratory","digestive","immune"],E={respiratory:"Respiratory",digestive:"Digestive",immune:"Immune"},u=(t,s=document)=>s.querySelector(t),h=t=>String(t!=null?t:"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[s]),z=t=>{t=t.slice();for(let s=t.length-1;s>0;s--){const e=Math.floor(Math.random()*(s+1));[t[s],t[e]]=[t[e],t[s]]}return t},X=()=>Math.floor(Date.now()/1e3),Gt="ap-stations-prefs";let b={mode:"daily",sys:"respiratory",div:"C",sub:"n",qtype:"all"};try{Object.assign(b,JSON.parse(localStorage.getItem(Gt)||"{}"))}catch(t){}const K=()=>{try{localStorage.setItem(Gt,JSON.stringify(b))}catch(t){}},Jt="ap-stations-progress";let k={items:{},days:{},mocks:[],updated:0};try{const t=JSON.parse(localStorage.getItem(Jt)||"null");t&&t.items&&(k=t)}catch(t){}k.days=k.days||{},k.mocks=k.mocks||[];let R=null,Ct=!1,jt=!1,zt=null;const Xt=u("#sync");function gt(t,s){Xt.className="sync"+(t==="cloud"?" cloud":""),Xt.textContent=s}function lt(){try{localStorage.setItem(Jt,JSON.stringify(k))}catch(t){}}function Ss(t){if(!(!t||!t.items)){for(const[s,e]of Object.entries(t.items)){const n=k.items[s];(!n||(e[3]||0)>(n[3]||0))&&(k.items[s]=e)}if(t.days)for(const[s,e]of Object.entries(t.days)){const n=k.days[s];(!n||(e.t||0)>(n.t||0))&&(k.days[s]=e)}if(t.mocks){const s=new Map(k.mocks.map(e=>[e.t,e]));t.mocks.forEach(e=>{const n=s.get(e.t);(!n||(e.u||0)>(n.u||0))&&s.set(e.t,e)}),k.mocks=[...s.values()].sort((e,n)=>e.t-n.t).slice(-50)}k.updated=Math.max(k.updated||0,t.updated||0)}}async function vt(){if(R){if(Ct){jt=!0;return}Ct=!0;try{await R.set({items:k.items,days:k.days,mocks:k.mocks,updated:k.updated}),gt("cloud","Progress saved to your account")}catch(t){t&&(t.code==="invalid_argument"||t.code==="revoked"||t.code==="not_granted")&&(R=null,gt("device","Progress saved on this device"))}Ct=!1,jt&&(jt=!1,vt())}}function Pt(){R&&(clearTimeout(zt),gt("cloud","Saving\u2026"),zt=setTimeout(vt,1500))}async function Ts(){try{if(!window.claude||!window.claude.use)return;const[t,s]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!t||!s)return;const e=await s.id();if(!e)return;const n=t.doc("data/users/"+e+"/progress"),a=await n.get();a.exists&&Ss(a.data()),R=n,lt(),gt("cloud","Progress saved to your account"),Vs(),(Object.keys(k.items).length||k.mocks.length||Object.keys(k.days).length)&&vt()}catch(t){R=null}}function rt(t,s){const e=k.items[t]||[0,0,0,0];k.items[t]=[e[0]+(s?1:0),e[1]+(s?0:1),s?1:0,X()],k.updated=X(),lt(),Pt()}const ct=t=>{const s=k.items[t];return s?s[2]?"g":"r":""},Ut=t=>b.div==="C"||t!=="C",D=t=>N.labeling[t].diagrams,O=t=>t.labels.filter(s=>Ut(t.level==="C"?"C":s.level)),C=(t,s="path")=>(s==="bank"?N.bank[t]:N.pathology[t]).sections,W=t=>t.items.filter(s=>Ut(s.level)),st=(t,s,e,n)=>`L|${t}|${s.id}|${e}|${n}`,Nt=(t,s,e)=>`F|${t}|${s.id}|${e}`,dt=(t,s,e="path")=>e==="bank"?`Q|${t}|${s.id||s.n}`:`P|${t}|${s.id||s.n}`,Vt=[["all","All types"],["mc","Multiple choice"],["fill","Fill in the blank"],["tf","True or false"],["short","Short answer"]],Zt={mc:"Multiple choice",match:"Multiple choice",fill:"Fill in the blank",tf:"True or false",short:"Short answer"},kt=t=>t.type==="match"?"mc":t.type,pt=(t,s)=>W(t).filter(e=>s!=="bank"||b.qtype==="all"||kt(e)===b.qtype),It=(t,s,e)=>{const n=C(t,s);for(let a=e;a<n.length;a++)if(pt(n[a],s).length)return a;return-1},ts=t=>String(t).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g,"").replace(/['’]/g,"").replace(/&/g," and ").replace(/[^a-z0-9]+/g," ").replace(/\b(the|a|an)\b/g," ").replace(/\s+/g," ").trim(),ss=t=>t.split(" ").map(s=>s.length>3&&/[^s]s$/.test(s)?s.slice(0,-1):s).join(" ");function es(t){const s=new Set,e=a=>{const o=ts(a);o.length>1&&s.add(o)},n=String(t).split(/\s*(?:;|\/|\bor\b)\s*/);for(const a of[t,...n]){e(a),e(a.replace(/\([^)]*\)/g," "));const o=a.match(/^(.*?)\s*\(([^)]*)\)\s*$/);o&&o[1].trim()&&e(o[2]),a.replace(/(\S+)\s*\(([^)]*)\)/g,(i,r,p)=>(e(a.replace(i,p)),i)),a.includes(":")&&e(a.split(":").slice(1).join(":"))}return[...s]}function Ms(t,s){const e=t.length,n=s.length;if(!e)return n;if(!n)return e;let a=Array.from({length:n+1},(o,i)=>i);for(let o=1;o<=e;o++){const i=[o];for(let r=1;r<=n;r++)i[r]=Math.min(a[r]+1,i[r-1]+1,a[r-1]+(t[o-1]===s[r-1]?0:1));a=i}return a[n]}function Es(t,s){if(t===s||ss(t)===ss(s))return!0;const e=t.split(" "),n=s.split(" ");if(e.length!==n.length||!e.every((o,i)=>o.slice(0,2)===n[i].slice(0,2)))return!1;const a=s.length<=4?0:s.length<=8?1:2;return Ms(t,s)<=a}function wt(t,s){const e=ts(t);return e?[...es(s.answer),...(s.accept||[]).flatMap(es)].some(a=>Es(e,a)):!1}let l=null,d=null;function ut(t,s,e){const n=D(t)[s],a=O(n).map(o=>({k:"L",s:t,di:s,n:o.n,sub:e}));e==="n"&&n.followups.forEach((o,i)=>a.push({k:"F",s:t,di:s,j:i})),l={kind:"label",title:n.title,items:a,i:0,results:[],ctx:{s:t,di:s,sub:e}},d=null,P()}function et(t,s,e="path"){let n;s===-1?n=z(C(t,e).flatMap((o,i)=>pt(o,e).map(r=>({k:"P",s:t,si:i,n:r.n,ds:e})))):n=pt(C(t,e)[s],e).map(o=>({k:"P",s:t,si:s,n:o.n,ds:e}));const a=e==="bank"&&b.qtype!=="all"?` \xB7 ${Vt.find(o=>o[0]===b.qtype)[1]}`:"";l={kind:e,title:(s===-1?"All sections, mixed":C(t,e)[s].title)+a,items:n,i:0,results:[],ctx:{s:t,si:s,ds:e}},d=null,P()}function nt(t,s){const e=[];s!=="path"&&D(t).forEach((n,a)=>{O(n).forEach(o=>["n","f"].forEach(i=>{ct(st(t,n,o.n,i))==="r"&&e.push({k:"L",s:t,di:a,n:o.n,sub:i})})),s!=="label-only"&&n.followups.forEach((o,i)=>{ct(Nt(t,n,i))==="r"&&e.push({k:"F",s:t,di:a,j:i})})});for(const n of["path","bank"])s!=="all"&&s!==n||C(t,n).forEach((a,o)=>W(a).forEach(i=>{ct(dt(t,i,n))==="r"&&e.push({k:"P",s:t,si:o,n:i.n,ds:n})}));return e}function ns(t,s){const e=z(nt(t,s));l={kind:"review",title:s==="label"?"Missed labels":s==="path"?"Missed pathology questions":s==="bank"?"Missed question bank items":"Everything missed",items:e,i:0,results:[],ctx:{s:t,which:s}},d=null,P()}function qs(){const t=l.items.filter((s,e)=>l.results[e]===!1);l=Qt(Wt({},l),{title:l.title+" (retry missed)",items:z(t),i:0,results:[]}),d=null,P()}function _(t){if(d.done)return;d.done=!0,d.ok=t,Rt(l.i,t),rt(at(l.items[l.i]),t),P(),j(),B();const s=u("#next");s&&s.focus()}function xt(){if(l.kind==="daily"){let t=l.results.findIndex((s,e)=>e>l.i&&s===void 0);t<0&&(t=l.results.findIndex(s=>s===void 0)),l.i=t<0?l.items.length:t}else l.i++;d=null,P()}function at(t){const s=t.s;return t.k==="L"?st(s,D(s)[t.di],t.n,t.sub):t.k==="F"?Nt(s,D(s)[t.di],t.j):dt(s,Q(t),t.ds)}const Q=t=>C(t.s,t.ds)[t.si].items.find(s=>s.n===t.n);function St(t){let s=0,e=0;t.forEach(a=>{const o=ct(a);o==="g"?s++:o==="r"&&e++});const n=t.length||1;return{g:s,r:e,t:t.length,html:`<div class="bar" aria-hidden="true"><i class="g" style="width:${s/n*100}%"></i><i class="r" style="width:${e/n*100}%"></i></div>`}}function j(){const t=b.sys,s=u("#picker"),e=ls.includes(b.mode);if(s.hidden=e,u("#main").classList.toggle("full",e),!e)if(b.mode==="label"){const n=b.sub;let a=[];const o=D(t).map((r,p)=>{const m=O(r).map($=>st(t,r,$.n,n));a=a.concat(m);const y=St(m),c=l&&l.kind==="label"&&l.ctx.s===t&&l.ctx.di===p;return`<button class="pitem" data-di="${p}" aria-current="${c}"><span class="pt">${h(r.title)}</span><span class="pm"><span>${y.t} labels${r.level==="C"?" \xB7 Div C":""}</span><span class="mono">${y.g}/${y.t}</span></span>${y.html}</button>`}).join(""),i=St(a);s.innerHTML=`<h2>${E[t]} diagrams</h2><p class="tally"><b>${i.g}</b> of <b>${i.t}</b> labels correct in ${n==="n"?"Name it":"Find it"}</p>${i.html}<div class="plist">${o}</div>`,s.querySelectorAll(".pitem").forEach(r=>r.onclick=()=>ut(t,+r.dataset.di,b.sub))}else if(b.mode==="path"||b.mode==="bank"){const n=b.mode;let a=[];const o=C(t,n).map((y,c)=>{const $=pt(y,n).map(M=>dt(t,M,n));if(a=a.concat($),!$.length)return"";const w=St($),S=l&&l.kind===n&&l.ctx.s===t&&l.ctx.si===c;return`<button class="pitem" data-si="${c}" aria-current="${S}"><span class="pt">${h(y.title)}</span><span class="pm"><span>${w.t} question${w.t===1?"":"s"}</span><span class="mono">${w.g}/${w.t}</span></span>${w.html}</button>`}).join(""),i=St(a),r=l&&l.kind===n&&l.ctx.s===t&&l.ctx.si===-1,p={};n==="bank"&&C(t,n).forEach(y=>W(y).forEach(c=>{p[kt(c)]=(p[kt(c)]||0)+1,p.all=(p.all||0)+1}));const m=n==="bank"?`<div class="seg qseg" id="qtypeSeg" aria-label="Question type">${Vt.map(([y,c])=>`<button data-q="${y}" aria-pressed="${b.qtype===y}">${c} <span class="mono small">${p[y]||0}</span></button>`).join("")}</div>`:"";s.innerHTML=`<h2>${E[t]} ${n==="bank"?"question bank":"pathology"}</h2>${m}<p class="tally"><b>${i.g}</b> of <b>${i.t}</b> questions correct</p>${i.html}<div class="plist"><button class="pitem" data-si="-1" aria-current="${r}"><span class="pt">All sections, mixed</span><span class="pm"><span>${i.t} questions, shuffled</span></span></button>${o}</div>`,s.querySelectorAll(".pitem").forEach(y=>y.onclick=()=>et(t,+y.dataset.si,n)),s.querySelectorAll("#qtypeSeg button").forEach(y=>y.onclick=()=>{b.qtype=y.dataset.q,K();const c=l&&l.kind==="bank"&&l.ctx.s===t?l.ctx.si:0,$=c===-1?-1:pt(C(t,n)[c],n).length?c:It(t,n,0);et(t,$,n),j()})}else{const n=nt(t,"label").length,a=nt(t,"path").length,o=nt(t,"bank").length;s.innerHTML=`<h2>Review: ${E[t]}</h2><p class="tally">Items whose last try was wrong. Get one right and it leaves this list.</p>
+        <div class="plist">
+          <button class="pitem" data-w="all" ${n+a+o?"":"disabled"}><span class="pt">Everything missed</span><span class="pm"><span class="mono">${n+a+o} items</span></span></button>
+          <button class="pitem" data-w="label" ${n?"":"disabled"}><span class="pt">Missed labels</span><span class="pm"><span class="mono">${n} items</span></span></button>
+          <button class="pitem" data-w="path" ${a?"":"disabled"}><span class="pt">Missed pathology</span><span class="pm"><span class="mono">${a} items</span></span></button>
+          <button class="pitem" data-w="bank" ${o?"":"disabled"}><span class="pt">Missed question bank</span><span class="pm"><span class="mono">${o} items</span></span></button>
+        </div>`,s.querySelectorAll(".pitem").forEach(i=>i.onclick=()=>ns(t,i.dataset.w))}}function B(){const t=T.reduce((e,n)=>e+nt(n,"all").length,0),s=u("#missCount");s.hidden=!t,s.textContent=t}function P(){const t=u("#stage");if(l&&l.kind==="daily"&&_s(),!l){t.innerHTML='<div class="card"><p class="empty">Pick something to practice from the list.</p></div>';return}if(!l.items.length){t.innerHTML=`<div class="card"><p class="eyebrow">${h(l.title)}</p><p class="empty">Nothing here right now${l.kind==="review"?". Nice work: there are no missed items for this system.":"."}</p></div>`;return}if(l.i>=l.items.length)return Ns(t);const s=l.items[l.i];d||(d={done:!1}),s.k==="L"?Ds(t,s):s.k==="F"?Cs(t,s):js(t,s)}const Tt=()=>`<span class="mono small">${l.i+1} / ${l.items.length}</span>`,U=t=>t==="C"?'<span class="ctag">Div C</span>':"";function Ls(t,s,e){return`<figure class="plate ${e==="f"?"find":""}"><div class="plate-in" id="plateIn"><img src="${h(as(t))}" width="${t.w}" height="${t.h}" alt="Numbered diagram: ${h(t.title)}"><div id="ov"></div></div>
+      <figcaption>${h(t.credit||"OpenStax, Anatomy and Physiology 2e (CC BY 4.0). Labels replaced with numbers.")}</figcaption></figure>`}const as=t=>t.image.charAt(0)==="#"?(document.getElementById(t.image.slice(1))||{}).src||"":t.image,As=(t,s=.006)=>`left:${(t[0]-s)*100}%;top:${(t[1]-s)*100}%;width:${(t[2]-t[0]+2*s)*100}%;height:${(t[3]-t[1]+2*s)*100}%`;function Ds(t,s){const e=s.s,n=D(e)[s.di],a=n.labels.find(x=>x.n===s.n),o=s.sub,i=l.kind==="label",r=i?O(n).map(x=>{const q=l.items.findIndex(g=>g.k==="L"&&g.n===x.n);return`<button class="chip ${ct(st(e,n,x.n,o))} ${q===l.i?"cur":""}" data-idx="${q}" aria-label="Label ${x.n}">${x.n}</button>`}).join(""):"",p=`<div class="card-head"><div><span class="eyebrow">${l.kind==="review"?"Review \xB7 ":l.kind==="daily"?"Daily set \xB7 ":""}${E[e]} \xB7 ${o==="n"?"Name it":"Find it"}</span><h1 class="card-title">${h(n.title)}</h1></div>
+      <div class="btns">${i?`<div class="seg" id="subSeg"><button data-sub="n" aria-pressed="${o==="n"}">Name it</button><button data-sub="f" aria-pressed="${o==="f"}">Find it</button></div>`:""}${Tt()}</div></div>`;let m;o==="n"?m=`<p class="qline">What structure is number <span class="num">${a.n}</span>?${U(a.level)}</p>
+        <form class="ansrow" id="ansForm" autocomplete="off"><input id="ans" aria-label="Your answer" placeholder="Type the name" ${d.done?"disabled":""}><button class="btn primary" ${d.done?"disabled":""}>Check</button></form>`:m=`<p class="qline">Click the number that marks:${U(a.level)}<span class="target">${h(a.answer)}</span></p>`;let y="";if(d.done){const x=(a.accept||[]).filter(q=>q.toLowerCase()!==a.answer.toLowerCase());y=`<div class="fb ${d.ok?"ok":"miss"}"><span class="verdict">${d.ok?"Correct":"Not quite"}</span>
+        ${o==="n"?`${d.typed?`You wrote: ${h(d.typed)}<br>`:""}Answer: <b>${h(a.answer)}</b>`:`That is number <b class="mono">${a.n}</b>.`}
+        ${x.length?`<span class="also">Also accepted: ${h(x.join(", "))}</span>`:""}</div>`}const c=d.done?`<div class="btns">${!d.ok&&o==="n"&&d.typed?'<button class="btn" id="override">I was right</button>':""}<button class="btn primary" id="next">Next</button></div>`:`<div class="btns"><button class="btn quiet" id="giveup">${o==="n"?"Show answer":"Show me"}</button></div>`;t.innerHTML=`<div class="card">${p}<div class="label-grid">${Ls(n,e,o)}<div class="ask">${m}${y}${c}
+      ${i?`<div><p class="small" style="margin:0 0 6px">Jump to a number. Green: right last time; red: missed.</p><div class="strip">${r}</div></div>`:""}
+      <details class="src"><summary>Past tests that asked about this diagram</summary><p>${h(n.asked.join("; "))}</p></details></div></div></div>`;const $=u("#ov"),w=x=>a.boxes.forEach(q=>{const v=document.createElement("div");v.className="hl "+x,v.style.cssText=As(q),$.appendChild(v)});if(o==="n")w(d.done?d.ok?"good":"":"pulse");else if(d.done&&(w(d.ok?"good":""),d.click&&!d.ok)){const x=document.createElement("div");x.className="mark",x.textContent="\xD7",x.style.left=d.click[0]*100+"%",x.style.top=d.click[1]*100+"%",$.appendChild(x)}const S=u("#ansForm");S&&(S.onsubmit=x=>{x.preventDefault();const q=u("#ans").value.trim();q&&(d.typed=q,_(wt(q,a)))},d.done||setTimeout(()=>{const x=u("#ans");x&&x.focus({preventScroll:!0})},0)),o==="f"&&!d.done&&(u("#plateIn").onclick=x=>{const q=x.currentTarget.getBoundingClientRect(),v=(x.clientX-q.left)/q.width,g=(x.clientY-q.top)/q.height,A=.018,F=Dt=>Dt.boxes.some(tt=>v>=tt[0]-A&&v<=tt[2]+A&&g>=tt[1]-A&&g<=tt[3]+A);n.labels.some(F)&&(d.click=[v,g],_(F(a)))});const M=u("#giveup");M&&(M.onclick=()=>_(!1));const L=u("#override");L&&(L.onclick=()=>{Rt(l.i,!0),rt(at(s),!0),d.ok=!0,P(),j(),B()});const H=u("#next");H&&(H.onclick=xt),t.querySelectorAll(".chip").forEach(x=>x.onclick=()=>{const q=+x.dataset.idx;q>=0&&(l.i=q,d=null,P())});const yt=u("#subSeg");yt&&yt.querySelectorAll("button").forEach(x=>x.onclick=()=>{b.sub=x.dataset.sub,K(),ut(e,s.di,b.sub),j()})}function Cs(t,s){const e=s.s,n=D(e)[s.di],a=n.followups[s.j];is(t,{eyebrow:`${E[e]} \xB7 ${h(n.title)} \xB7 short question`,prompt:a.q,answer:a.a,why:"",from:n.asked})}function is(t,s){t.innerHTML=`<div class="card qcard"><div class="card-head"><span class="eyebrow">${s.eyebrow}</span>${Tt()}</div>
+      <p class="prompt">${h(s.prompt)}${s.ctag||""}</p>
+      <textarea id="draft" placeholder="Write your answer here (optional), then show the answer." ${d.revealed?"disabled":""}>${h(d.draft||"")}</textarea>
+      ${d.revealed?`<div class="fb ${d.done?d.ok?"ok":"miss":""}" style="${d.done?"":"background:var(--accent-soft)"}; margin-top:12px">
+        <span class="verdict">${d.done?d.ok?"Marked correct":"Marked for review":"Answer"}</span>
+        <div class="model"><b>${h(s.answer)}</b></div>${s.accept&&s.accept.length?`<span class="also">Also accept: ${h(s.accept.join(", "))}</span>`:""}
+        ${s.why?`<div class="why">${h(s.why)}</div>`:""}${s.from&&s.from.length?`<div class="from">From: ${h(s.from.join("; "))}</div>`:""}</div>`:""}
+      <div class="btns" style="margin-top:12px">${d.revealed?d.done?'<button class="btn primary" id="next">Next</button>':'<span class="small">Did you get it?</span><button class="btn" id="gotit">I got it</button><button class="btn" id="missed">Not yet</button>':'<button class="btn primary" id="reveal">Show answer</button>'}</div></div>`;const e=u("#draft");e&&(e.oninput=()=>d.draft=e.value);const n=u("#reveal");n&&(n.onclick=()=>{d.revealed=!0,P()});const a=u("#gotit");a&&(a.onclick=()=>_(!0));const o=u("#missed");o&&(o.onclick=()=>_(!1));const i=u("#next");i&&(i.onclick=xt)}function js(t,s){const e=s.s,n=C(e,s.ds)[s.si],a=Q(s),o=`${l.kind==="review"?"Review \xB7 ":l.kind==="daily"?"Daily set \xB7 ":""}${E[e]} ${s.ds==="bank"?`question bank \xB7 ${Zt[a.type]}`:"pathology"} \xB7 ${h(n.title)}`;if(a.type==="fill")return Ps(t,s,a,o);if(a.type==="short")return is(t,{eyebrow:o,prompt:a.prompt,answer:a.answer,accept:a.accept,why:a.why,from:a.src,ctag:U(a.level)});if(!d.opts)if(a.type==="mc")d.opts=a.options.map((y,c)=>({t:y,ok:c===a.answer}));else if(a.type==="tf")d.opts=[{t:"True",ok:a.answer===!0},{t:"False",ok:a.answer===!1}];else{const y=z(n.bank.filter(c=>c!==a.answer)).slice(0,n.reuse?n.bank.length:3);d.opts=z([a.answer,...y]).map(c=>({t:c,ok:c===a.answer})),n.reuse&&d.opts.sort((c,$)=>c.t.localeCompare($.t))}const i=a.type==="match"?n.reuse?"Which type is it?":/breathing/i.test(n.title)?"Which pattern of breathing is this?":"Which disorder is this?":a.type==="tf"?"True or false?":"",r=d.opts.map((y,c)=>{let $="";return d.done&&(y.ok?$="right":d.pick===c&&($="wrong")),`<button class="opt ${$}" data-i="${c}" ${d.done?"disabled":""}><span class="k">${"abcdefgh"[c]}</span><span>${h(y.t)}</span></button>`}).join("");let p="";if(d.done){const y=a.type==="match"?a.answer:a.type==="tf"?a.answer?"True":"False":a.options[a.answer],c=a.type==="tf"?String(a.why||"").replace(/^(True|False)\.\s*/,""):a.why;p=`<div class="fb ${d.ok?"ok":"miss"}"><span class="verdict">${d.ok?"Correct":"Not quite"}</span>Answer: <b>${h(y)}</b>
+        ${a.accept&&a.accept.length?`<span class="also">Also called: ${h(a.accept.join(", "))}</span>`:""}
+        ${c?`<div class="why">${h(c)}</div>`:""}<div class="from">From: ${h(a.src.join("; "))}</div></div>`}t.innerHTML=`<div class="card qcard"><div class="card-head"><span class="eyebrow">${o}</span>${Tt()}</div>
+      <p class="prompt">${h(a.prompt)}${U(a.level)}</p>${i?`<p class="subq">${i}</p>`:""}
+      <div class="opts">${r}</div>${p}<div class="btns" style="margin-top:12px">${d.done?'<button class="btn primary" id="next">Next</button>':`<span class="small">Tip: press a\u2013${"abcdefgh"[d.opts.length-1]} to answer</span>`}</div></div>`,t.querySelectorAll(".opt").forEach(y=>y.onclick=()=>{const c=+y.dataset.i;d.pick=c,_(d.opts[c].ok)});const m=u("#next");m&&(m.onclick=xt)}function os(t,s){const e=t.answer.map((a,o)=>({answer:a,accept:t.accept&&t.accept[o]||[]}));if(!t.anyorder)return e.every((a,o)=>wt(s[o]||"",a));const n=a=>a.length<=1?[a]:a.flatMap((o,i)=>n([...a.slice(0,i),...a.slice(i+1)]).map(r=>[o,...r]));return n(e.map((a,o)=>o)).some(a=>a.every((o,i)=>wt(s[i]||"",e[o])))}function Ps(t,s,e,n){const a=e.prompt.split("_____");let o="";a.forEach((c,$)=>{o+=h(c),$<a.length-1&&(o+=`<input class="blank" id="blank${$}" aria-label="Blank ${$+1}" autocomplete="off" ${d.done?"disabled":""} value="${h((d.vals||[])[$]||"")}">`)});let i="";if(d.done){const c=e.answer.length>1?e.answer.map((w,S)=>`(${S+1}) ${h(w)}`).join("&nbsp;&nbsp; ")+(e.anyorder?" <span class='also' style='display:inline'>(any order)</span>":""):h(e.answer[0]),$=[...new Set((e.accept||[]).flat())].filter(w=>!e.answer.map(S=>S.toLowerCase()).includes(w.toLowerCase()));i=`<div class="fb ${d.ok?"ok":"miss"}"><span class="verdict">${d.ok?"Correct":"Not quite"}</span>Answer: <b>${c}</b>
+        ${$.length?`<span class="also">Also accepted: ${h($.join(", "))}</span>`:""}${e.why?`<div class="why">${h(e.why)}</div>`:""}<div class="from">From: ${h(e.src.join("; "))}</div></div>`}t.innerHTML=`<div class="card qcard"><div class="card-head"><span class="eyebrow">${n}</span>${Tt()}</div>
+      <form id="fillForm" autocomplete="off"><p class="prompt">${o}${U(e.level)}</p>
+      <div class="btns" style="margin:10px 0 12px">${d.done?"":'<button class="btn primary">Check</button><button class="btn quiet" type="button" id="giveup">Show answer</button>'}</div></form>
+      ${i}<div class="btns" style="margin-top:12px">${d.done?`${!d.ok&&(d.vals||[]).some(c=>c)?'<button class="btn" id="override">I was right</button>':""}<button class="btn primary" id="next">Next</button>`:""}</div></div>`;const r=u("#fillForm");r.onsubmit=c=>{if(c.preventDefault(),d.done)return;const $=a.slice(0,-1).map((w,S)=>u("#blank"+S).value.trim());$.some(w=>w)&&(d.vals=$,_(os(e,$)))},d.done||setTimeout(()=>{const c=u("#blank0");c&&c.focus({preventScroll:!0})},0);const p=u("#giveup");p&&(p.onclick=()=>{d.vals=a.slice(0,-1).map((c,$)=>u("#blank"+$).value.trim()),_(!1)});const m=u("#override");m&&(m.onclick=()=>{Rt(l.i,!0),rt(at(s),!0),d.ok=!0,P(),j(),B()});const y=u("#next");y&&(y.onclick=xt)}function Ns(t){if(l.kind==="daily")return Bs(t);const s=l.items.length,e=l.results.filter(m=>m===!0).length,n=l.results.filter(m=>m===!1).length;let a="";if(l.kind==="label"){const m=l.ctx.s,y=l.ctx.di,c=D(m).length;a=y+1<c?`<button class="btn primary" id="nextSet">Next diagram: ${h(D(m)[y+1].title)}</button>`:""}else if(l.kind==="dailymiss")a=`<button class="btn primary" id="backDaily">Back to today's set</button>`;else if((l.kind==="path"||l.kind==="bank")&&l.ctx.si>=0){const m=l.ctx.s,y=l.ctx.si,c=l.ctx.ds,$=It(m,c,y+1);l.ctx.next=$,a=$>=0?`<button class="btn primary" id="nextSet">Next section: ${h(C(m,c)[$].title)}</button>`:""}t.innerHTML=`<div class="card qcard"><span class="eyebrow">Round finished \xB7 ${h(l.title)}</span>
+      <p class="score mono">${e} / ${s}</p><p>${n?`You missed ${n}. They are saved in Review missed until you get them right.`:"Every one right."}</p>
+      <div class="btns">${n?`<button class="btn" id="retry">Practice the ${n} missed</button>`:""}${a}<button class="btn quiet" id="again">Start this round again</button></div></div>`;const o=u("#retry");o&&(o.onclick=qs);const i=u("#again");i&&(i.onclick=()=>{l.i=0,l.results=[],l.items=l.kind==="label"?l.items:z(l.items),d=null,P()});const r=u("#backDaily");r&&(r.onclick=()=>Ht());const p=u("#nextSet");p&&(p.onclick=()=>l.kind==="label"?(ut(l.ctx.s,l.ctx.di+1,l.ctx.sub),j()):(et(l.ctx.s,l.ctx.next,l.ctx.ds),j()))}const ls=["daily","mock","progress"],Is=t=>{let s=1779033703^t.length;for(let e=0;e<t.length;e++)s=Math.imul(s^t.charCodeAt(e),3432918353),s=s<<13|s>>>19;return s>>>0},Fs=t=>()=>{t|=0,t=t+1831565813|0;let s=Math.imul(t^t>>>15,1|t);return s=s+Math.imul(s^s>>>7,61|s)^s,((s^s>>>14)>>>0)/4294967296},rs=t=>Fs(Is(t)),G=(t,s)=>{t=t.slice();for(let e=t.length-1;e>0;e--){const n=Math.floor(s()*(e+1));[t[e],t[n]]=[t[n],t[e]]}return t},V=(t=new Date)=>`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`,Ft=t=>t.k==="L"?`L|${t.s}|${t.di}|${t.n}`:`P|${t.s}|${t.ds}|${t.si}|${t.n}`,Y=(t,s)=>s?Math.round(t/s*100):0;function I(t,s,e){const n=[];return C(t,s).forEach((a,o)=>W(a).forEach(i=>{(!e||e.includes(kt(i)))&&n.push({k:"P",s:t,si:o,n:i.n,ds:s})})),n}function Hs(t){if(t.k==="L"){const n=D(t.s)[t.di],a=n.labels.find(o=>o.n===t.n);return{kind:"Labeling",prompt:`Number ${t.n} on \u201C${n.title}\u201D`,answer:a?a.answer:""}}if(t.k==="F"){const n=D(t.s)[t.di].followups[t.j];return{kind:"Diagram question",prompt:n.q,answer:n.a}}const s=Q(t);if(!s)return{kind:"",prompt:"",answer:""};const e=s.type==="mc"?s.options[s.answer]:s.type==="tf"?s.answer?"True":"False":s.type==="fill"?s.answer.join("; "):String(s.answer);return{kind:`${t.ds==="bank"?"Question bank":"Pathology"} \xB7 ${Zt[s.type]}`,prompt:s.prompt,answer:e.length>240?e.slice(0,237)+"\u2026":e}}const Rs=12;function Os(t){const s=rs(`daily|${t}|${b.div}`),e=c=>c[Math.floor(s()*c.length)],n=new Set,a=c=>{const $=c.filter(S=>!n.has(Ft(S)));if(!$.length)return null;const w=e($);return n.add(Ft(w)),w},o=G([2,2,1],s),i=G(["tf","fill","mc","mc","mc"],s),r=[];T.forEach((c,$)=>{const w=D(c).map((M,L)=>({di:L,L:O(M)})).filter(M=>M.L.length);if(w.length){const M=e(w);r.push({k:"L",s:c,di:M.di,n:e(M.L).n,sub:"n"})}const S=a(I(c,"path",["mc","tf","fill"]));S&&r.push(S);for(let M=0;M<o[$];M++){const L=i.shift()||"mc",H=a(I(c,"bank",[L]))||a(I(c,"bank",["mc"]));H&&r.push(H)}});const p=G(r,s),m=e(T),y=a(I(m,s()<.5?"bank":"path",["short"]))||a(I(m,"bank",["short"]));return y&&p.push(y),p.slice(0,Rs)}const cs=(t,s)=>`${t}|${s}`;function Ht(t){const s=V(),e=Os(s),n=k.days[cs(s,b.div)]||{res:{}},a=e.map((i,r)=>r in n.res?!!n.res[r]:void 0);let o=a.findIndex(i=>i===void 0);o<0&&(o=e.length),t!=null&&(o=t),l={kind:"daily",title:"Daily set",items:e,i:o,results:a,ctx:{dk:s,div:b.div}},d=null,P()}function Rt(t,s){if(l.results[t]=s,l.kind!=="daily")return;const e=cs(l.ctx.dk,l.ctx.div),n=k.days[e]||(k.days[e]={res:{},done:!1});n.res[t]=s?1:0,n.n=l.items.length,n.done=l.items.every((a,o)=>o in n.res),n.t=X(),k.updated=X(),lt(),Pt(),Mt()}function ds(){const t=new Set(Object.entries(k.days).filter(([,n])=>n.done).map(([n])=>n.split("|")[0]));let s=0;const e=new Date;for(t.has(V(e))||e.setDate(e.getDate()-1);t.has(V(e));)s++,e.setDate(e.getDate()-1);return s}function Mt(){const t=u("#streakN");t&&(t.textContent=ds())}function _s(){const t=u("#modeHead");if(!l||l.kind!=="daily")return;const s=l.items.length,e=l.results.filter(i=>i===!0).length,n=l.results.filter(i=>i!==void 0).length,a=new Date(l.ctx.dk+"T12:00:00").toLocaleDateString(void 0,{weekday:"long",month:"long",day:"numeric"}),o=l.items.map((i,r)=>{const p=l.results[r];return`<button class="dot ${p===!0?"g":p===!1?"r":""} ${r===l.i?"cur":""}" data-i="${r}" aria-label="Question ${r+1}${p===void 0?"":p?", right":", missed"}" ${p!==void 0?"disabled":""}></button>`}).join("");t.innerHTML=`<div class="card dayhead"><div class="daytext"><span class="eyebrow">Daily set \xB7 Div ${l.ctx.div}</span><h1 class="card-title">${h(a)}</h1>
+      <p class="small daysub">${s} questions from all three systems: labeling, pathology and the question bank. Everyone on Div ${l.ctx.div} gets the same set today, so your team can compare scores. A new set appears at midnight.</p></div>
+      <div class="dayscore"><span class="score mono">${e}<span class="of"> / ${s}</span></span><div class="dots">${o}</div><span class="small">${n} of ${s} answered</span></div></div>`,t.querySelectorAll(".dot").forEach(i=>i.onclick=()=>{const r=+i.dataset.i;l.kind!=="daily"||l.results[r]!==void 0||(l.i=r,d=null,P())})}function Bs(t){const s=l.items.length,e=l.results.filter(i=>i===!0).length,n=l.results.filter(i=>i===!1).length,a=l.items.map((i,r)=>{const p=Hs(i),m=l.results[r];return`<li><span class="mk ${m?"g":"r"}" aria-label="${m?"Right":"Missed"}">${m?"\u2713":"\u2717"}</span><span class="tx"><span class="small">${E[i.s]} \xB7 ${h(p.kind)}</span><span class="qt">${h(p.prompt)}</span><span class="small">Answer: <b>${h(p.answer)}</b></span></span></li>`}).join("");t.innerHTML=`<div class="card qcard"><span class="eyebrow">Daily set finished</span><p class="score mono">${Y(e,s)}%</p>
+      <p>${e} of ${s} right. ${n?"The ones you missed are saved in Review missed.":"A perfect set."} Come back tomorrow to keep your streak going.</p>
+      <div class="btns">${n?`<button class="btn primary" id="dmiss">Practice the ${n} missed</button>`:""}<button class="btn" id="dmock">Take a mock test</button><button class="btn quiet" id="dprog">See my progress</button></div>
+      <ul class="qlist">${a}</ul></div>`;const o=u("#dmiss");o&&(o.onclick=()=>{l={kind:"dailymiss",title:"Today\u2019s missed questions",items:z(l.items.filter((i,r)=>l.results[r]===!1)),i:0,results:[],ctx:{}},d=null,P()}),u("#dmock").onclick=()=>Z("mock"),u("#dprog").onclick=()=>Z("progress")}const ps="ap-stations-mock";let f=null;try{f=JSON.parse(localStorage.getItem(ps)||"null")}catch(t){}let it=null,ft=null;const ot=()=>{try{localStorage.setItem(ps,JSON.stringify(f))}catch(t){}},Ys=()=>{clearTimeout(ft),ft=setTimeout(ot,250)},Ot=()=>{ft&&(clearTimeout(ft),ft=null),f&&ot()};window.addEventListener("pagehide",Ot),document.addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&Ot()});const Ks=["I","II","III"],us=[["label","A \xB7 Diagram"],["mc","B \xB7 Multiple choice"],["tf","C \xB7 True or false"],["fill","D \xB7 Fill in the blank"],["short","E \xB7 Short answer"]],Ws={label:"Diagram",mc:"Multiple choice",tf:"True or false",fill:"Fill in the blank",short:"Short answer"},_t=50;function Et(t,s,e,n){const a=Q(e),o=C(t,e.ds)[e.si],i={s:t,part:s,type:s,ref:e,pts:1};if(s==="mc")if(a.type==="mc")i.opts=a.options.slice(),i.ans=a.answer;else{const r=G(o.bank.filter(p=>p!==a.answer),n).slice(0,3);i.opts=o.reuse?o.bank.slice():G([a.answer,...r],n),i.ans=i.opts.indexOf(a.answer),i.lead=o.reuse?"Which type is it?":/breathing/i.test(o.title)?"Which pattern of breathing is this?":"Which disorder is this?"}return i}function fs(){const t=rs(`mock|${Date.now()}|${Math.random()}`),s=n=>n[Math.floor(t()*n.length)],e=[];return T.forEach(n=>{const a=D(n).map((c,$)=>({di:$,L:O(c)})).filter(c=>c.L.length>=5);if(a.length){const c=s(a);G(c.L,t).slice(0,5).sort(($,w)=>$.n-w.n).forEach($=>e.push({s:n,part:"label",type:"label",ref:{k:"L",s:n,di:c.di,n:$.n,sub:"n"},pts:1}))}const o=new Set,i=(c,$)=>{const w=[];for(const S of c)for(const M of G(S,t)){if(w.length>=$)break;const L=Ft(M);o.has(L)||(o.add(L),w.push(M))}return w},r=I(n,"bank",["mc"]),p=I(n,"path",["mc"]),m=i([r],5).concat(i([p],3));m.length<8&&m.push(...i([r,p],8-m.length)),G(m,t).forEach(c=>e.push(Et(n,"mc",c,t))),i([I(n,"bank",["tf"]),I(n,"path",["tf"])],3).forEach(c=>e.push(Et(n,"tf",c,t))),i([I(n,"bank",["fill"]),I(n,"path",["fill"])],3).forEach(c=>e.push(Et(n,"fill",c,t)));const y=i([I(n,"bank",["short"])],1).concat(i([I(n,"path",["short"])],1));y.forEach((c,$)=>e.push(Qt(Wt({},Et(n,"short",c,t)),{pts:2,tb:$===y.length-1})))}),{t:Date.now(),div:b.div,phase:"running",endAt:Date.now()+_t*60*1e3,qs:e,resp:e.map(()=>null),self:{}}}const ms=t=>{const s=D(t.s)[t.ref.di];return s&&s.labels.find(e=>e.n===t.ref.n)},qt=t=>t!=null&&t!==""&&!(Array.isArray(t)&&!t.some(s=>s));function Lt(t){const s=f.qs[t],e=f.resp[t];if(s.type==="short")return f.self[t]==null?null:f.self[t];if(!qt(e))return 0;if(s.type==="label"){const a=ms(s);return a&&wt(e,a)?1:0}const n=Q(s.ref);return n?s.type==="mc"?e===s.ans?1:0:s.type==="tf"?e===n.answer?1:0:s.type==="fill"&&os(n,e)?1:0:0}function hs(){const t={e:0,p:0,sys:{},part:{},tb:[0,0],ungraded:0};return f.qs.forEach((s,e)=>{const n=Lt(e),a=(n||0)*s.pts;n==null&&t.ungraded++,t.e+=a,t.p+=s.pts,t.sys[s.s]=t.sys[s.s]||[0,0],t.sys[s.s][0]+=a,t.sys[s.s][1]+=s.pts,t.part[s.part]=t.part[s.part]||[0,0],t.part[s.part][0]+=a,t.part[s.part][1]+=s.pts,s.tb&&(t.tb[0]+=a,t.tb[1]+=s.pts)}),t}function bs(){const t=hs(),s={t:f.t,d:V(new Date(f.t)),div:f.div,e:Math.round(t.e*10)/10,p:t.p,sys:{},u:X()};T.forEach(n=>{t.sys[n]&&(s.sys[n]=[Math.round(t.sys[n][0]*10)/10,t.sys[n][1]])});const e=k.mocks.findIndex(n=>n.t===f.t);e>=0?k.mocks[e]=s:k.mocks.push(s),k.mocks=k.mocks.slice(-50),k.updated=X(),lt(),Pt()}const ys=()=>{if(!f||f.phase!=="running")return"";const t=Math.max(0,f.endAt-Date.now());return`${Math.floor(t/6e4)}:${String(Math.floor(t%6e4/1e3)).padStart(2,"0")}`};function $s(){const t=u("#mockTimer");if(!f||f.phase!=="running"){clearInterval(it),it=null,t&&(t.textContent="");return}const s=f.endAt-Date.now(),e=ys();t&&(t.textContent=e);const n=u("#clock");n&&(n.textContent=e,n.classList.toggle("low",s<5*6e4)),s<=0&&Yt()}function Bt(){f&&f.phase==="running"&&!it&&(it=setInterval($s,1e3),$s())}function Yt(){if(!f||f.phase!=="running")return;f.phase="done",f.endedAt=Date.now(),clearInterval(it),it=null;const t=u("#mockTimer");t&&(t.textContent=""),f.qs.forEach((s,e)=>{if(s.type!=="short"){const n=s.type==="label"||Q(s.ref)?at(s.ref):null;n&&rt(n,Lt(e)===1)}}),bs(),ot(),B(),b.mode==="mock"&&(mt(),window.scrollTo({top:0}))}const Kt=()=>f.resp.filter(qt).length;function Qs(t,s,e){const n=f.qs[t],a=f.resp[t];if(n.type==="label")return"";const o=Q(n.ref);if(!o)return"";const i=n.tb?'<span class="ctag tb" title="Tiebreaker">TB</span>':"",r=n.pts>1?`<span class="ctag">${n.pts} pts</span>`:"";let p="",m=`<p class="prompt"><span class="qn mono">${s}.</span> ${h(o.prompt)}${U(o.level)}${i}${r}</p>`;const y=e?Lt(t):null;if(n.type==="mc"||n.type==="tf"){const $=n.type==="tf"?["True","False"]:n.opts,w=n.type==="tf"?a===!0?0:a===!1?1:-1:a==null?-1:a,S=n.type==="tf"?o.answer?0:1:n.ans;p=`${n.lead?`<p class="subq">${n.lead}</p>`:""}<div class="opts ${n.type==="tf"?"tfopts":""}">${$.map((M,L)=>{let H="";return e&&(L===S?H="right":L===w&&(H="wrong")),`<button type="button" class="opt ${H}" data-i="${t}" data-v="${L}" aria-pressed="${L===w}" ${e?"disabled":""}><span class="k">${n.type==="tf"?"TF"[L]:"abcdefgh"[L]}</span><span>${h(M)}</span></button>`}).join("")}</div>`}else if(n.type==="fill"){const $=o.prompt.split("_____");let w=`<span class="qn mono">${s}.</span> `;$.forEach((S,M)=>{w+=h(S),M<$.length-1&&(w+=`<input class="blank" data-i="${t}" data-b="${M}" aria-label="Question ${s}, blank ${M+1}" autocomplete="off" value="${h((a||[])[M]||"")}" ${e?"disabled":""}>`)}),m=`<p class="prompt">${w}${U(o.level)}</p>`}else n.type==="short"&&(p=e?a?`<div class="yours"><span class="small">Your answer</span><div>${h(a)}</div></div>`:'<p class="small">No answer written.</p>':`<textarea data-i="${t}" aria-label="Answer to question ${s}" placeholder="Write your answer the way you would on the test">${h(a||"")}</textarea>`);let c="";if(e){const $=n.type==="mc"?n.opts[n.ans]:n.type==="tf"?o.answer?"True":"False":n.type==="fill"?o.answer.join("; "):o.answer,w=n.type==="tf"?String(o.why||"").replace(/^(True|False)\.\s*/,""):o.why;if(n.type==="short"){const S=f.self[t];c=`<div class="fb ${S==null?"":S===1?"ok":S===0?"miss":"half"}" ${S==null?'style="background:var(--accent-soft)"':""}><span class="verdict">${S==null?"Grade yourself":`Self-graded \xB7 ${S*n.pts} / ${n.pts} pts`}</span>
+          <div class="model"><b>${h($)}</b></div>${o.why?`<div class="why">${h(o.why)}</div>`:""}
+          <div class="btns sgrade" style="margin-top:8px"><span class="small">How much credit?</span>${[[1,`Full (${n.pts})`],[.5,`Half (${n.pts/2})`],[0,"None (0)"]].map(([M,L])=>`<button class="btn ${S===M?"primary":""}" data-sg="${t}" data-val="${M}">${L}</button>`).join("")}</div>
+          <div class="from">From: ${h(o.src.join("; "))}</div></div>`}else c=`<div class="fb ${y===1?"ok":"miss"}"><span class="verdict">${y===1?"Correct":qt(a)?"Not quite":"Left blank"}</span>${y===1?"":`Answer: <b>${h($)}</b>`}
+          ${n.type==="fill"&&qt(a)&&y!==1?`<span class="also">You wrote: ${h(a.join("; "))}</span>`:""}${w?`<div class="why">${h(w)}</div>`:""}<div class="from">From: ${h(o.src.join("; "))}</div></div>`}return`<div class="mq" id="mq${t}">${m}${p}${c}</div>`}function Gs(t,s,e){const n=f.qs[t[0]],a=D(n.s)[n.ref.di];if(!a)return"";const o=t.map((i,r)=>{const p=f.qs[i],m=ms(p),y=f.resp[i]||"",c=e?Lt(i):null;return`<div class="lrow ${e?c===1?"ok":"miss":""}"><span class="qn mono">${s+r}.</span><span class="num">${p.ref.n}</span>
+        ${e?`<span class="lans">${y?h(y):"<i>blank</i>"}${c===1?" \u2713":` <span class="small">\u2192 <b>${h(m?m.answer:"")}</b></span>`}</span>`:`<input data-i="${i}" aria-label="Question ${s+r}: structure number ${p.ref.n}" autocomplete="off" value="${h(y)}" placeholder="Name structure ${p.ref.n}">`}</div>`}).join("");return`<div class="mq"><p class="prompt">Name each numbered structure on the diagram.</p><div class="mlabel"><figure class="plate"><div class="plate-in"><img src="${h(as(a))}" width="${a.w}" height="${a.h}" alt="Numbered diagram: ${h(a.title)}" loading="lazy"></div>
+      <figcaption>${h(a.title)} \xB7 ${h(a.credit||"OpenStax, Anatomy and Physiology 2e (CC BY 4.0)")}</figcaption></figure><div class="lrows">${o}</div></div></div>`}function gs(t){let s="",e=0;return T.forEach((n,a)=>{f.qs.some(i=>i.s===n)&&(s+=`<h2 class="secth">Section ${Ks[a]} \xB7 ${E[n]} System</h2>`,us.forEach(([i,r])=>{const p=f.qs.map((m,y)=>m.s===n&&m.part===i?y:-1).filter(m=>m>=0);p.length&&(s+=`<h3 class="parth">${r}${i==="short"?' <span class="small">(2 points each; TB = tiebreaker)</span>':""}</h3>`,i==="label"?(s+=Gs(p,e+1,t),e+=p.length):p.forEach(m=>{e++,s+=Qs(m,e,t)}))}))}),s}function Js(){const t={label:0,mc:0,tf:0,fill:0,short:0},s=fs();return s.qs.forEach(e=>t[e.part]++),{c:t,total:s.qs.length,pts:s.qs.reduce((e,n)=>e+n.pts,0)}}function mt(){const t=u("#stage");if(u("#modeHead").innerHTML="",!f||f.phase==="intro"||f.phase==="done"&&f.showIntro){const i=Js(),r=i.c,p=k.mocks.slice(-5).reverse();t.innerHTML=`<div class="card qcard"><span class="eyebrow">Mock test \xB7 Div ${b.div}</span><h1 class="card-title">A full 50-minute A&amp;P test</h1>
+        <p>Built like a Science Olympiad Anatomy &amp; Physiology test: one section per system, each with a diagram to label, multiple choice, true/false, fill in the blank and short answer. Tiebreaker questions are marked TB. You see no answers until you submit, and the test submits itself when time runs out.</p>
+        <ul class="plainlist"><li><b>${i.total} questions, ${i.pts} points</b> across Respiratory, Digestive and Immune</li>
+          <li>Each section: ${r.label/3} diagram labels, ${r.mc/3} multiple choice, ${r.tf/3} true/false, ${r.fill/3} fill in the blank, ${r.short/3} short answer</li>
+          <li>Questions are drawn at random from the labeling diagrams, pathology and the question bank${b.div==="B"?" (Div B only)":", including Div C items"}</li>
+          <li>Short answers are graded by you against the model answer after you submit</li></ul>
+        <p class="small">Tip: on test day partners usually split the sections. Try doing one system each, then check each other's.</p>
+        <div class="btns"><button class="btn primary" id="mstart">Start the 50-minute test</button></div>
+        ${p.length?`<h3 class="parth">Your recent mock tests</h3><ul class="qlist">${p.map(m=>`<li><span class="mk mono">${Y(m.e,m.p)}%</span><span class="tx">${h(m.d)} \xB7 Div ${m.div} \xB7 ${m.e} / ${m.p} pts</span></li>`).join("")}</ul>`:""}</div>`,u("#mstart").onclick=()=>{f=fs(),ot(),Bt(),mt(),window.scrollTo({top:0})};return}if(f.phase==="running"){Bt(),t.innerHTML=`<div class="timerbar"><div><span class="clock mono" id="clock">${ys()}</span> <span class="small" id="mcount">${Kt()} of ${f.qs.length} answered</span></div>
+        <div class="btns" id="msub"><button class="btn primary" id="msubmit">Submit test</button></div></div>
+        <div class="card paper"><div class="paperhead"><span class="eyebrow">Mock test \xB7 Div ${f.div}</span><h1 class="card-title">Anatomy &amp; Physiology</h1>
+        <p class="small">50 minutes \xB7 ${f.qs.length} questions \xB7 ${f.qs.reduce((r,p)=>r+p.pts,0)} points. Answer in any order; your answers save as you go, even if you close the page.</p></div>
+        ${gs(!1)}<div class="btns" style="margin-top:18px"><button class="btn primary" id="msubmit2">Submit test</button></div></div>`;const i=()=>{const r=u("#msub");r.innerHTML=`<span class="small">Submit now? You can't change answers after.</span><button class="btn primary" id="myes">Yes, submit</button><button class="btn" id="mno">Keep working</button>`,u("#myes").onclick=Yt,u("#mno").onclick=()=>{r.innerHTML='<button class="btn primary" id="msubmit">Submit test</button>',u("#msubmit").onclick=i}};u("#msubmit").onclick=i,u("#msubmit2").onclick=()=>{window.scrollTo({top:0}),i()};return}const s=hs(),e=(i,r)=>`<div><div class="n mono">${i}</div><div class="l">${r}</div></div>`,n=T.filter(i=>s.sys[i]).map(i=>e(`${Math.round(s.sys[i][0]*10)/10} / ${s.sys[i][1]}`,E[i])).join(""),a=us.filter(([i])=>s.part[i]).map(([i])=>e(`${Math.round(s.part[i][0]*10)/10} / ${s.part[i][1]}`,Ws[i])).join(""),o=f.endedAt?Math.min(_t,Math.round((f.endedAt-f.t)/6e4)):_t;t.innerHTML=`<div class="card qcard"><span class="eyebrow">Mock test results \xB7 Div ${f.div} \xB7 ${o} min used</span>
+      <p class="score mono" id="mscore">${Y(s.e,s.p)}%</p><p id="mpts">${Math.round(s.e*10)/10} of ${s.p} points${s.tb[1]?` \xB7 tiebreakers ${s.tb[0]} / ${s.tb[1]}`:""}</p>
+      <div class="secscore">${n}</div><div class="secscore">${a}</div>
+      ${s.ungraded?`<p class="small" style="margin-top:10px">${s.ungraded} short answer${s.ungraded===1?"":"s"} still need grading. They count as 0 until you grade them below.</p>`:""}
+      <div class="btns" style="margin-top:12px"><button class="btn primary" id="mnew">Take a new mock test</button><button class="btn" id="mrev">Practice what I missed</button><button class="btn quiet" id="mprog">See my progress</button></div></div>
+      <div class="card paper"><div class="paperhead"><span class="eyebrow">Answer review</span><p class="small" style="margin:4px 0 0">Green = right. Red shows the correct answer. Grade your short answers with the buttons under each one.</p></div>${gs(!0)}</div>`,u("#mnew").onclick=()=>{f.showIntro=!0,ot(),mt()},u("#mrev").onclick=()=>Z("review"),u("#mprog").onclick=()=>Z("progress")}function zs(){const t=u("#stage");t.addEventListener("click",s=>{if(b.mode!=="mock"||!f)return;const e=s.target.closest("[data-sg]");if(e&&f.phase==="done"){const r=+e.dataset.sg,p=+e.dataset.val,m=f.qs[r];f.self[r]=p,ot(),bs(),Q(m.ref)&&rt(at(m.ref),p===1),B();const y=window.scrollY;mt(),window.scrollTo({top:y});return}const n=s.target.closest(".opt[data-i]");if(!n||f.phase!=="running")return;const a=+n.dataset.i,o=f.qs[a];f.resp[a]=o.type==="tf"?n.dataset.v==="0":+n.dataset.v,n.parentElement.querySelectorAll(".opt").forEach(r=>r.setAttribute("aria-pressed",String(r===n)));const i=u("#mcount");i&&(i.textContent=`${Kt()} of ${f.qs.length} answered`),Ot()}),t.addEventListener("input",s=>{if(b.mode!=="mock"||!f||f.phase!=="running")return;const e=s.target;if(!e.matches("[data-i]"))return;const n=+e.dataset.i;if(e.dataset.b!=null){const o=Array.isArray(f.resp[n])?f.resp[n]:[];o[+e.dataset.b]=e.value.trim(),f.resp[n]=o}else f.resp[n]=e.value.trim()?e.value:null;const a=u("#mcount");a&&(a.textContent=`${Kt()} of ${f.qs.length} answered`),Ys()})}let At=!1;function Xs(){const t=[];return T.forEach(s=>{let e=0,n=0,a=0;const o=i=>{e++;const r=k.items[i];r&&(n++,r[2]&&a++)};D(s).forEach(i=>{O(i).forEach(r=>["n","f"].forEach(p=>o(st(s,i,r.n,p)))),i.followups.forEach((r,p)=>o(Nt(s,i,p)))}),t.push({s,area:"Labeling",mode:"label",tot:e,tried:n,right:a});for(const i of["path","bank"])e=0,n=0,a=0,C(s,i).forEach(r=>W(r).forEach(p=>o(dt(s,p,i)))),t.push({s,area:i==="path"?"Pathology":"Question bank",mode:i,tot:e,tried:n,right:a})}),t}function Us(){const t=[];return T.forEach(s=>{D(s).forEach((e,n)=>{let a=0,o=0;O(e).forEach(i=>["n","f"].forEach(r=>{const p=k.items[st(s,e,i.n,r)];p&&(a++,p[2]&&o++)})),a>=3&&t.push({s,kind:"label",di:n,title:e.title,tried:a,right:o})});for(const e of["path","bank"])C(s,e).forEach((n,a)=>{let o=0,i=0;W(n).forEach(r=>{const p=k.items[dt(s,r,e)];p&&(o++,p[2]&&i++)}),o>=3&&t.push({s,kind:e,si:a,title:n.title,tried:o,right:i})})}),t.filter(s=>s.right<s.tried).sort((s,e)=>s.right/s.tried-e.right/e.tried||e.tried-s.tried).slice(0,6)}function ht(){const t=u("#stage");u("#modeHead").innerHTML="";const s=new Set(Object.entries(k.days).filter(([,v])=>v.done).map(([v])=>v.split("|")[0])),e=Object.values(k.items).reduce((v,g)=>v+g[0]+g[1],0),n=(v,g)=>`<div class="stat"><div class="n">${v}</div><div class="l">${g}</div></div>`,a=new Date,o=new Date(a);o.setDate(o.getDate()-27);let i="";for(let v=0;v<28;v++){const g=new Date(o);g.setDate(o.getDate()+v);const A=V(g),F=Object.keys(k.days).filter($t=>$t.startsWith(A+"|")),Dt=F.some($t=>k.days[$t].done),tt=F.some($t=>Object.keys(k.days[$t].res||{}).length);i+=`<div class="cell ${Dt?"done":tt?"part":""} ${A===V(a)?"today":""}" title="${A}${Dt?" \xB7 finished":tt?" \xB7 started":""}">${g.getDate()}</div>`}const r=Xs(),p=T.map(v=>`<div class="sysblock"><div class="sysname">${E[v]}</div>${r.filter(g=>g.s===v).map(g=>{const A=Y(g.right,g.tried),F=Y(g.tried,g.tot);return`<div class="hbar"><span class="hl2">${g.area}</span><span class="track" aria-hidden="true"><i class="${g.tried?A<60?"lo":A<80?"mid":"hi":""}" style="width:${g.tried?A:0}%"></i></span><span class="v mono">${g.tried?A+"%":"\u2014"}</span>
+        <span class="cov small">${g.tried} of ${g.tot} tried (${F}%)</span></div>`}).join("")}</div>`).join(""),m=Us(),y=m.length?`<ul class="qlist">${m.map((v,g)=>`<li><span class="mk mono r">${Y(v.right,v.tried)}%</span><span class="tx"><span class="small">${E[v.s]} \xB7 ${v.kind==="label"?"Labeling":v.kind==="path"?"Pathology":"Question bank"}</span><span class="qt">${h(v.title)}</span><span class="small">${v.right} of ${v.tried} right last time</span></span><button class="btn" data-weak="${g}">Practice</button></li>`).join("")}</ul>`:'<p class="small">Answer a few questions in a topic and your weakest topics will show up here.</p>',c=k.mocks.slice(-6).reverse(),$=k.mocks.reduce((v,g)=>Math.max(v,Y(g.e,g.p)),0),w=c.length?`<p class="small">Best: <b class="mono">${$}%</b> \xB7 ${k.mocks.length} taken</p><ul class="qlist">${c.map(v=>`<li><span class="mk mono">${Y(v.e,v.p)}%</span><span class="tx"><span class="qt">${h(v.d)} \xB7 Div ${v.div} \xB7 ${v.e} / ${v.p} pts</span><span class="small">${T.filter(g=>v.sys&&v.sys[g]).map(g=>`${E[g]} ${Y(v.sys[g][0],v.sys[g][1])}%`).join(" \xB7 ")}</span></span></li>`).join("")}</ul>`:'<p class="small">No mock tests yet.</p>',S=T.reduce((v,g)=>v+nt(g,"all").length,0),M=T.reduce((v,g)=>v+D(g).reduce((A,F)=>A+O(F).length,0),0),L=T.reduce((v,g)=>v+C(g,"path").reduce((A,F)=>A+W(F).length,0),0),H=T.reduce((v,g)=>v+C(g,"bank").reduce((A,F)=>A+W(F).length,0),0);t.innerHTML=`<div class="card"><span class="eyebrow">Progress \xB7 Div ${b.div}</span><h1 class="card-title">How you're doing</h1>
+      <p class="small" style="margin:4px 0 0">${R?"Saved to your account, so it follows you to other devices.":"Saved in this browser on this device."} Every answer counts: daily sets, practice rounds and mock tests.</p></div>
+      <div class="pgrid">
+        <div class="card"><h2 class="ph">Daily habit</h2><div class="statline">${n(ds(),"day streak")}${n(s.size,"daily sets finished")}${n(e,"answers given")}</div>
+          <p class="flabel">Last 4 weeks</p><div class="cal">${i}</div>
+          <div class="btns" style="margin-top:12px"><button class="btn primary" id="pdaily">${s.has(V())?"Review today's set":"Do today's set"}</button></div></div>
+        <div class="card"><h2 class="ph">Accuracy by system</h2><p class="small" style="margin:0 0 8px">Share right on your last try, out of the questions you've tried.</p>${p}</div>
+        <div class="card"><h2 class="ph">Weak spots</h2>${y}</div>
+        <div class="card"><h2 class="ph">Mock tests</h2>${w}<div class="btns" style="margin-top:10px"><button class="btn" id="pmock">Take a mock test</button></div></div>
+        <div class="card"><h2 class="ph">Review pile</h2><p>${S} item${S===1?"":"s"} you haven't gotten right yet. Get one right and it leaves the pile.</p>
+          <div class="btns"><button class="btn" id="preview" ${S?"":"disabled"}>Review missed</button></div>
+          <p class="flabel" style="margin-top:16px">What's in the app (Div ${b.div})</p><p class="small" style="margin:0">${M} diagram labels \xB7 ${L} pathology questions \xB7 ${H} question bank items</p>
+          <div class="btns" style="margin-top:14px"><button class="btn quiet" id="preset">Reset all progress</button></div>
+          ${At?`<div class="confirm"><p>This erases your scores, streak, mock tests and review pile${R?" on every device":" in this browser"}. It can't be undone.</p><div class="btns"><button class="btn danger" id="pyes">Erase everything</button><button class="btn" id="pno">Cancel</button></div></div>`:""}</div>
+      </div>`,u("#pdaily").onclick=()=>Z("daily"),u("#pmock").onclick=()=>Z("mock");const yt=u("#preview");yt&&(yt.onclick=()=>Z("review")),u("#preset").onclick=()=>{At=!0,ht()};const x=u("#pyes");x&&(x.onclick=()=>{k={items:{},days:{},mocks:[],updated:X()},At=!1,lt(),R&&vt(),B(),Mt(),ht()});const q=u("#pno");q&&(q.onclick=()=>{At=!1,ht()}),t.querySelectorAll("[data-weak]").forEach(v=>v.onclick=()=>{const g=m[+v.dataset.weak];b.sys=g.s,g.kind==="label"?(b.mode="label",b.sub="n",K(),J(),u("#modeHead").innerHTML="",ut(g.s,g.di,"n"),j()):(b.mode=g.kind,g.kind==="bank"&&(b.qtype="all"),K(),J(),u("#modeHead").innerHTML="",et(g.s,g.si,g.kind),j()),window.scrollTo({top:0})})}function Z(t){b.mode=t,K(),J(),bt(),j(),window.scrollTo({top:0})}document.addEventListener("keydown",t=>{if(t.target.matches("input, textarea")||t.metaKey||t.ctrlKey||t.altKey||!l||!d)return;const s=l.items[l.i];if(s&&s.k==="P"&&!d.done&&d.opts){const e="abcdefgh".indexOf(t.key.toLowerCase());e>=0&&e<d.opts.length&&(d.pick=e,_(d.opts[e].ok))}});function J(){document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.mode===b.mode))),document.querySelectorAll("#sysSeg button").forEach(t=>t.setAttribute("aria-pressed",String(t.dataset.sys===b.sys))),document.querySelectorAll("#divSeg button").forEach(t=>t.setAttribute("aria-pressed",String(t.dataset.div===b.div))),u("#sysSeg").hidden=ls.includes(b.mode)}function bt(){if(b.mode!=="daily"&&(u("#modeHead").innerHTML=""),b.mode==="daily")return Ht();if(b.mode==="mock"||b.mode==="progress")return l=null,d=null,b.mode==="mock"?mt():ht();b.mode==="label"?ut(b.sys,0,b.sub):b.mode==="path"?et(b.sys,0):b.mode==="bank"?et(b.sys,Math.max(0,It(b.sys,"bank",0)),"bank"):ns(b.sys,"all")}function Vs(){J(),j(),B(),Mt(),b.mode==="progress"&&ht(),b.mode==="daily"&&Ht()}document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{b.mode=t.dataset.mode,K(),J(),bt(),j()}),document.querySelectorAll("#sysSeg button").forEach(t=>t.onclick=()=>{b.sys=t.dataset.sys,K(),J(),bt(),j()}),document.querySelectorAll("#divSeg button").forEach(t=>t.onclick=()=>{b.div=t.dataset.div,K(),J(),bt(),j(),B()}),T.includes(b.sys)||(b.sys="respiratory"),["daily","label","path","bank","review","mock","progress"].includes(b.mode)||(b.mode="daily"),zs(),f&&f.phase==="running"&&Date.now()>=f.endAt&&Yt(),Bt(),J(),bt(),j(),B(),Mt();const vs=document.getElementById("appShell");vs&&(vs.hidden=!1);const ks=document.getElementById("plainCopy");ks&&(ks.hidden=!0),Ts()})();};</script>
 <script>
-window.__fsStart=function(){
-const {TOPICS,SRC,BANK}=window.CW;
-
-/* ---------------- utilities ---------------- */
-function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return (h>>>0)}
-function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-function rngFor(s){return mulberry(hashStr(s))}
-function ri(r,a,b){return a+Math.floor(r()*(b-a+1))}
-function pick(r,arr){return arr[Math.floor(r()*arr.length)]}
-function shuffle(arr,r){for(let i=arr.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
-function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
-
-function sigFigs(str){
-  let s=String(str).trim().replace(/^[+-]/,'').replace(/,/g,'');
-  if(/e/i.test(s)) s=s.split(/e/i)[0];
-  if(!/^(\d+\.?\d*|\.\d+)$/.test(s)) return null;
-  if(s.includes('.')){const d=s.replace('.','').replace(/^0+/,'');return d.length||1}
-  const d=s.replace(/^0+/,'').replace(/0+$/,'');return d.length||1;
-}
-function fmtSF(x,n){
-  if(!isFinite(x)) return String(x);
-  if(x===0) return n>1?(0).toFixed(n-1):'0';
-  let p=Math.floor(Math.log10(Math.abs(x)));
-  let dec=n-1-p;
-  let v=Math.round(x*Math.pow(10,dec))/Math.pow(10,dec);
-  if(Math.abs(v)>=Math.pow(10,p+1)){p++;dec=n-1-p;v=Math.round(x*Math.pow(10,dec))/Math.pow(10,dec)}
-  return dec>0?v.toFixed(dec):String(v);
-}
-/* display form: adds a trailing "." (e.g. 90.) or switches to scientific notation (1.2 × 10²) so the sig figs are unambiguous */
-function fmtShow(x,n){
-  const s=fmtSF(x,n); if(s.includes('.')||!/0$/.test(s)) return s;
-  const zeros=s.length-s.replace(/0+$/,'').length, digits=s.replace(/^-/,'').length;
-  if(digits-zeros>=n) return s;
-  if(digits===n) return s+'.';
-  return fmtSci(x,n);
-}
-function fmtAns(q){ if(q.dp!=null) return q.a.toFixed(q.dp); if(q.sci) return fmtSci(q.a,q.sf); if(q.sf) return fmtShow(q.a,q.sf); return String(Math.round(q.a*100)/100); }
-function parseNum(s){
-  const t=String(s).replace(/,/g,'').replace(/[−–]/g,'-').trim();
-  const m=t.match(/([-+]?(?:\d+\.?\d*|\.\d+))\s*(?:[x×*]\s*10\s*\^?\s*([-+]?\d+)|e([-+]?\d+))?/i);
-  if(!m) return null; const ex=m[2]!=null?m[2]:m[3];
-  return {v:ex!=null?parseFloat(m[1])*Math.pow(10,parseInt(ex)):parseFloat(m[1]),str:m[1]};
-}
-function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9β\-]/g,'').replace(/-/g,'')}
-function ptsOf(q){return q.k==='short'?q.kp.length:q.k==='multi'?2:1}
-
-/* ---------------- grading ---------------- */
-function grade(q,resp){
-  if(resp==null||resp==='') return {frac:0,blank:true};
-  switch(q.k){
-    case 'mc': case 'tf': return {frac:resp===q.a?1:0};
-    case 'multi':{let r=0,w=0;resp.forEach(i=>q.a.includes(i)?r++:w++);return {frac:Math.max(0,(r-w)/q.a.length),r,w}}
-    case 'fill':{const n=norm(resp);return {frac:q.acc.some(a=>norm(a)===n)?1:0}}
-    case 'num':{
-      const p=parseNum(resp); if(!p) return {frac:0,note:'That isn’t a number.'};
-      let v=p.v; if(q.abs) v=Math.abs(v);
-      const err=Math.abs(v-q.a)/Math.abs(q.a);
-      if(q.dp!=null){const dec=(p.str.split('.')[1]||'').length, same=v.toFixed(q.dp)===q.a.toFixed(q.dp);
-        if(same&&dec===q.dp) return {frac:1,dpOk:true,givenDp:dec};
-        if(Math.abs(v-q.a)<=0.02) return {frac:0.75,dpOk:dec===q.dp,givenDp:dec,rounding:dec===q.dp};
-        return {frac:0,wrongValue:true,givenDp:dec};}
-      if(!q.sf){return {frac:err<=(q.tol??0.01)?1:0}}
-      const given=sigFigs(p.str); const sfOk=given===q.sf;
-      const exact=Number(fmtSF(v,q.sf))===Number(fmtSF(q.a,q.sf));
-      if(sfOk&&exact) return {frac:1,sfOk:true,given};
-      if(err<=0.01) return {frac:0.75,sfOk,given,rounding:sfOk&&!exact};
-      return {frac:0,sfOk,given,wrongValue:true};
-    }
-    case 'short':{if(!resp.hits) return {frac:0};return {frac:resp.hits.filter(Boolean).length/q.kp.length}}
+(function () {
+  var KEY = "ap_team_pass";
+  var lock = document.getElementById("lock"), form = document.getElementById("lockForm");
+  var inp = document.getElementById("lockPass"), rem = document.getElementById("lockRem");
+  var btn = document.getElementById("lockBtn"), err = document.getElementById("lockErr");
+  function norm(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function bytes(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+  function show(msg) { lock.hidden = false; err.textContent = msg || ""; }
+  function stop(msg) { show(msg); btn.disabled = true; inp.disabled = true; }
+  if (!window.APLOCK) return stop("Couldn't load the questions file (data.js). Make sure it was uploaded next to index.html.");
+  if (!(window.crypto && crypto.subtle && window.TextEncoder)) return stop("This browser can't unlock the app. Open the https:// link in Chrome, Safari, Edge or Firefox.");
+  var L = window.APLOCK;
+  function unlock(p) {
+    return crypto.subtle.importKey("raw", new TextEncoder().encode(p), "PBKDF2", false, ["deriveKey"])
+      .then(function (base) { return crypto.subtle.deriveKey({ name: "PBKDF2", salt: bytes(L.salt), iterations: L.iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]); })
+      .then(function (key) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes(L.iv) }, key, bytes(L.ct)); })
+      .then(function (buf) { return JSON.parse(new TextDecoder().decode(buf)); });
   }
-  return {frac:0};
-}
-
-/* ---------------- lab-calc generators ---------------- */
-const GROUPS={lab:'Lab tasks',milk:'Milk testing',nutr:'Nutrition & energy',fat:'Fats & oils',chem:'Chemistry',kin:'Enzymes & heat kill'};
-const sfmin=(...a)=>Math.min(...a.map(x=>typeof x==='number'?x:sigFigs(x)));
-const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
-function sup(n){return String(n).split('').map(c=>SUP[c]??c).join('')}
-function fmtSci(x,n){const [m,e]=x.toExponential(n-1).split('e');return m+' × 10'+sup(parseInt(e))}
-const GEN={
-  fat:{name:'Babcock: grams of fat',g:'lab',lv:'B',make(r){
-    const m=(ri(r,1200,3200)/10).toFixed(1), p=(ri(r,180,450)/10).toFixed(1);
-    const a=(+p/100)*(+m), sf=sfmin(m,p);
-    return {k:'num',t:'lab',lv:'B',u:'g',sf,a,q:`A ${m} g cream sample reads ${p}% fat on a Babcock test. How many grams of milk fat does the sample contain?`,
-      x:`Mass of fat = (% fat ÷ 100) × sample mass\n= (${p} ÷ 100) × ${m} g = ${fmtShow(a,sf)} g\nSig figs: ${p} has ${sigFigs(p)}, ${m} has ${sigFigs(m)} → keep ${sf}.`};}},
-  fatpct:{name:'Babcock: % fat',g:'lab',lv:'B',make(r){
-    const s=(ri(r,150,600)/10).toFixed(1), tp=ri(r,180,450)/10, f=(+s*tp/100).toFixed(2);
-    const a=(+f)/(+s)*100, sf=sfmin(f,s);
-    return {k:'num',t:'lab',lv:'B',u:'%',sf,a,q:`A ${s} g cream sample is run through a Babcock test, and the fat in it has a mass of ${f} g. What is the percent fat?`,
-      x:`% fat = fat mass ÷ sample mass × 100\n= ${f} g ÷ ${s} g × 100 = ${fmtShow(a,sf)}%\nSig figs: ${f} has ${sigFigs(f)}, ${s} has ${sigFigs(s)} → keep ${sf}.`};}},
-  curd:{name:'Curd yield',g:'lab',lv:'B',make(r){
-    const m=(ri(r,5000,15000)/10).toFixed(1), y=ri(r,110,220)/1000, c=(+m*y).toFixed(1);
-    const a=(+c)/(+m)*100, sf=sfmin(c,m);
-    return {k:'num',t:'lab',lv:'B',u:'%',sf,a,q:`You coagulate ${m} g of milk and drain off ${c} g of curd. What is the percent curd yield?`,
-      x:`Curd yield = curd mass ÷ milk mass × 100\n= ${c} g ÷ ${m} g × 100 = ${fmtShow(a,sf)}%\nSig figs: ${c} has ${sigFigs(c)}, ${m} has ${sigFigs(m)} → keep ${sf}.`};}},
-  ovV:{name:'Overrun (volume)',g:'lab',lv:'B',make(r){
-    const mix=pick(r,[1.25,1.50,1.75,2.00,2.25,2.50]), rr=ri(r,40,105)/100;
-    const fin=Math.round(mix*(1+rr)*100)/100, mS=mix.toFixed(2), fS=fin.toFixed(2), dS=(+fS - +mS).toFixed(2);
-    const a=(+dS)/(+mS)*100, sf=sfmin(dS,mS);
-    return {k:'num',t:'lab',lv:'B',u:'%',sf,a,q:`${mS} L of ice cream mix is churned into ${fS} L of finished ice cream. Calculate the overrun.`,
-      x:`Overrun = (ice cream vol − mix vol) ÷ mix vol × 100\n= (${fS} − ${mS}) ÷ ${mS} × 100\n= ${dS} ÷ ${mS} × 100 = ${fmtShow(a,sf)}%\nSig figs: the subtraction keeps 2 decimal places, so ${dS} has ${sigFigs(dS)} sig figs; ${mS} has ${sigFigs(mS)} → keep ${sf}.`};}},
-  ovW:{name:'Overrun (weight)',g:'lab',lv:'C',make(r){
-    const mw=(ri(r,1300,1650)/10).toFixed(1), rr=ri(r,50,105)/100, iw=(+mw/(1+rr)).toFixed(1), dS=(+mw - +iw).toFixed(1);
-    const a=(+dS)/(+iw)*100, sf=sfmin(dS,iw);
-    return {k:'num',t:'lab',lv:'C',u:'%',sf,a,q:`A cup holds ${mw} g of ice cream mix. The same cup filled with finished ice cream weighs ${iw} g. Calculate the overrun.`,
-      x:`Overrun = (mix wt − ice cream wt) ÷ ice cream wt × 100\n= (${mw} − ${iw}) ÷ ${iw} × 100\n= ${dS} ÷ ${iw} × 100 = ${fmtShow(a,sf)}%\nSig figs: ${dS} has ${sigFigs(dS)}, ${iw} has ${sigFigs(iw)} → keep ${sf}.`};}},
-  fpd:{name:'Freezing-point drop',g:'lab',lv:'C',make(r){
-    const salt=r()<0.5, M=salt?58.44:342.30, i=salt?2:1, name=salt?'NaCl':'sucrose';
-    const mass=salt?(ri(r,50,250)/10).toFixed(1):(ri(r,200,900)/10).toFixed(1), w=pick(r,['100.0','150.0','200.0','250.0']);
-    const mol=+mass/M, molal=mol/(+w/1000), a=i*1.86*molal, sf=sfmin(mass,3,w);
-    return {k:'num',t:'lab',lv:'C',u:'°C',sf,a,abs:true,q:`${mass} g of ${name} (${M.toFixed(2)} g/mol) is dissolved in ${w} g of water. Using Kf = 1.86 °C·kg/mol, by how many degrees is the freezing point lowered (ΔTf)?`,
-      x:`mol ${name} = ${mass} ÷ ${M.toFixed(2)} = ${mol.toPrecision(4)} mol\nm = ${mol.toPrecision(4)} mol ÷ ${(+w/1000).toFixed(4)} kg = ${molal.toPrecision(4)} mol/kg\nΔTf = i · Kf · m = ${i} × 1.86 × ${molal.toPrecision(4)} = ${fmtShow(a,sf)} °C\n(i = ${i}: ${salt?'NaCl splits into Na⁺ + Cl⁻':'sucrose stays as one particle'})\nSig figs: ${mass} has ${sigFigs(mass)}, Kf has 3 → keep ${sf}.`};}},
-  pearson:{name:'Pearson square',g:'milk',lv:'C',make(r){
-    const M=pick(r,['50.0','100.0','250.0','500.0']), T=pick(r,['1.00','2.00','3.00','3.25']), R=(ri(r,380,460)/100).toFixed(2), L=pick(r,['0.05','0.10']);
-    const dR=(+T - +L).toFixed(2), dS=(+R - +T).toFixed(2), dT=(+R - +L).toFixed(2);
-    const a=(+M)*(+dR)/(+dT), sf=sfmin(M,dR,dT);
-    return {k:'num',t:'lab',lv:'C',u:'kg',sf,a,q:`Using a Pearson square, how many kg of ${R}% milk must be blended with ${L}% skim milk to make ${M} kg of ${T}% milk?`,
-      x:`Parts of ${R}% milk = ${T} − ${L} = ${dR}\nParts of skim = ${R} − ${T} = ${dS}\nTotal parts = ${R} − ${L} = ${dT}\nMilk = ${M} × ${dR} ÷ ${dT} = ${fmtShow(a,sf)} kg (the rest is skim)\nSig figs: ${dR} has ${sigFigs(dR)}, ${dT} has ${sigFigs(dT)}, ${M} has ${sigFigs(M)} → keep ${sf}.`};}},
-  ta:{name:'Titratable acidity',g:'milk',lv:'C',make(r){
-    const g=(ri(r,100,250)/10).toFixed(1), pct=ri(r,12,30)/100, mL=(pct*(+g)/(0.100*9.008)).toFixed(2);
-    const a=(+mL)*0.100*9.008/(+g), sf=sfmin(mL,3,g);
-    return {k:'num',t:'lab',lv:'C',u:'% lactic acid',sf,a,q:`A ${g} g milk sample needs ${mL} mL of 0.100 N NaOH to reach the phenolphthalein endpoint. What is its titratable acidity? (% lactic acid = mL × N × 9.008 ÷ g sample)`,
-      x:`% lactic acid = ${mL} × 0.100 × 9.008 ÷ ${g} = ${fmtShow(a,sf)}%\nFresh milk is about 0.14–0.16%; higher means it is souring.\nSig figs: ${mL} has ${sigFigs(mL)}, 0.100 has 3, ${g} has ${sigFigs(g)} → keep ${sf}.`};}},
-  kjN:{name:'Kjeldahl: %N → protein',g:'milk',lv:'B',make(r){
-    const N=(ri(r,45,62)/100).toFixed(2), a=+N*6.38, sf=sigFigs(N);
-    return {k:'num',t:'lab',lv:'B',u:'% protein',sf,a,q:`Kjeldahl analysis finds ${N}% nitrogen in a milk sample. What is the % protein? (Milk factor = 6.38)`,
-      x:`% protein = % N × 6.38 = ${N} × 6.38 = ${fmtShow(a,sf)}%\n(6.38 because milk protein is about 15.67% nitrogen.)\nSig figs: ${N} has ${sf}.`};}},
-  kjT:{name:'Kjeldahl titration',g:'milk',lv:'C',make(r){
-    const g=pick(r,['5.000','10.00']), Vb=pick(r,['0.20','0.25','0.30']), prot=ri(r,290,380)/100;
-    const net=prot/6.38/100*(+g)*1000/(0.1000*14.007), Vs=(net + +Vb).toFixed(2), nS=(+Vs - +Vb).toFixed(2);
-    const mg=(+nS)*0.1000*14.007, N=mg/((+g)*1000)*100, a=N*6.38, sf=sfmin(nS,'0.1000',g,3);
-    return {k:'num',t:'lab',lv:'C',u:'% protein',sf,a,q:`A ${g} g milk sample is digested and its ammonia titrated with 0.1000 M HCl. The sample needs ${Vs} mL; the blank needs ${Vb} mL. Find the % protein. (N = 14.007 g/mol; milk factor 6.38)`,
-      x:`Net HCl = ${Vs} − ${Vb} = ${nS} mL\nmmol N = ${nS} × 0.1000 = ${((+nS)*0.1).toFixed(4)} mmol → × 14.007 = ${mg.toFixed(2)} mg N\n% N = ${mg.toFixed(2)} mg ÷ (${g} g × 1000) × 100 = ${N.toFixed(4)}%\n% protein = ${N.toFixed(4)} × 6.38 = ${fmtShow(a,sf)}%\nSig figs: limited by the 6.38 factor → ${sf}.`};}},
-  addw:{name:'Added water (freezing point)',g:'milk',lv:'C',make(r){
-    const s=(ri(r,440,515)/1000).toFixed(3), d=(0.530 - +s).toFixed(3), a=(+d)/0.530*100, sf=sfmin(d,'0.530');
-    return {k:'num',t:'lab',lv:'C',u:'% added water',sf,a,q:`Normal milk freezes at −0.530 °C. A sample freezes at −${s} °C. About what percent water was added? (% = (normal − sample) ÷ normal × 100, using the sizes of the temperatures)`,
-      x:`(0.530 − ${s}) ÷ 0.530 × 100 = ${d} ÷ 0.530 × 100 = ${fmtShow(a,sf)}%\nSig figs: the subtraction keeps 3 decimals, so ${d} has ${sigFigs(d)} sig figs → keep ${sf}.`};}},
-  cal:{name:'Calories from a label',g:'nutr',lv:'B',make(r){
-    const it=pick(r,[{n:'1 cup of chocolate milk',f:[5,9],c:[24,32],p:[8,9]},{n:'1 container of vanilla yogurt',f:[2,5],c:[20,30],p:[5,9]},{n:'1 oz of cheddar cheese',f:[8,10],c:[0,1],p:[6,8]},{n:'½ cup of ice cream',f:[6,9],c:[14,18],p:[2,4]},{n:'1 cup of skim milk',f:[0,0],c:[12,13],p:[8,9]},{n:'1 cup of soy milk',f:[3,5],c:[3,9],p:[7,8]}]);
-    const f=ri(r,it.f[0],it.f[1]),c=ri(r,it.c[0],it.c[1]),p=ri(r,it.p[0],it.p[1]); const a=9*f+4*c+4*p;
-    return {k:'num',t:'nutr',lv:'B',u:'kcal',sf:null,tol:0.001,a,q:`A label for ${it.n} lists ${f} g fat, ${c} g carbohydrate, and ${p} g protein. Using 9-4-4 kcal/g, how many calories is one serving?`,
-      x:`Fat: ${f} × 9 = ${9*f}\nCarbs: ${c} × 4 = ${4*c}\nProtein: ${p} × 4 = ${4*p}\nTotal = ${a} kcal (a label would round this to the nearest 10 above 50 kcal)`};}},
-  dv:{name:'% Daily Value',g:'nutr',lv:'B',make(r){
-    if(r()<0.6){let mg=ri(r,121,459); if(mg%10===0) mg+=3; const a=mg/1300*100, sf=sigFigs(String(mg));
-      return {k:'num',t:'nutr',lv:'B',u:'%',sf,a,q:`A serving of milk has ${mg} mg of calcium. The Daily Value for calcium is 1,300 mg. What %DV is this?`,
-        x:`%DV = amount ÷ DV × 100 = ${mg} ÷ 1,300 × 100 = ${fmtShow(a,sf)}%\nThe DV is a defined (exact) value, so ${mg} mg (${sf} sig figs) sets the sig figs.`};}
-    const mc=(ri(r,12,59)/10).toFixed(1), a=+mc/20*100, sf=sigFigs(mc);
-    return {k:'num',t:'nutr',lv:'B',u:'%',sf,a,q:`A cup of fortified milk has ${mc} mcg of vitamin D. The Daily Value is 20 mcg. What %DV is this?`,
-      x:`%DV = ${mc} ÷ 20 × 100 = ${fmtShow(a,sf)}%\nThe DV is exact, so ${mc} mcg (${sf} sig figs) sets the sig figs.`};}},
-  dvback:{name:'Amount from %DV',g:'nutr',lv:'B',make(r){
-    const n=pick(r,[{n:'calcium',dv:1300,u:'mg'},{n:'potassium',dv:4700,u:'mg'},{n:'iron',dv:18,u:'mg'},{n:'vitamin D',dv:20,u:'mcg'},{n:'sodium',dv:2300,u:'mg'}]);
-    const p=pick(r,[10,15,20,25,30,35,40]), a=p/100*n.dv;
-    return {k:'num',t:'nutr',lv:'B',u:n.u,sf:null,tol:0.001,a,q:`A label lists ${p}% DV for ${n.n}. The Daily Value is ${n.dv.toLocaleString()} ${n.u}. How much ${n.n} is in one serving?`,
-      x:`amount = (%DV ÷ 100) × DV = ${p/100} × ${n.dv.toLocaleString()} = ${Math.round(a*100)/100} ${n.u}`};}},
-  heat:{name:'Heat: q = mcΔT',g:'nutr',lv:'B',make(r){
-    const m=pick(r,['150.0','250.0','400.0','500.0']), T1=(ri(r,40,250)/10).toFixed(1), T2=pick(r,['63.0','72.0','85.0']), dT=(+T2 - +T1).toFixed(1);
-    const a=(+m)*4.184*(+dT)/1000, sf=sfmin(m,dT,'4.184');
-    return {k:'num',t:'nutr',lv:'B',u:'kJ',sf,a,q:`How much heat, in kJ, is needed to warm ${m} g of water from ${T1} °C to ${T2} °C? (c = 4.184 J/g·°C)`,
-      x:`ΔT = ${T2} − ${T1} = ${dT} °C\nq = m × c × ΔT = ${m} × 4.184 × ${dT} = ${((+m)*4.184*(+dT)).toFixed(0)} J = ${fmtShow(a,sf)} kJ\nSig figs: ${dT} has ${sigFigs(dT)}, ${m} has ${sigFigs(m)} → keep ${sf}.`};}},
-  bomb:{name:'Bomb calorimeter',g:'nutr',lv:'C',make(r){
-    const C=pick(r,['9.80','10.25','10.50']), mass=(ri(r,800,1500)/1000).toFixed(3), dT=(ri(r,150,380)/100).toFixed(2);
-    const q=(+C)*(+dT), a=q/(+mass)/4.184, sf=sfmin(C,mass,dT);
-    return {k:'num',t:'nutr',lv:'C',u:'kcal/g',sf,a,q:`A ${mass} g food sample burns in a bomb calorimeter (C = ${C} kJ/°C) and the temperature rises ${dT} °C. What is its energy in kcal per gram? (1 kcal = 4.184 kJ)`,
-      x:`q = C × ΔT = ${C} × ${dT} = ${q.toPrecision(4)} kJ\nPer gram: ${q.toPrecision(4)} ÷ ${mass} = ${(q/(+mass)).toPrecision(4)} kJ/g\n÷ 4.184 = ${fmtShow(a,sf)} kcal/g\nSig figs: ${C} has ${sigFigs(C)}, ${dT} has ${sigFigs(dT)}, ${mass} has ${sigFigs(mass)} → keep ${sf}.`};}},
-  convert:{name:'kcal ⇄ kJ',g:'nutr',lv:'B',make(r){
-    if(r()<0.5){let k=ri(r,121,489); if(k%10===0) k+=3; const a=k*4.184, sf=sigFigs(String(k));
-      return {k:'num',t:'nutr',lv:'B',u:'kJ',sf,a,q:`Convert ${k} kcal to kilojoules. (1 kcal = 4.184 kJ)`,x:`${k} × 4.184 = ${fmtShow(a,sf)} kJ\n4.184 is a defined factor, so ${k} (${sf} sig figs) sets the sig figs.`};}
-    let j=ri(r,512,2989); if(j%10===0) j+=7; const a=j/4.184, sf=sigFigs(String(j));
-    return {k:'num',t:'nutr',lv:'B',u:'kcal',sf,a,q:`Convert ${j} kJ to kcal. (1 kcal = 4.184 kJ)`,x:`${j} ÷ 4.184 = ${fmtShow(a,sf)} kcal\n4.184 is a defined factor, so ${j} (${sf} sig figs) sets the sig figs.`};}},
-  ivalue:{name:'Iodine value',g:'fat',lv:'C',make(r){
-    const f=pick(r,[{n:'oleic acid',d:1,M:282.47},{n:'linoleic acid',d:2,M:280.45},{n:'α-linolenic acid',d:3,M:278.43},{n:'palmitoleic acid',d:1,M:254.41}]);
-    const a=f.d*253.81/f.M*100;
-    return {k:'num',t:'lip',lv:'C',u:'g I₂/100 g',sf:null,tol:0.003,a,q:`Calculate the iodine value of ${f.n} (${f.d} C=C, ${f.M} g/mol). (I₂ = 253.81 g/mol; IV = number of C=C × 253.81 ÷ M × 100)`,
-      x:`IV = ${f.d} × 253.81 ÷ ${f.M} × 100 = ${a.toFixed(1)}\nIodine values are usually reported to one decimal place.`};}},
-  sapval:{name:'Saponification value',g:'fat',lv:'C',make(r){
-    const t=pick(r,[{n:'tributyrin',M:302.36},{n:'tricaprylin',M:470.65},{n:'tripalmitin',M:807.32},{n:'triolein',M:885.43},{n:'tristearin',M:891.48}]);
-    const a=3*56.1*1000/t.M, sf=3;
-    return {k:'num',t:'lip',lv:'C',u:'mg KOH/g',sf,a,q:`What is the saponification value of pure ${t.n} (${t.M} g/mol)? (SV = 3 × 56.1 × 1000 ÷ M, KOH = 56.1 g/mol)`,
-      x:`SV = 3 × 56.1 × 1000 ÷ ${t.M} = ${fmtShow(a,sf)} mg KOH/g\nShorter chains → more ester bonds per gram → higher SV.\nSig figs: 56.1 has 3 → keep 3.`};}},
-  butter:{name:'Butter yield',g:'fat',lv:'C',make(r){
-    const m=pick(r,['850.0','1000.0','1200.0','1500.0']), f=(ri(r,360,480)/100).toFixed(2), rec=pick(r,['95.0','96.0','97.5']), bf=pick(r,['80.0','82.0']);
-    const a=(+m)*(+f/100)*(+rec/100)/(+bf/100), sf=sfmin(m,f,rec,bf);
-    return {k:'num',t:'lip',lv:'C',u:'kg',sf,a,q:`How many kg of butter (${bf}% fat) can be made from ${m} kg of milk with ${f}% fat, if ${rec}% of the fat is recovered?`,
-      x:`Butter = milk × fat fraction × recovery ÷ butter fat fraction\n= ${m} × ${(+f/100).toFixed(4)} × ${(+rec/100).toFixed(3)} ÷ ${(+bf/100).toFixed(3)} = ${fmtShow(a,sf)} kg\nSig figs: smallest is ${sf}.`};}},
-  fdm:{name:'Fat in dry matter',g:'fat',lv:'C',make(r){
-    const f=(ri(r,200,350)/10).toFixed(1), mo=(ri(r,300,450)/10).toFixed(1), dm=(100 - +mo).toFixed(1);
-    const a=(+f)/(+dm)*100, sf=sfmin(f,dm);
-    return {k:'num',t:'lip',lv:'C',u:'% FDM',sf,a,q:`A cheese has ${f}% fat and ${mo}% moisture. What is its fat in dry matter (FDM)?`,
-      x:`Dry matter = 100 − ${mo} = ${dm}%\nFDM = ${f} ÷ ${dm} × 100 = ${fmtShow(a,sf)}%\n(U.S. cheddar must be at least 50% FDM.)`};}},
-  pH:{name:'pH from [H⁺]',g:'chem',lv:'C',make(r){
-    const m=(ri(r,11,99)/10).toFixed(1), e=ri(r,2,7), a=-Math.log10((+m)*Math.pow(10,-e));
-    return {k:'num',t:'chem',lv:'C',u:'',dp:2,a,q:`What is the pH of a solution with [H⁺] = ${m} × 10${sup(-e)} M?`,
-      x:`pH = −log(${m} × 10${sup(-e)}) = ${a.toFixed(2)}\nLog rule: [H⁺] has 2 sig figs, so the pH gets 2 decimal places.`};}},
-  hpH:{name:'[H⁺] from pH',g:'chem',lv:'C',make(r){
-    const p=(ri(r,300,720)/100).toFixed(2), a=Math.pow(10,-(+p));
-    return {k:'num',t:'chem',lv:'C',u:'M',sf:2,sci:true,a,q:`A solution has pH ${p}. What is [H⁺]?`,
-      x:`[H⁺] = 10^−${p} = ${fmtSci(a,2)} M\nLog rule: 2 decimal places in the pH → 2 sig figs in [H⁺].`};}},
-  hh:{name:'Buffer pH (lactic acid)',g:'chem',lv:'C',make(r){
-    const b=(ri(r,10,90)/10).toFixed(1), c=(ri(r,10,90)/10).toFixed(1), a=3.86+Math.log10((+b)/(+c));
-    return {k:'num',t:'chem',lv:'C',u:'',dp:2,a,q:`Lactic acid has pKa 3.86. What is the pH of a buffer with [lactate] = ${b} mM and [lactic acid] = ${c} mM?`,
-      x:`pH = pKa + log([lactate] ÷ [lactic acid]) = 3.86 + log(${b} ÷ ${c})\n= 3.86 + (${Math.log10((+b)/(+c)).toFixed(2)}) = ${a.toFixed(2)}`};}},
-  titr:{name:'Titration molarity',g:'chem',lv:'C',make(r){
-    const Va=pick(r,['10.00','20.00','25.00']), Vb=(ri(r,1200,3000)/100).toFixed(2), a=0.1000*(+Vb)/(+Va), sf=sfmin(Va,Vb,'0.1000');
-    return {k:'num',t:'chem',lv:'C',u:'M',sf,a,q:`${Va} mL of lactic acid solution is neutralized by ${Vb} mL of 0.1000 M NaOH (1:1). What is the acid’s molarity?`,
-      x:`M(acid) = M(base) × V(base) ÷ V(acid) = 0.1000 × ${Vb} ÷ ${Va} = ${fmtShow(a,sf)} M`};}},
-  molar:{name:'Lactose molarity',g:'chem',lv:'C',make(r){
-    const g=(ri(r,440,520)/100).toFixed(2), a=(+g*10)/342.30, sf=sigFigs(g);
-    return {k:'num',t:'chem',lv:'C',u:'M',sf,a,q:`Milk has ${g} g of lactose (342.30 g/mol) per 100 mL. What is the molarity of lactose?`,
-      x:`${g} g per 100 mL = ${(+g*10).toFixed(1)} g/L\n${(+g*10).toFixed(1)} g/L ÷ 342.30 g/mol = ${fmtShow(a,sf)} M\nSig figs: ${g} has ${sf}.`};}},
-  pep:{name:'Peptide molar mass',g:'chem',lv:'C',make(r){
-    const AA=[['Gly',75.07],['Ala',89.09],['Ser',105.09],['Cys',121.16],['Asp',133.10],['Lys',146.19],['Phe',165.19]];
-    const n=ri(r,2,4), ch=shuffle(AA.slice(),r).slice(0,n), sum=ch.reduce((s,x)=>s+x[1],0), a=sum-(n-1)*18.015;
-    return {k:'num',t:'chem',lv:'C',u:'g/mol',dp:2,a,q:`Find the molar mass of the peptide ${ch.map(x=>x[0]).join('–')}. (${ch.map(x=>x[0]+' '+x[1].toFixed(2)).join(', ')}; H₂O 18.015 g/mol)`,
-      x:`Sum of amino acids = ${sum.toFixed(2)}\n${n} amino acids → ${n-1} peptide bond${n>2?'s':''}, so subtract ${n-1} × 18.015 = ${((n-1)*18.015).toFixed(3)}\nMolar mass = ${a.toFixed(2)} g/mol (round to 2 decimal places when adding)`};}},
-  mm:{name:'Michaelis–Menten',g:'kin',lv:'C',make(r){
-    const V=pick(r,['50.0','80.0','120.0']), K=(ri(r,10,50)/10).toFixed(1), S=(ri(r,10,200)/10).toFixed(1), sum=(+K + +S).toFixed(1);
-    const a=(+V)*(+S)/(+sum), sf=sfmin(V,S,sum);
-    return {k:'num',t:'enz',lv:'C',u:'µmol/min',sf,a,q:`Lactase has Vmax = ${V} µmol/min and Km = ${K} mM. What is the rate at [lactose] = ${S} mM?`,
-      x:`v = Vmax × [S] ÷ (Km + [S]) = ${V} × ${S} ÷ (${K} + ${S}) = ${V} × ${S} ÷ ${sum} = ${fmtShow(a,sf)} µmol/min`};}},
-  q10:{name:'Q₁₀ rate',g:'kin',lv:'C',make(r){
-    const r1=(ri(r,20,90)/10).toFixed(1), T1=pick(r,[5,10,15]), d=pick(r,[10,20,30]), a=(+r1)*Math.pow(2,d/10), sf=sfmin(r1,'2.0');
-    return {k:'num',t:'enz',lv:'C',u:'µmol/h',sf,a,q:`A milk lipase releases ${r1} µmol of fatty acid per hour at ${T1} °C. If Q₁₀ = 2.0, what is its rate at ${T1+d} °C?`,
-      x:`Rate₂ = Rate₁ × Q₁₀^((T₂ − T₁) ÷ 10) = ${r1} × 2.0^${d/10} = ${fmtShow(a,sf)} µmol/h`};}},
-  dlog:{name:'D-value kill time',g:'kin',lv:'C',make(r){
-    const D=pick(r,['0.020','0.030','0.040','0.050']), n=pick(r,[5,6,7,9,12]), a=(+D)*n*60, sf=sigFigs(D);
-    return {k:'num',t:'proc',lv:'C',u:'s',sf,a,q:`A pathogen in milk has D₇₂ = ${D} min. How many seconds at 72 °C give a ${n}-log reduction?`,
-      x:`t = D × (number of log reductions) = ${D} min × ${n} = ${((+D)*n).toFixed(3)} min\n× 60 s/min = ${fmtShow(a,sf)} s\n(Each D-time kills 90%, so ${n} D-times leave 1 in 10${sup(n)}.)`};}},
-  zval:{name:'z-value (new D)',g:'kin',lv:'C',make(r){
-    const D1=pick(r,['0.20','0.25','0.50','1.5']), z=pick(r,[8,10]), d=pick(r,[5,10,15]), a=(+D1)*Math.pow(10,d/z), sf=sigFigs(D1);
-    return {k:'num',t:'proc',lv:'C',u:'min',sf,a,q:`Bacterial spores have D = ${D1} min at 121 °C and z = ${z} °C. What is their D-value at ${121-d} °C?`,
-      x:`Lower temperature → longer D.\nD₂ = D₁ × 10^((T₁ − T₂) ÷ z) = ${D1} × 10^(${d} ÷ ${z}) = ${D1} × ${Math.pow(10,d/z).toPrecision(4)} = ${fmtShow(a,sf)} min`};}},
-};
-function genOne(key,r,tag){const q=GEN[key].make(r);q.id='g:'+key+':'+tag;q.gen=key;return q}
-
-/* ---------------- storage ---------------- */
-const KEY='curds-whey-v1';
-let S={level:'C',days:{},topics:{},missed:[],seen:{},mocks:[]};
-try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);S=Object.assign(S,o)}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function record(q,frac){
-  const pts=ptsOf(q); const t=S.topics[q.t]||[0,0]; t[0]+=frac*pts; t[1]+=pts; S.topics[q.t]=t;
-  if(!q.gen){ S.seen[q.id]=(S.seen[q.id]||0)+1;
-    const i=S.missed.indexOf(q.id);
-    if(frac<1&&i<0) S.missed.push(q.id); if(frac===1&&i>=0) S.missed.splice(i,1); }
-  save();
-}
-function dateKey(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function poolForLevel(){return BANK.filter(q=>S.level==='C'||q.lv==='B')}
-function gensForLevel(){return Object.keys(GEN).filter(k=>S.level==='C'||GEN[k].lv==='B')}
-
-/* ---------------- question renderer ---------------- */
-/* o: {mode:'instant'|'exam'|'review', resp, onAnswer(resp), onChange(resp), label, onHits(hits)} */
-function renderQ(q,o){
-  const card=el('article','qcard');
-  const head=el('div','qhead');
-  head.append(el('span','qnum',o.label||''));
-  const chips=el('div','chips');
-  chips.append(el('span','chip',TOPICS[q.t]), el('span','chip lv','Div '+q.lv));
-  if(q.k==='multi') chips.append(el('span','chip','Select all that apply'));
-  if(q.gen) chips.append(el('span','chip','New numbers each time'));
-  if(q.src&&SRC[q.src]){const s=SRC[q.src]; chips.append(el('span','chip '+(s.past?'past':'ref'),(s.past?'Past-test style · ':'Source · ')+s.label));}
-  const p=ptsOf(q); chips.append(el('span','chip pts',p+(p===1?' pt':' pts')));
-  head.append(chips); card.append(head);
-  card.append(el('p','qtext',q.q));
-  const body=el('div'); card.append(body);
-  const review=o.mode==='review', exam=o.mode==='exam';
-  let resp=o.resp;
-
-  if(q.k==='mc'||q.k==='multi'||q.k==='tf'){
-    const opts=q.k==='tf'?['True','False']:q.o;
-    const box=el('div',q.k==='tf'?'tfrow':'opts');
-    let sel=q.k==='multi'?new Set(resp||[]):resp;
-    const btns=opts.map((txt,i)=>{
-      const val=q.k==='tf'?(i===0):i;
-      const b=el('button','opt'); b.type='button';
-      b.append(el('span','key',q.k==='tf'?(i===0?'T':'F'):String.fromCharCode(65+i)), el('span',null,txt));
-      const isSel=q.k==='multi'?sel.has(i):sel===val;
-      b.setAttribute('aria-pressed',isSel?'true':'false');
-      if(review){
-        b.disabled=true;
-        const correct=q.k==='multi'?q.a.includes(i):q.a===val;
-        if(correct&&isSel) b.classList.add('ok');
-        else if(!correct&&isSel) b.classList.add('no');
-        else if(correct) b.classList.add('miss','ok');
-      } else {
-        b.addEventListener('click',()=>{
-          if(q.k==='multi'){ sel.has(i)?sel.delete(i):sel.add(i); b.setAttribute('aria-pressed',sel.has(i)?'true':'false'); if(exam) o.onChange([...sel].sort()); checkBtn&&(checkBtn.disabled=sel.size===0); }
-          else { sel=val; btns.forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); if(exam) o.onChange(val); else o.onAnswer(val); }
-        });
-      }
-      box.append(b); return b;
+  function start(data) {
+    window.APDATA = data;
+    lock.hidden = true;
+    window.__apStart();
+    var foot = document.querySelector(".foot");
+    if (foot) {
+      var b = document.createElement("button");
+      b.className = "linkbtn"; b.type = "button"; b.textContent = "Lock this device";
+      b.onclick = function () { try { localStorage.removeItem(KEY); } catch (e) {} location.reload(); };
+      foot.appendChild(document.createTextNode(" "));
+      foot.appendChild(b);
+    }
+  }
+  form.onsubmit = function (e) {
+    e.preventDefault();
+    var p = norm(inp.value);
+    if (!p) { err.textContent = "Type the passcode first."; return; }
+    btn.disabled = true; btn.textContent = "Unlocking…"; err.textContent = "";
+    unlock(p).then(function (data) {
+      if (rem.checked) { try { localStorage.setItem(KEY, p); } catch (e) {} }
+      start(data);
+    }, function () {
+      btn.disabled = false; btn.textContent = "Unlock";
+      err.textContent = "That passcode didn't work. Check the spelling and try again.";
+      inp.select();
     });
-    body.append(box);
-    var checkBtn=null;
-    if(q.k==='multi'&&!review&&!exam){
-      const act=el('div','actions'); checkBtn=el('button','btn','Check answer'); checkBtn.type='button'; checkBtn.disabled=sel.size===0;
-      checkBtn.addEventListener('click',()=>o.onAnswer([...sel].sort())); act.append(checkBtn, el('span','hint','Partial credit: each wrong pick cancels one right pick.')); body.append(act);
-    }
-  }
-
-  if(q.k==='num'||q.k==='fill'){
-    const row=el('div','inrow'); const inp=el('input'); inp.type='text'; inp.id='in-'+q.id.replace(/[^a-z0-9]/gi,'');
-    inp.setAttribute('aria-label','Your answer'); inp.autocomplete='off';
-    if(q.k==='num'){inp.inputMode=q.sci?'text':'decimal'; inp.placeholder=q.sci?'6.3e-6':'0.00'; if(q.sci) inp.style.width='16ch'} else {inp.className='wide'; inp.placeholder='Type your answer'}
-    if(resp!=null) inp.value=resp;
-    row.append(inp); if(q.u) row.append(el('span','unit',q.u));
-    if(review){inp.disabled=true}
-    else if(exam){inp.addEventListener('input',()=>o.onChange(inp.value.trim()||null))}
-    else { const b=el('button','btn','Check'); b.type='button'; const go=()=>{if(inp.value.trim()) o.onAnswer(inp.value.trim())}; b.addEventListener('click',go); inp.addEventListener('keydown',e=>{if(e.key==='Enter')go()}); row.append(b); }
-    body.append(row);
-    if(q.k==='num'&&!review) body.append(el('p','hint',q.dp!=null?'Give your answer to the correct number of decimal places.':q.sci?'Use scientific notation, like 6.3e-6 or 6.3 x 10^-6, with the correct sig figs.':q.sf?'Give your final answer with the correct number of significant figures.':'Round only at the end; units are shown for you.'));
-  }
-
-  if(q.k==='short'){
-    if(review){
-      if(resp&&resp.text){const y=el('div','model');y.append(el('div','lbl','Your answer'),el('div','yours',resp.text));body.append(y)}
-      body.append(shortKey(q,resp&&resp.hits,o.onHits));
-    } else {
-      const ta=el('textarea'); ta.id='ta-'+q.id; ta.setAttribute('aria-label','Your answer'); ta.placeholder='Write your answer the way you would on the test…';
-      if(resp&&resp.text) ta.value=resp.text;
-      body.append(ta);
-      if(exam){ta.addEventListener('input',()=>o.onChange({text:ta.value,hits:null}))}
-      else{
-        const act=el('div','actions'); const b=el('button','btn','Compare with model answer'); b.type='button'; act.append(b,el('span','hint','You’ll tick off the key points you hit.')); body.append(act);
-        b.addEventListener('click',()=>{
-          b.disabled=true; ta.disabled=true; const hits=q.kp.map(()=>false);
-          const k=shortKey(q,hits,h=>{hits.splice(0,hits.length,...h)}); body.append(k);
-          const a2=el('div','actions'); const s=el('button','btn','Save my score'); s.type='button'; a2.append(s); body.append(a2);
-          s.addEventListener('click',()=>o.onAnswer({text:ta.value,hits:hits.slice()}));
-        });
-      }
-    }
-  }
-
-  if(review) card.append(feedback(q,resp));
-  return card;
-}
-function shortKey(q,hits,onHits){
-  const w=el('div','model'); w.append(el('div','lbl','Model answer'), el('div',null,q.m));
-  const kp=el('div','kp'); const lbl=el('div','lbl',onHits?'Tick each key point your answer included (1 pt each)':'Key points (1 pt each)'); lbl.style.marginTop='10px'; w.append(lbl);
-  q.kp.forEach((t,i)=>{const l=el('label');const c=el('input');c.type='checkbox';c.id='kp-'+q.id+'-'+i;c.checked=!!(hits&&hits[i]);c.disabled=!onHits;
-    c.addEventListener('change',()=>{const h=[...kp.querySelectorAll('input')].map(x=>x.checked);onHits&&onHits(h)});l.append(c,el('span',null,t));kp.append(l)});
-  w.append(kp); return w;
-}
-function feedback(q,resp){
-  const g=grade(q,resp); const pts=ptsOf(q); const earned=Math.round(g.frac*pts*100)/100;
-  const cls=g.frac===1?'good':g.frac>0?'part':'bad';
-  const fb=el('div','fb '+cls);
-  let verdict;
-  if(q.k==='short') verdict=`Self-graded · ${earned} / ${pts} pts`;
-  else if(g.frac===1) verdict=`Correct · +${earned} ${earned===1?'pt':'pts'}`;
-  else if(g.frac>0) verdict=`Partly right · ${earned} / ${pts} pts`;
-  else verdict=g.blank?`No answer · 0 / ${pts}`:`Not quite · 0 / ${pts}`;
-  fb.append(el('div','verdict',verdict));
-  if(q.k==='num'){
-    const ans=fmtAns(q);
-    let line=`Answer: ${ans}${q.u?' '+q.u:''}`;
-    if(q.dp!=null){ line+=` (${q.dp} decimal places).`;
-      if(!g.blank&&g.givenDp!=null&&!g.wrongValue){ if(g.frac===1) line+=' Your decimal places are right.'; else if(!g.dpOk) line+=` Your value is right, but you gave ${g.givenDp} decimal places: ¾ credit.`; else if(g.rounding) line+=' Check your rounding: ¾ credit.'; }
-    } else if(q.sf){ line+=` (${q.sf} sig figs).`;
-      if(!g.blank&&g.given!=null){ if(g.sfOk&&g.frac===1) line+=' Your sig figs are right.'; else if(!g.sfOk&&!g.wrongValue) line+=` Your value is right, but you gave ${g.given} sig figs: ¾ credit.`; else if(g.rounding) line+=' Right sig figs, but check your rounding: ¾ credit.'; }
-    } else line+='.';
-    fb.append(el('p',null,line));
-    fb.append(el('div','work',q.x));
-  } else if(q.k==='fill'){
-    fb.append(el('p',null,'Answer: '+q.ans+'. '+q.x));
-  } else if(q.k==='short'){
-    /* model shown above */
-  } else fb.append(el('p',null,q.x));
-  return fb;
-}
-
-/* ---------------- app shell ---------------- */
-const view=document.getElementById('view');
-let current='today';
-function setLevel(lv){S.level=lv;save();Today.idx=null;document.getElementById('lvB').setAttribute('aria-pressed',lv==='B');document.getElementById('lvC').setAttribute('aria-pressed',lv==='C');Practice.reset();show(current)}
-document.getElementById('lvB').addEventListener('click',()=>setLevel('B'));
-document.getElementById('lvC').addEventListener('click',()=>setLevel('C'));
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>show(t.dataset.view)));
-function show(v){
-  current=v; document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v?'true':'false'));
-  updateStreak(); view.innerHTML=''; ({today:Today.render,practice:Practice.render,lab:Lab.render,mock:Mock.render,progress:Progress.render})[v]();
-}
-function updateStreak(){
-  let n=0; const d=new Date();
-  const doneOn=k=>Object.keys(S.days).some(x=>x.startsWith(k+'|')&&S.days[x].done);
-  if(!doneOn(dateKey(d))) d.setDate(d.getDate()-1);
-  while(doneOn(dateKey(d))){n++;d.setDate(d.getDate()-1)}
-  document.getElementById('streakN').textContent=n;
-}
-
-/* ---------------- Daily set ---------------- */
-const Today={idx:null,
-  build(dk){
-    const r=rngFor('daily|'+dk+'|'+S.level);
-    const pool=shuffle(poolForLevel().slice(),r); const quota={tf:2,short:1,multi:2}; const kc={},tc={}; const out=[];
-    for(const q of pool){ if(out.length>=10) break; if((tc[q.t]||0)>=2) continue; if(q.k==='num') continue;
-      if(quota[q.k]!=null&&(kc[q.k]||0)>=quota[q.k]) continue; out.push(q); tc[q.t]=(tc[q.t]||0)+1; kc[q.k]=(kc[q.k]||0)+1; }
-    const gk=shuffle(gensForLevel(),r).slice(0,2);
-    const g1=genOne(gk[0],r,dk+'a'), g2=genOne(gk[1],r,dk+'b');
-    const si=out.findIndex(q=>q.k==='short'); let sh=null; if(si>=0) sh=out.splice(si,1)[0];
-    out.splice(3,0,g1); out.splice(8,0,g2); if(sh) out.push(sh);
-    return out;
-  },
-  render(){
-    const dk=dateKey(), key=dk+'|'+S.level; const set=Today.build(dk);
-    const day=S.days[key]||(S.days[key]={res:{},done:false});
-    const n=set.length; let earned=0,possible=0,answered=0;
-    set.forEach((q,i)=>{possible+=ptsOf(q);const r=day.res[i];if(r){answered++;earned+=r.frac*ptsOf(q)}});
-    if(Today.idx==null||Today.idx>n) Today.idx=day.done?n:set.findIndex((q,i)=>!day.res[i]);
-    if(Today.idx<0) Today.idx=n;
-
-    const wrap=el('section','today');
-    const dh=el('div','dayhead'); const hl=el('div');
-    const nice=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
-    hl.append(el('h2',null,`Daily set for ${nice}`), el('p','sub',`${n} questions, about 15 minutes. Everyone at Div ${S.level} gets the same set today, so your team can compare scores. A new set appears at midnight.`));
-    dh.append(hl); wrap.append(dh);
-
-    // gauge
-    const g=el('aside','gauge'); g.setAttribute('aria-label','Score gauge');
-    g.append(el('div','glabel','Babcock reading'));
-    const bottle=el('div','bottle'); const nr=el('div','neckrow'); const sc=el('div','scale');
-    [100,80,60,40,20,0].forEach(v=>sc.append(el('span',null,v)));
-    const neck=el('div','neck'); const pct=possible?earned/possible*100:0; neck.style.setProperty('--fill',pct.toFixed(1)+'%'); neck.append(el('div','fat'));
-    nr.append(sc,neck); const bulb=el('div','bulb'); const bb=el('div'); bb.append(el('div','big',`${Math.round(earned*10)/10}`),el('div','sm',`of ${possible} pts`)); bulb.append(bb);
-    bottle.append(nr,bulb); g.append(bottle);
-    const dots=el('div','dots');
-    set.forEach((q,i)=>{const d=el('button','dot');d.type='button';d.setAttribute('aria-label',`Question ${i+1}`);const r=day.res[i];if(r)d.classList.add(r.frac===1?'r':r.frac>0?'p':'w');if(i===Today.idx)d.classList.add('cur');d.addEventListener('click',()=>{Today.idx=i;show('today')});dots.append(d)});
-    g.append(dots, el('p','gnote','The fat column is your score, read like a Babcock bottle neck.'));
-    wrap.append(g);
-
-    const main=el('div'); main.style.minWidth='0';
-    if(Today.idx>=n){ main.append(Today.summary(set,day,earned,possible)); }
-    else{
-      const i=Today.idx,q=set[i],r=day.res[i];
-      const card=renderQ(q,{mode:r?'review':'instant',resp:r&&r.resp,label:`QUESTION ${i+1} OF ${n}`,
-        onAnswer:(resp)=>{const gr=grade(q,resp);day.res[i]={resp,frac:gr.frac};record(q,gr.frac);
-          if(Object.keys(day.res).length===n) day.done=true; save(); show('today')}});
-      main.append(card);
-      if(r){const act=el('div','actions');const nx=el('button','btn',answered===n?'See today’s results':'Next question');nx.type='button';
-        nx.addEventListener('click',()=>{const nxt=set.findIndex((q2,j)=>j>i&&!day.res[j]);Today.idx=answered===n?n:(nxt>=0?nxt:set.findIndex((q2,j)=>!day.res[j]));if(Today.idx<0)Today.idx=n;show('today')});act.append(nx);main.append(act);nx.focus({preventScroll:true})}
-    }
-    wrap.append(main); view.append(wrap);
-  },
-  summary(set,day,earned,possible){
-    const p=el('div','panel summary'); const pct=possible?Math.round(earned/possible*100):0;
-    const done=Object.keys(day.res).length===set.length;
-    p.append(el('h2',null,done?'Today’s set is done':'Finish the rest of today’s set'));
-    const big=el('div','row'); big.append(el('div','bigscore',pct+'%'), el('div','sub',`${Math.round(earned*10)/10} of ${possible} points`)); p.append(big);
-    const ul=el('ul','qlist');
-    set.forEach((q,i)=>{const r=day.res[i];const li=el('li');const mk=el('span','mk '+(r?(r.frac===1?'r':r.frac>0?'p':'w'):''),r?(r.frac===1?'✓':r.frac>0?'½':'✗'):'—');const tx=el('span','tx',q.q.length>110?q.q.slice(0,107)+'…':q.q);li.append(mk,tx);li.style.cursor='pointer';li.addEventListener('click',()=>{Today.idx=i;show('today')});ul.append(li)});
-    p.append(ul);
-    const act=el('div','actions');
-    const m=el('button','btn','Practice my missed questions'); m.type='button'; m.addEventListener('click',()=>{Practice.missedOnly=true;Practice.reset();show('practice')});
-    const l=el('button','btn ghost','Drill lab calcs'); l.type='button'; l.addEventListener('click',()=>show('lab'));
-    act.append(m,l); p.append(act); return p;
-  }
-};
-
-/* ---------------- Practice by topic ---------------- */
-const KINDS={mc:'Multiple choice',multi:'Select all',tf:'True / false',fill:'One-word',num:'Calculation',short:'Free response'};
-const Practice={topics:new Set(Object.keys(TOPICS)),kinds:new Set(Object.keys(KINDS)),missedOnly:false,pastOnly:false,queue:null,pos:0,cur:null,resp:null,earned:0,possible:0,count:0,
-  reset(){Practice.queue=null;Practice.cur=null;Practice.resp=null},
-  build(){
-    let pool=poolForLevel().filter(q=>Practice.topics.has(q.t)&&Practice.kinds.has(q.k));
-    if(Practice.missedOnly) pool=pool.filter(q=>S.missed.includes(q.id));
-    if(Practice.pastOnly) pool=pool.filter(q=>q.src&&SRC[q.src]&&SRC[q.src].past);
-    pool=shuffle(pool,rngFor('p'+Date.now()));
-    pool.sort((a,b)=>(S.seen[a.id]?1:0)-(S.seen[b.id]?1:0));
-    Practice.queue=pool; Practice.pos=0; Practice.cur=pool[0]||null; Practice.resp=null;
-  },
-  render(){
-    if(!Practice.queue) Practice.build();
-    const s=el('section'); s.append(el('h2',null,'Practice by topic'), el('p','sub','Pick topics and question types. Questions you haven’t seen come first; anything you miss goes to your review pile.'));
-    const f=el('div','filters');
-    const tf=el('div'); tf.append(el('div','flabel','Topics')); const tc=el('div','chips');
-    const all=el('button','fchip','All topics'); all.type='button'; all.setAttribute('aria-pressed',Practice.topics.size===Object.keys(TOPICS).length);
-    all.addEventListener('click',()=>{Practice.topics=new Set(Object.keys(TOPICS));Practice.reset();show('practice')}); tc.append(all);
-    Object.entries(TOPICS).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';const on=Practice.topics.has(k)&&Practice.topics.size!==Object.keys(TOPICS).length;b.setAttribute('aria-pressed',on);
-      b.addEventListener('click',()=>{if(Practice.topics.size===Object.keys(TOPICS).length) Practice.topics=new Set([k]); else {Practice.topics.has(k)?Practice.topics.delete(k):Practice.topics.add(k); if(!Practice.topics.size) Practice.topics=new Set(Object.keys(TOPICS));} Practice.reset();show('practice')});tc.append(b)});
-    tf.append(tc); f.append(tf);
-    const kf=el('div'); kf.append(el('div','flabel','Question types')); const kc=el('div','chips');
-    Object.entries(KINDS).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Practice.kinds.has(k));
-      b.addEventListener('click',()=>{Practice.kinds.has(k)?Practice.kinds.delete(k):Practice.kinds.add(k); if(!Practice.kinds.size) Practice.kinds=new Set(Object.keys(KINDS)); Practice.reset();show('practice')});kc.append(b)});
-    const mo=el('button','fchip',`Only my missed (${S.missed.length})`); mo.type='button'; mo.setAttribute('aria-pressed',Practice.missedOnly);
-    mo.addEventListener('click',()=>{Practice.missedOnly=!Practice.missedOnly;Practice.reset();show('practice')}); kc.append(mo);
-    const po=el('button','fchip','Past-test style only'); po.type='button'; po.setAttribute('aria-pressed',Practice.pastOnly);
-    po.addEventListener('click',()=>{Practice.pastOnly=!Practice.pastOnly;Practice.reset();show('practice')}); kc.append(po);
-    kf.append(kc); f.append(kf); s.append(f);
-
-    const tally=el('p','tally'); tally.innerHTML=`This session: <b>${Math.round(Practice.earned*10)/10}</b> / ${Practice.possible} pts · ${Practice.count} answered · ${Math.max(0,Practice.queue.length-Practice.pos-(Practice.resp!=null?1:0))} left in this set`;
-    s.append(tally);
-    const q=Practice.cur;
-    if(!q){const p=el('div','panel');p.append(el('h3',null,Practice.missedOnly?'No missed questions here':'No questions match'),el('p','sub',Practice.missedOnly?'Nothing in your review pile matches these filters. Nice work.':'Try turning on more topics or question types.'));s.append(p);view.append(s);return}
-    const card=renderQ(q,{mode:Practice.resp!=null?'review':'instant',resp:Practice.resp,label:`${TOPICS[q.t].toUpperCase()}`,
-      onAnswer:(resp)=>{const g=grade(q,resp);Practice.resp=resp;Practice.earned+=g.frac*ptsOf(q);Practice.possible+=ptsOf(q);Practice.count++;record(q,g.frac);show('practice')}});
-    s.append(card);
-    if(Practice.resp!=null){const act=el('div','actions');const nx=el('button','btn','Next question');nx.type='button';
-      nx.addEventListener('click',()=>{Practice.pos++;if(Practice.pos>=Practice.queue.length){Practice.build()}else{Practice.cur=Practice.queue[Practice.pos];Practice.resp=null}show('practice')});act.append(nx);s.append(act)}
-    view.append(s);
-  }
-};
-
-/* ---------------- Lab calcs ---------------- */
-const FORMULAS={
-  lab:[['Babcock fat','mass fat = (% fat ÷ 100) × sample mass'],['Curd yield','% = curd mass ÷ milk mass × 100'],['Overrun (volume)','% = (V ice cream − V mix) ÷ V mix × 100'],['Overrun (weight)','% = (wt mix − wt ice cream) ÷ wt ice cream × 100',1],['Freezing point','ΔTf = i · Kf · m    Kf(water) = 1.86',1]],
-  milk:[['Pearson square','parts rich = target − low\nparts low = rich − target',1],['Titratable acidity','% LA = mL × N × 9.008 ÷ g sample',1],['Kjeldahl','% protein = % N × 6.38 (milk)'],['Added water','% = (FP normal − FP sample) ÷ FP normal × 100',1]],
-  nutr:[['Calories','kcal = 9·fat + 4·carb + 4·protein'],['% Daily Value','%DV = amount ÷ DV × 100'],['Heat','q = m × c × ΔT   c(water) = 4.184 J/g·°C'],['Bomb calorimeter','q = C × ΔT; energy/g = q ÷ mass',1],['Energy units','1 kcal = 4.184 kJ']],
-  fat:[['Iodine value','IV = #C=C × 253.81 ÷ M × 100',1],['Saponification value','SV = 3 × 56.1 × 1000 ÷ M',1],['Butter yield','milk × fat% × recovery ÷ butter fat%',1],['Fat in dry matter','FDM = fat ÷ (100 − moisture) × 100',1]],
-  chem:[['pH','pH = −log[H⁺]; decimals in pH = sig figs in [H⁺]',1],['Buffer','pH = pKa + log([A⁻] ÷ [HA])',1],['Titration','Ma × Va = Mb × Vb (1:1)',1],['Molarity','M = (g ÷ molar mass) ÷ L',1],['Peptide mass','Σ amino acids − (n − 1) × 18.015',1]],
-  kin:[['Michaelis–Menten','v = Vmax[S] ÷ (Km + [S])',1],['Q₁₀','R₂ = R₁ × Q₁₀^((T₂ − T₁) ÷ 10)',1],['D-value','t = D × (log reductions)',1],['z-value','D₂ = D₁ × 10^((T₁ − T₂) ÷ z)',1]]
-};
-const Lab={group:'all',type:'mix',cur:null,resp:null,earned:0,count:0,sfRight:0,
-  keys(){return gensForLevel().filter(k=>Lab.group==='all'||GEN[k].g===Lab.group)},
-  next(){let keys=Lab.type==='mix'?Lab.keys():[Lab.type];if(!keys.length){Lab.group='all';Lab.type='mix';keys=Lab.keys()}const r=rngFor('lab'+Date.now()+Math.random());Lab.cur=genOne(pick(r,keys),r,String(Date.now()));Lab.resp=null},
-  render(){
-    if(Lab.type!=='mix'&&!gensForLevel().includes(Lab.type)){Lab.type='mix'}
-    if(!Lab.cur||!gensForLevel().includes(Lab.cur.gen)||(Lab.type!=='mix'&&Lab.cur.gen!==Lab.type)||(Lab.type==='mix'&&Lab.group!=='all'&&GEN[Lab.cur.gen].g!==Lab.group)) Lab.next();
-    const s=el('section'); s.append(el('h2',null,'Lab calculations'), el('p','sub',`Fresh numbers every time for the 2027 lab tasks (milk fat from cream, curd mass, ice cream) plus milk testing, nutrition, fat chemistry, pH, and enzyme math. Graded on value and significant figures: the right value with wrong sig figs earns ¾ credit.${S.level==='B'?' Switch to Div C for the harder calculation types.':''}`));
-    const f=el('div','filters');
-    const gr=el('div'); gr.append(el('div','flabel','Area')); const gc=el('div','chips');
-    [['all','All areas']].concat(Object.entries(GROUPS).filter(([k])=>gensForLevel().some(x=>GEN[x].g===k))).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Lab.group===k);b.addEventListener('click',()=>{Lab.group=k;Lab.type='mix';Lab.next();show('lab')});gc.append(b)});
-    gr.append(gc); f.append(gr);
-    if(Lab.group!=='all'){const tr=el('div'); tr.append(el('div','flabel','Problem type')); const tc=el('div','chips');
-      [['mix','Mixed']].concat(Lab.keys().map(k=>[k,GEN[k].name])).forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Lab.type===k);b.addEventListener('click',()=>{Lab.type=k;Lab.next();show('lab')});tc.append(b)});
-      tr.append(tc); f.append(tr);}
-    s.append(f);
-    const tally=el('p','tally'); tally.innerHTML=`This session: <b>${Lab.count}</b> solved · <b>${Lab.count?Math.round(Lab.earned/Lab.count*100):0}%</b> credit · sig figs right on <b>${Lab.sfRight}</b>`; s.append(tally);
-    const two=el('div','two'); const left=el('div'); left.style.minWidth='0';
-    const q=Lab.cur;
-    left.append(renderQ(q,{mode:Lab.resp!=null?'review':'instant',resp:Lab.resp,label:(GROUPS[GEN[q.gen].g]+' · '+GEN[q.gen].name).toUpperCase(),
-      onAnswer:(resp)=>{const g=grade(q,resp);Lab.resp=resp;Lab.earned+=g.frac;Lab.count++;if(g.sfOk||g.dpOk||(!q.sf&&q.dp==null&&g.frac===1))Lab.sfRight++;record(q,g.frac);show('lab')}}));
-    const act=el('div','actions');const nx=el('button',Lab.resp!=null?'btn':'btn ghost',Lab.resp!=null?'New problem':'Skip this one');nx.type='button';nx.addEventListener('click',()=>{Lab.next();show('lab')});act.append(nx);left.append(act);
-    two.append(left);
-    const side=el('aside','panel side'); const grp=Lab.group==='all'?GEN[q.gen].g:Lab.group;
-    side.append(el('h3',null,'Formulas · '+GROUPS[grp]));
-    FORMULAS[grp].forEach(([a,b,c])=>{if(S.level==='B'&&c)return;side.append(el('div','flabel',a),el('div','formula',b))});
-    side.append(el('h3',null,'Sig-fig rules'));const ul=el('ul');['× and ÷: keep the fewest sig figs of any measurement.','+ and −: keep the fewest decimal places.','Logs: decimals in pH = sig figs in [H⁺].','Defined values (DV, 100, 9-4-4, 4.184, i) don’t limit sig figs.','Round only at the end.'].forEach(t=>ul.append(el('li',null,t)));side.append(ul);
-    two.append(side); s.append(two); view.append(s);
-  }
-};
-
-/* ---------------- Mock test ---------------- */
-const Mock={phase:'intro',qs:[],resps:[],secs:[],endAt:0,tick:null,recordedShort:false,
-  start(){
-    const r=rngFor('mock'+Date.now()); const pool=shuffle(poolForLevel().slice(),r);
-    const take=(f,n)=>{const out=[];for(const q of pool){if(out.length>=n)break;if(f(q)&&!used.has(q.id)){out.push(q);used.add(q.id)}}return out};
-    const used=new Set();
-    const mc=take(q=>q.k==='mc'||q.k==='fill',14), mu=take(q=>q.k==='multi',3);
-    const tf=take(q=>q.k==='tf',6), nb=take(q=>q.k==='num',2), sh=take(q=>q.k==='short',2);
-    const gk=shuffle(gensForLevel(),r).slice(0,3).map((k,i)=>genOne(k,r,'m'+i+Date.now()));
-    Mock.secs=[{name:'Section I · Multiple choice',qs:mc.concat(mu)},{name:'Section II · True or false',qs:tf},{name:'Section III · Lab calculations',qs:nb.concat(gk)},{name:'Section IV · Free response',qs:sh}];
-    Mock.qs=Mock.secs.flatMap(s=>s.qs); Mock.resps=Mock.qs.map(()=>null);
-    Mock.endAt=Date.now()+50*60*1000; Mock.phase='running'; Mock.recordedShort=false;
-    clearInterval(Mock.tick); Mock.tick=setInterval(Mock.onTick,1000); Mock.onTick();
-  },
-  onTick(){
-    const left=Math.max(0,Mock.endAt-Date.now()); const m=Math.floor(left/60000), s=Math.floor(left%60000/1000); const txt=`${m}:${String(s).padStart(2,'0')}`;
-    const c=document.getElementById('clock'); if(c){c.textContent=txt;c.classList.toggle('low',left<5*60000)}
-    document.getElementById('tabTimer').textContent=Mock.phase==='running'?txt:'';
-    if(left<=0&&Mock.phase==='running') Mock.submit();
-  },
-  submit(){
-    clearInterval(Mock.tick); Mock.phase='done'; document.getElementById('tabTimer').textContent='';
-    Mock.qs.forEach((q,i)=>{if(q.k!=='short') record(q,grade(q,Mock.resps[i]).frac)});
-    Mock.saveScore(); show('mock'); window.scrollTo({top:0});
-  },
-  totals(){let e=0,p=0;const per=Mock.secs.map(s=>{let se=0,sp=0;s.qs.forEach(q=>{const i=Mock.qs.indexOf(q);const g=grade(q,Mock.resps[i]);se+=g.frac*ptsOf(q);sp+=ptsOf(q)});e+=se;p+=sp;return [se,sp]});return {e,p,per}},
-  saveScore(){const t=Mock.totals();const rec={d:dateKey(),e:Math.round(t.e*10)/10,p:t.p,lv:S.level};const last=S.mocks[S.mocks.length-1];if(last&&last.t===Mock.endAt){last.e=rec.e}else{rec.t=Mock.endAt;S.mocks.push(rec)}save()},
-  render(){
-    const s=el('section');
-    if(Mock.phase==='intro'){
-      s.append(el('h2',null,'Mock test'), el('p','sub',`A full 50-minute written test built the way past Food Science B tests are: multiple choice, select-all (2 pts, partial credit), true/false, lab calculations, and scenario free response. Div ${S.level} questions. No feedback until you submit.`));
-      const p=el('div','panel'); const ul=el('ul'); ['Section I · 14 multiple choice + 3 select-all','Section II · 6 true/false','Section III · 5 lab calculations (sig figs count)','Section IV · 2 free response, self-graded against a model answer'].forEach(t=>ul.append(el('li',null,t))); p.append(el('h3',null,'What’s on it'),ul);
-      const tip=el('p','sub','Tip: on test day you and your partner split the booklet. Try doing Sections I–II fast, then spend real time on III–IV.'); tip.style.marginTop='12px'; p.append(tip);
-      const act=el('div','actions');const b=el('button','btn','Start the 50-minute test');b.type='button';b.addEventListener('click',()=>{Mock.start();show('mock')});act.append(b);p.append(act);
-      if(S.mocks.length){const h=el('p','hint');h.textContent='Past mock scores: '+S.mocks.slice(-5).map(m=>`${m.d}: ${Math.round(m.e/m.p*100)}%`).join(' · ');p.append(h)}
-      s.append(p); view.append(s); return;
-    }
-    if(Mock.phase==='running'){
-      const bar=el('div','timerbar'); const lc=el('div'); lc.append(el('span','clock','50:00')); lc.firstChild.id='clock';
-      const answered=Mock.resps.filter(r=>r!=null&&r!=='').length; const st=el('span','tally',`${answered} of ${Mock.qs.length} answered`); st.id='mockCount'; lc.append(document.createTextNode('  '),st);
-      const sb=el('button','btn','Submit test'); sb.type='button';
-      const conf=el('div','row'); conf.hidden=true;
-      conf.append(el('span',null,'Submit now?')); const y=el('button','btn small','Yes, submit');y.type='button';y.addEventListener('click',()=>Mock.submit());const n=el('button','btn ghost small','Keep working');n.type='button';n.addEventListener('click',()=>{conf.hidden=true;sb.hidden=false});conf.append(y,n);
-      sb.addEventListener('click',()=>{sb.hidden=true;conf.hidden=false});
-      const rt=el('div','row'); rt.append(sb,conf);
-      bar.append(lc,rt); s.append(bar);
-      let num=0;
-      Mock.secs.forEach(sec=>{const h=el('div','section');h.append(el('h3',null,sec.name));s.append(h);const list=el('div','mocklist');
-        sec.qs.forEach(q=>{const i=Mock.qs.indexOf(q);num++;list.append(renderQ(q,{mode:'exam',resp:Mock.resps[i],label:`QUESTION ${num}`,onChange:(r)=>{Mock.resps[i]=r;const c=document.getElementById('mockCount');if(c)c.textContent=`${Mock.resps.filter(x=>x!=null&&x!==''&&!(x.text===''&&x.hits===null)).length} of ${Mock.qs.length} answered`}}))});
-        s.append(list)});
-      const act=el('div','actions'); const sb2=el('button','btn','Submit test'); sb2.type='button'; sb2.addEventListener('click',()=>{window.scrollTo({top:0});sb.click()}); act.append(sb2); s.append(act);
-      view.append(s); Mock.onTick(); return;
-    }
-    // done
-    const t=Mock.totals(); const p=el('div','panel summary');
-    p.append(el('h2',null,'Mock test results'));
-    const big=el('div','row'); const scoreEl=el('div','bigscore',Math.round(t.e/t.p*100)+'%'); const pe=el('div','sub',`${Math.round(t.e*10)/10} of ${t.p} points`); big.append(scoreEl,pe); p.append(big);
-    const ss=el('div','secscore'); Mock.secs.forEach((sec,k)=>{const d=el('div');d.append(el('div','n',`${Math.round(t.per[k][0]*10)/10} / ${t.per[k][1]}`),el('div','l',sec.name.replace('Section ','').replace(' · ',' ')));ss.append(d)}); p.append(ss);
-    const note=el('p','hint','Free response starts at 0. Scroll to Section IV and tick the key points you hit; your score updates as you go.'); note.style.marginTop='12px'; p.append(note);
-    const act=el('div','actions'); const again=el('button','btn ghost','Take a new mock test'); again.type='button'; again.addEventListener('click',()=>{Mock.phase='intro';show('mock')}); act.append(again); p.append(act);
-    s.append(p);
-    let num=0;
-    Mock.secs.forEach(sec=>{const h=el('div','section');h.append(el('h3',null,sec.name));s.append(h);const list=el('div','mocklist');
-      sec.qs.forEach(q=>{const i=Mock.qs.indexOf(q);num++;
-        if(q.k==='short'&&(!Mock.resps[i]||!Mock.resps[i].hits)) Mock.resps[i]={text:(Mock.resps[i]&&Mock.resps[i].text)||'',hits:q.kp.map(()=>false)};
-        const holder=el('div');
-        const draw=()=>{holder.innerHTML='';holder.append(renderQ(q,{mode:'review',resp:Mock.resps[i],label:`QUESTION ${num0}`,onHits:q.k==='short'?(h)=>{Mock.resps[i].hits=h;Mock.saveScore();const tt=Mock.totals();scoreEl.textContent=Math.round(tt.e/tt.p*100)+'%';pe.textContent=`${Math.round(tt.e*10)/10} of ${tt.p} points`;ss.lastChild.firstChild.textContent=`${Math.round(tt.per[3][0]*10)/10} / ${tt.per[3][1]}`;const fbv=holder.querySelector('.fb .verdict');if(fbv){const g=grade(q,Mock.resps[i]);fbv.textContent=`Self-graded · ${Math.round(g.frac*ptsOf(q)*100)/100} / ${ptsOf(q)} pts`;holder.querySelector('.fb').className='fb '+(g.frac===1?'good':g.frac>0?'part':'bad')}}:null}))};
-        const num0=num; draw(); list.append(holder)});
-      s.append(list)});
-    const shortQs=Mock.secs[3].qs;
-    if(shortQs.length&&!Mock.recordedShort){const a2=el('div','actions');const b=el('button','btn','Save free-response scores to Progress');b.type='button';b.addEventListener('click',()=>{shortQs.forEach(q=>{const i=Mock.qs.indexOf(q);record(q,grade(q,Mock.resps[i]).frac)});Mock.recordedShort=true;b.disabled=true;b.textContent='Saved to Progress'});a2.append(b);s.append(a2)}
-    view.append(s);
-  }
-};
-
-/* ---------------- Progress ---------------- */
-const Progress={confirm:false,
-  render(){
-    const s=el('section'); s.append(el('h2',null,'Progress'), el('p','sub','Saved in this browser. Topic bars count every question from the daily set, practice, lab calcs, and mock tests.'));
-    const g=el('div','pgrid');
-    // summary
-    const a=el('div','panel'); a.append(el('h3',null,'Daily habit'));
-    const daysDone=new Set(Object.keys(S.days).filter(k=>S.days[k].done).map(k=>k.split('|')[0]));
-    const sl=el('div','statline'); const st=(n,l)=>{const d=el('div','stat');d.append(el('div','n',n),el('div','l',l));return d};
-    sl.append(st(document.getElementById('streakN').textContent,'day streak'),st(daysDone.size,'daily sets finished'),st(Object.values(S.topics).reduce((x,t)=>x+t[1],0).toFixed(0),'points attempted'));
-    a.append(sl);
-    a.append(el('div','flabel','Last 4 weeks')); a.lastChild.style.marginTop='14px';
-    const cal=el('div','cal'); const today=new Date(); const start=new Date(today); start.setDate(start.getDate()-27);
-    for(let i=0;i<28;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=dateKey(d);const c=el('div','cell',d.getDate());
-      const keys=Object.keys(S.days).filter(x=>x.startsWith(k+'|'));const done=keys.some(x=>S.days[x].done);const some=keys.some(x=>Object.keys(S.days[x].res).length);
-      if(done)c.classList.add('done');else if(some)c.classList.add('part');if(k===dateKey(today))c.classList.add('today');c.title=k+(done?' · finished':some?' · started':'');cal.append(c)}
-    a.append(cal); g.append(a);
-    // topics
-    const b=el('div','panel'); b.append(el('h3',null,'Accuracy by topic'));
-    const rows=Object.keys(TOPICS).map(k=>{const t=S.topics[k]||[0,0];return {k,e:t[0],p:t[1]}});
-    const tried=rows.filter(r=>r.p>0).sort((x,y)=>x.e/x.p-y.e/y.p), untried=rows.filter(r=>r.p===0);
-    if(!tried.length) b.append(el('p','sub','Answer a few questions and your weakest topics will rise to the top here.'));
-    const bars=el('div','bars');
-    tried.concat(untried).forEach(r=>{const row=el('div','bar');const pct=r.p?r.e/r.p*100:0;row.append(el('span',null,TOPICS[r.k]));const tr=el('div','track');const fl=el('div','fill'+(r.p&&pct<60?' lowv':r.p&&pct<80?' midv':''));fl.style.width=pct.toFixed(1)+'%';tr.append(fl);row.append(tr,el('span','v',r.p?Math.round(pct)+'%':'—'));bars.append(row)});
-    b.append(bars); g.append(b);
-    // missed
-    const c=el('div','panel'); c.append(el('h3',null,'Review pile'), el('p','sub',`${S.missed.length} question${S.missed.length===1?'':'s'} you haven’t gotten fully right yet. Getting one right in practice removes it.`));
-    const act=el('div','actions'); const pm=el('button','btn','Practice missed questions');pm.type='button';pm.disabled=!S.missed.length;pm.addEventListener('click',()=>{Practice.missedOnly=true;Practice.topics=new Set(Object.keys(TOPICS));Practice.kinds=new Set(Object.keys(KINDS));Practice.reset();show('practice')});act.append(pm);c.append(act);
-    if(S.mocks.length){c.append(el('div','flabel','Mock tests'));c.lastChild.style.marginTop='16px';const ul=el('ul','qlist');S.mocks.slice(-6).reverse().forEach(m=>{const li=el('li');li.append(el('span','mk',Math.round(m.e/m.p*100)+'%'),el('span','tx',`${m.d} · Div ${m.lv} · ${m.e} / ${m.p} pts`));ul.append(li)});c.append(ul)}
-    const rs=el('div','actions'); const rb=el('button','btn ghost small','Reset all progress'); rb.type='button'; rb.addEventListener('click',()=>{Progress.confirm=true;show('progress')}); rs.append(rb); c.append(rs);
-    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, and review pile in this browser. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[]};save();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
-    g.append(c);
-    // bank info
-    const d=el('div','panel'); d.append(el('h3',null,'What’s in the bank'));
-    const counts={};BANK.forEach(q=>{counts[q.k]=(counts[q.k]||0)+1});
-    d.append(el('p','sub',`${BANK.length} written questions (${BANK.filter(q=>q.lv==='B').length} Div B, ${BANK.filter(q=>q.lv==='C').length} Div C-level) plus ${Object.keys(GEN).length} lab-calc generators with unlimited numbers.`));
-    const ul2=el('ul');Object.entries(KINDS).forEach(([k,v])=>ul2.append(el('li',null,`${v}: ${counts[k]||0}`)));d.append(ul2);
-    const bySrc={};BANK.forEach(q=>{if(q.src)bySrc[q.src]=(bySrc[q.src]||0)+1});
-    d.append(el('div','flabel','Where questions come from')); d.lastChild.style.marginTop='12px';
-    const ul3=el('ul');Object.entries(SRC).sort((a,b)=>(b[1].past-a[1].past)||((bySrc[b[0]]||0)-(bySrc[a[0]]||0))).forEach(([k,v])=>{if(bySrc[k])ul3.append(el('li',null,`${v.past?'Past test':'Reference'} · ${v.label}: ${bySrc[k]}`))});d.append(ul3);
-    g.append(d);
-    s.append(g); view.append(s);
-  }
-};
-
-/* ---------------- boot ---------------- */
-document.getElementById('lv'+S.level).setAttribute('aria-pressed','true');
-document.getElementById('lv'+(S.level==='B'?'C':'B')).setAttribute('aria-pressed','false');
-const startView=['today','practice','lab','mock','progress'].includes(location.hash.slice(1))?location.hash.slice(1):'today';
-show(startView);
-
-const fc=document.getElementById('forgetCode'); if(fc){ if(!window.FSLOCK) fc.hidden=true; fc.addEventListener('click',()=>{try{localStorage.removeItem('curds-whey-code')}catch(e){} location.reload();}); }
-};
-</script>
-<script>
-(function(){
-  var KEY='curds-whey-code', form=document.getElementById('lockForm'), inp=document.getElementById('lockPass'), err=document.getElementById('lockErr'), rem=document.getElementById('lockRem'), btn=document.getElementById('lockBtn');
-  function open(){var ls=document.getElementById('lockScreen'),aw=document.getElementById('appWrap');ls.hidden=true;aw.hidden=false;window.scrollTo(0,0);try{window.__fsStart();}catch(x){console.error(x);aw.hidden=true;ls.hidden=false;btn.disabled=true;btn.textContent='Unlock';err.textContent='The app hit an error while loading. Try reloading the page.';}}
-  function stop(m){err.textContent=m;btn.disabled=true;}
-  if(window.CW&&window.CW.BANK){open();return;}                 /* single-file copy: questions are already inside */
-  if(!window.FSLOCK) return stop("Couldn’t load the questions file (data.js). Run build-app.mjs, then upload data.js next to index.html.");
-  if(!(window.crypto&&crypto.subtle&&window.TextEncoder)) return stop("This browser can’t unlock the app. Open the https:// link in Chrome, Safari, Edge or Firefox.");
-  var L=window.FSLOCK;
-  function bytes(b){var s=atob(b),a=new Uint8Array(s.length);for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a;}
-  function unlock(p){
-    return crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveKey"])
-      .then(function(base){return crypto.subtle.deriveKey({name:"PBKDF2",salt:bytes(L.salt),iterations:L.iter,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);})
-      .then(function(key){return crypto.subtle.decrypt({name:"AES-GCM",iv:bytes(L.iv)},key,bytes(L.ct));})
-      .then(function(buf){window.CW=JSON.parse(new TextDecoder().decode(buf));});
-  }
-  form.addEventListener('submit',function(e){
-    e.preventDefault(); var p=inp.value; if(!p) return; btn.disabled=true; btn.textContent='Unlocking…'; err.textContent='';
-    unlock(p).then(function(){ if(rem.checked){try{localStorage.setItem(KEY,p);}catch(x){}} open(); },
-      function(){ btn.disabled=false; btn.textContent='Unlock'; err.textContent='That code didn’t work. Check it with your captain.'; inp.select(); });
-  });
-  var saved=null; try{saved=localStorage.getItem(KEY);}catch(x){}
-  if(saved){ btn.disabled=true; btn.textContent='Unlocking…';
-    unlock(saved).then(open,function(){try{localStorage.removeItem(KEY);}catch(x){} btn.disabled=false; btn.textContent='Unlock'; inp.focus();}); }
-  else inp.focus();
+  };
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  if (saved) {
+    unlock(saved).then(start, function () { try { localStorage.removeItem(KEY); } catch (e) {} show(""); inp.focus(); });
+  } else { show(""); inp.focus(); }
 })();
 </script>
-
+</body></html>
