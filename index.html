@@ -204,6 +204,51 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
 .foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;max-width:80ch}
 .confirm{margin-top:10px;padding:12px;border-radius:8px;background:var(--bad-soft)}
 @media (prefers-reduced-motion: reduce){ .fat{transition:none} }
+/* flashcards */
+.fc-top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.fc-prog{min-width:0;flex:1 1 280px;max-width:420px}
+.fc-meter{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--sunk)}
+.fc-meter span{display:block;height:100%}
+.fc-meter .k{background:var(--good)} .fc-meter .l{background:var(--butter)}
+.fc-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13.5px;color:var(--muted);margin-top:6px}
+.fc-legend b{color:var(--ink);font-family:var(--f-mono);font-weight:600}
+.fc-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:1px solid var(--line)}
+.fc-stage{max-width:720px}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.fc-card{display:block;width:100%;border:0;background:none;padding:0;text-align:left;perspective:1600px;border-radius:14px}
+.fc-inner{display:grid;transition:transform .45s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.fc-card.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{grid-area:1/1;min-height:270px;display:flex;flex-direction:column;gap:12px;padding:20px 24px;border-radius:14px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgba(19,36,58,.06);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.fc-back{transform:rotateY(180deg);border-color:var(--accent)}
+.fc-main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.fc-term{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,5vw,38px);line-height:1.1;letter-spacing:-.01em;text-wrap:balance;overflow-wrap:anywhere}
+.fc-def{font-size:clamp(17px,2.4vw,20px);line-height:1.5;max-width:60ch}
+.fc-small{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted)}
+.fc-hint{font-size:13px;color:var(--muted)}
+.fc-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.fc-acts .btn{min-height:46px;padding-inline:20px}
+.btn.fc-miss{background:var(--surface);border-color:var(--bad);color:var(--bad)}
+.btn.fc-got{background:var(--good);color:var(--surface)}
+.fc-keys{font-size:13px;color:var(--muted);margin:10px 0 0}
+@media (hover:none){.fc-keys{display:none}}
+.fc-search{margin-bottom:10px}
+.fc-search input{width:min(100%,460px);font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.fc-list{margin:8px 0 0;max-width:820px}
+.fc-list dt{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-weight:700;margin-top:14px}
+.fc-list dd{margin:2px 0 0 18px;color:var(--ink);padding-bottom:12px;border-bottom:1px solid var(--line)}
+.fc-dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--sunk);border:1px solid var(--line)}
+.fc-dot.k{background:var(--good);border-color:var(--good)} .fc-dot.l{background:var(--butter);border-color:var(--butter)}
+@media (max-width:560px){.fc-face{min-height:240px;padding:18px}.fc-acts .btn{flex:1;justify-content:center}}
+.fc-filters{margin-bottom:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.fc-filters>summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:14.5px;list-style:none;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.fc-filters>summary::-webkit-details-marker{display:none}
+.fc-filters>summary::before{content:"▸";color:var(--muted);display:inline-block;transition:transform .15s}
+.fc-filters[open]>summary::before{transform:rotate(90deg)}
+.fc-sum{font-weight:400;color:var(--muted);font-size:14px}
+.fc-filters .filters{padding:2px 14px 14px;margin:0}
+@media (prefers-reduced-motion: reduce){.fc-inner{transition:none}}
 /* lock screen */
 [hidden]{display:none!important}
 .lock{min-height:100vh;display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
@@ -250,6 +295,7 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="tab-today" data-view="today">Daily set</button>
       <button class="tab" role="tab" id="tab-practice" data-view="practice">Practice by topic</button>
+      <button class="tab" role="tab" id="tab-cards" data-view="cards">Flashcards</button>
       <button class="tab" role="tab" id="tab-lab" data-view="lab">Lab calcs</button>
       <button class="tab" role="tab" id="tab-mock" data-view="mock">Mock test<span class="tmr" id="tabTimer"></span></button>
       <button class="tab" role="tab" id="tab-progress" data-view="progress">Progress</button>
@@ -264,7 +310,7 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
 <script src="data.js"></script>
 <script>
 window.__fsStart=function(){
-const {TOPICS,SRC,BANK}=window.CW;
+const {TOPICS,SRC,BANK}=window.CW; const CARDS=window.CW.CARDS||[];
 
 /* ---------------- utilities ---------------- */
 function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return (h>>>0)}
@@ -638,13 +684,13 @@ function feedback(q,resp){
 /* ---------------- app shell ---------------- */
 const view=document.getElementById('view');
 let current='today';
-function setLevel(lv){S.level=lv;save();Today.idx=null;document.getElementById('lvB').setAttribute('aria-pressed',lv==='B');document.getElementById('lvC').setAttribute('aria-pressed',lv==='C');Practice.reset();show(current)}
+function setLevel(lv){S.level=lv;save();Today.idx=null;document.getElementById('lvB').setAttribute('aria-pressed',lv==='B');document.getElementById('lvC').setAttribute('aria-pressed',lv==='C');Practice.reset();Cards.reset();show(current)}
 document.getElementById('lvB').addEventListener('click',()=>setLevel('B'));
 document.getElementById('lvC').addEventListener('click',()=>setLevel('C'));
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>show(t.dataset.view)));
 function show(v){
   current=v; document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v?'true':'false'));
-  updateStreak(); view.innerHTML=''; ({today:Today.render,practice:Practice.render,lab:Lab.render,mock:Mock.render,progress:Progress.render})[v]();
+  updateStreak(); view.innerHTML=''; ({today:Today.render,practice:Practice.render,lab:Lab.render,mock:Mock.render,progress:Progress.render,cards:Cards.render})[v]();
 }
 function updateStreak(){
   let n=0; const d=new Date();
@@ -765,6 +811,128 @@ const Practice={topics:new Set(Object.keys(TOPICS)),kinds:new Set(Object.keys(KI
     view.append(s);
   }
 };
+
+/* ---------------- Flashcards ---------------- */
+function fcRec(){return S.fc||(S.fc={})}
+const CARD_BY_ID={}; CARDS.forEach(c=>{CARD_BY_ID[c.id]=c});
+const Cards={filtersOpen:false,mode:'study',dir:'term',deck:'all',topics:new Set(Object.keys(TOPICS)),queue:null,pos:0,flipped:false,got:0,miss:0,q:'',focus:false,
+  status(id){const r=fcRec()[id];return r?r.s:'n'},
+  pool(){return CARDS.filter(c=>(S.level==='C'||c.lv==='B')&&Cards.topics.has(c.t))},
+  reset(){Cards.queue=null},
+  build(){
+    const r=rngFor('fc'+Date.now()); let p=Cards.pool();
+    if(Cards.deck!=='all') p=p.filter(c=>Cards.status(c.id)===Cards.deck);
+    const by=st=>shuffle(p.filter(c=>Cards.status(c.id)===st),r);
+    const known=by('k').sort((a,b)=>(fcRec()[a.id].r||0)-(fcRec()[b.id].r||0));
+    Cards.queue=by('l').concat(by('n'),known).map(c=>c.id); Cards.pos=0; Cards.flipped=false; Cards.got=0; Cards.miss=0;
+  },
+  mark(knew){
+    const id=Cards.queue[Cards.pos]; const rec=fcRec()[id]||{s:'n',r:0,n:0};
+    rec.n=(rec.n||0)+1;
+    if(knew){rec.s='k';rec.r=(rec.r||0)+1;Cards.got++}
+    else{rec.s='l';rec.r=0;Cards.miss++;
+      if(Cards.queue.indexOf(id,Cards.pos+1)<0) Cards.queue.splice(Math.min(Cards.queue.length,Cards.pos+5),0,id);}  /* see it again a few cards later */
+    fcRec()[id]=rec; save(); Cards.pos++; Cards.flipped=false; Cards.focus=true; show('cards');
+  },
+  render(){
+    const s=el('section','fc');
+    s.append(el('h2',null,'Flashcards'),el('p','sub',`${CARDS.length} dairy terms to learn. Flip a card, then mark whether you knew it. Cards you miss come back a few cards later and go first next time.`));
+    if(!CARDS.length){const p=el('div','panel');p.append(el('h3',null,'No flashcards loaded'),el('p','sub','This copy of the questions file doesn’t have the flashcards yet. Run build-app.mjs again and upload the new data.js.'));s.append(p);view.append(s);return}
+    const pool=Cards.pool(); const cnt={n:0,l:0,k:0}; pool.forEach(c=>cnt[Cards.status(c.id)]++);
+    const top=el('div','fc-top');
+    const seg=el('div','seg'); seg.setAttribute('role','group'); seg.setAttribute('aria-label','Flashcard mode');
+    [['study','Study cards'],['list','Word list']].forEach(([k,v])=>{const b=el('button',null,v);b.type='button';b.setAttribute('aria-pressed',Cards.mode===k?'true':'false');b.addEventListener('click',()=>{Cards.mode=k;show('cards')});seg.append(b)});
+    const prog=el('div','fc-prog'); const bar=el('div','fc-meter'); const tot=pool.length||1;
+    const bk=el('span','k'); bk.style.width=(cnt.k/tot*100).toFixed(1)+'%'; const bl=el('span','l'); bl.style.width=(cnt.l/tot*100).toFixed(1)+'%'; bar.append(bk,bl);
+    bar.setAttribute('role','img'); bar.setAttribute('aria-label',`${cnt.k} known, ${cnt.l} still learning, ${cnt.n} new`);
+    const lg=el('div','fc-legend'); lg.innerHTML=`<span><i style="background:var(--good);border-color:var(--good)"></i>Known <b>${cnt.k}</b></span><span><i style="background:var(--butter);border-color:var(--butter)"></i>Still learning <b>${cnt.l}</b></span><span><i style="background:var(--sunk)"></i>New <b>${cnt.n}</b></span>`;
+    prog.append(bar,lg); top.append(seg,prog); s.append(top);
+
+    const f=el('div','filters');
+    const tf=el('div'); tf.append(el('div','flabel','Topics')); const tc=el('div','chips'); const nT=Object.keys(TOPICS).length;
+    const all=el('button','fchip','All topics'); all.type='button'; all.setAttribute('aria-pressed',Cards.topics.size===nT?'true':'false');
+    all.addEventListener('click',()=>{Cards.topics=new Set(Object.keys(TOPICS));Cards.reset();show('cards')}); tc.append(all);
+    Object.entries(TOPICS).forEach(([k,v])=>{if(!CARDS.some(c=>c.t===k)) return; const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Cards.topics.has(k)&&Cards.topics.size!==nT?'true':'false');
+      b.addEventListener('click',()=>{if(Cards.topics.size===nT) Cards.topics=new Set([k]); else {Cards.topics.has(k)?Cards.topics.delete(k):Cards.topics.add(k); if(!Cards.topics.size) Cards.topics=new Set(Object.keys(TOPICS));} Cards.reset();show('cards')});tc.append(b)});
+    tf.append(tc); f.append(tf);
+    if(Cards.mode==='study'){
+      const df=el('div'); df.append(el('div','flabel','Cards')); const dc=el('div','chips');
+      [['all',`All (${pool.length})`],['l',`Still learning (${cnt.l})`],['n',`New (${cnt.n})`],['k',`Known (${cnt.k})`]].forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Cards.deck===k?'true':'false');b.addEventListener('click',()=>{Cards.deck=k;Cards.reset();show('cards')});dc.append(b)});
+      df.append(dc); f.append(df);
+      const sf=el('div'); sf.append(el('div','flabel','Show first')); const sc=el('div','chips');
+      [['term','Term'],['def','Definition']].forEach(([k,v])=>{const b=el('button','fchip',v);b.type='button';b.setAttribute('aria-pressed',Cards.dir===k?'true':'false');b.addEventListener('click',()=>{Cards.dir=k;Cards.flipped=false;show('cards')});sc.append(b)});
+      sf.append(sc); f.append(sf);
+    }
+    const det=el('details','fc-filters'); if(Cards.filtersOpen) det.open=true; det.addEventListener('toggle',()=>{Cards.filtersOpen=det.open});
+    const only=[...Cards.topics]; const tLabel=Cards.topics.size===nT?'All topics':only.length===1?TOPICS[only[0]]:`${only.length} topics`;
+    const dLabel={all:'All cards',l:'Still learning',n:'New cards',k:'Known cards'}[Cards.deck];
+    const sm=el('summary'); sm.append(el('span',null,'Filters'),el('span','fc-sum',Cards.mode==='study'?`${tLabel} · ${dLabel} · ${Cards.dir==='term'?'term':'definition'} first`:tLabel));
+    det.append(sm,f); s.append(det);
+    if(Cards.mode==='list'){Cards.renderList(s,pool);view.append(s);return}
+
+    if(!Cards.queue) Cards.build();
+    const stage=el('div','fc-stage');
+    if(Cards.pos>=Cards.queue.length){
+      const p=el('div','panel');
+      if(!Cards.queue.length){p.append(el('h3',null,'No cards here'),el('p','sub',Cards.deck==='l'?'Nothing in your still-learning pile for these topics. Nice work.':'Try more topics or a different set of cards.'));}
+      else{
+        p.append(el('h3',null,'Deck finished'),el('p','sub',`Got it: ${Cards.got} · Still learning: ${Cards.miss}. Known so far: ${cnt.k} of ${pool.length}.`));
+        const row=el('div','row'); const again=el('button','btn','Go again');again.type='button';again.addEventListener('click',()=>{Cards.build();show('cards')});row.append(again);
+        if(cnt.l){const m=el('button','btn ghost',`Study still learning (${cnt.l})`);m.type='button';m.addEventListener('click',()=>{Cards.deck='l';Cards.build();show('cards')});row.append(m)}
+        p.append(row);
+      }
+      stage.append(p); s.append(stage); view.append(s); return;
+    }
+    const c=CARD_BY_ID[Cards.queue[Cards.pos]]; const termFirst=Cards.dir==='term';
+    const meta=el('div','fc-meta'); meta.append(el('span','tally',`Card ${Cards.pos+1} of ${Cards.queue.length}`));
+    const st=Cards.status(c.id); meta.append(el('span','tally',st==='k'?'Known':st==='l'?'Still learning':'New card'));
+    stage.append(meta);
+    const card=el('button','fc-card'+(Cards.flipped?' flipped':'')); card.type='button';
+    const inner=el('div','fc-inner'); const front=el('div','fc-face fc-front'), back=el('div','fc-face fc-back');
+    const chips=()=>{const ch=el('div','chips');ch.append(el('span','chip',TOPICS[c.t]));if(c.lv==='C')ch.append(el('span','chip lv','Div C'));return ch};
+    const fm=el('div','fc-main'); fm.append(el('div',termFirst?'fc-term':'fc-def',termFirst?c.w:c.d));
+    front.append(chips(),fm,el('div','fc-hint','Tap the card to flip it'));
+    const bm=el('div','fc-main');
+    if(termFirst) bm.append(el('div','fc-small',c.w),el('div','fc-def',c.d)); else bm.append(el('div','fc-small','Term'),el('div','fc-term',c.w));
+    back.append(chips(),bm,el('div','fc-hint',c.src&&SRC[c.src]?'Source: '+SRC[c.src].label:''));
+    inner.append(front,back); card.append(inner); stage.append(card);
+    const acts=el('div','fc-acts');
+    const showB=el('button','btn','Show answer'); showB.type='button';
+    const miss=el('button','btn fc-miss','Still learning'); miss.type='button';
+    const got=el('button','btn fc-got','Got it'); got.type='button';
+    const sync=()=>{card.classList.toggle('flipped',Cards.flipped);showB.hidden=Cards.flipped;miss.hidden=!Cards.flipped;got.hidden=!Cards.flipped;
+      front.setAttribute('aria-hidden',Cards.flipped?'true':'false');back.setAttribute('aria-hidden',Cards.flipped?'false':'true');
+      card.setAttribute('aria-label',(Cards.flipped?'Back of card: ':'Front of card: ')+(Cards.flipped===termFirst?c.d:c.w)+'. Press to flip.')};
+    const flip=()=>{Cards.flipped=!Cards.flipped;sync()};
+    card.addEventListener('click',flip); showB.addEventListener('click',()=>{flip();got.focus()});
+    miss.addEventListener('click',()=>Cards.mark(false)); got.addEventListener('click',()=>Cards.mark(true));
+    acts.append(showB,miss,got); stage.append(acts);
+    stage.append(el('p','fc-keys','Keys: Space flips · ← still learning · → got it'));
+    sync(); s.append(stage); view.append(s);
+    if(Cards.focus){Cards.focus=false;card.focus({preventScroll:true})}
+  },
+  renderList(s,pool){
+    const box=el('div','fc-search'); const inp=el('input'); inp.type='search'; inp.placeholder='Search terms and definitions'; inp.value=Cards.q; inp.setAttribute('aria-label','Search terms and definitions');
+    box.append(inp); s.append(box);
+    const count=el('p','tally'); const list=el('dl','fc-list'); s.append(count,list);
+    const key=w=>w.replace(/^[^A-Za-z0-9]+/,'').toLowerCase();
+    const sorted=pool.slice().sort((a,b)=>key(a.w).localeCompare(key(b.w)));
+    const draw=()=>{const q=Cards.q.trim().toLowerCase(); list.innerHTML='';
+      const rows=sorted.filter(c=>!q||c.w.toLowerCase().includes(q)||c.d.toLowerCase().includes(q));
+      count.textContent=`${rows.length} term${rows.length===1?'':'s'}`+(q?` matching “${Cards.q.trim()}”`:'');
+      rows.forEach(c=>{const dt=el('dt');const st=Cards.status(c.id);const dot=el('span','fc-dot '+st);dot.title=st==='k'?'Known':st==='l'?'Still learning':'New';dot.setAttribute('aria-label',dot.title);dot.setAttribute('role','img');
+        dt.append(dot,document.createTextNode(c.w));if(c.lv==='C')dt.append(el('span','chip lv','Div C'));list.append(dt,el('dd',null,c.d))})};
+    inp.addEventListener('input',()=>{Cards.q=inp.value;draw()}); draw();
+  }
+};
+document.addEventListener('keydown',e=>{
+  if(current!=='cards'||Cards.mode!=='study'||e.metaKey||e.ctrlKey||e.altKey) return;
+  const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.tagName==='SELECT'||tg.isContentEditable)) return;
+  if(!Cards.queue||Cards.pos>=Cards.queue.length) return;
+  if(e.key===' '||e.key==='Enter'){ if(tg&&tg.tagName==='BUTTON') return; const cd=document.querySelector('.fc-card'); if(cd){e.preventDefault();cd.click()} }
+  else if(Cards.flipped&&(e.key==='ArrowRight'||e.key==='2')){e.preventDefault();Cards.mark(true)}
+  else if(Cards.flipped&&(e.key==='ArrowLeft'||e.key==='1')){e.preventDefault();Cards.mark(false)}
+});
 
 /* ---------------- Lab calcs ---------------- */
 const FORMULAS={
@@ -889,7 +1057,7 @@ const Progress={confirm:false,
     const a=el('div','panel'); a.append(el('h3',null,'Daily habit'));
     const daysDone=new Set(Object.keys(S.days).filter(k=>S.days[k].done).map(k=>k.split('|')[0]));
     const sl=el('div','statline'); const st=(n,l)=>{const d=el('div','stat');d.append(el('div','n',n),el('div','l',l));return d};
-    sl.append(st(document.getElementById('streakN').textContent,'day streak'),st(daysDone.size,'daily sets finished'),st(Object.values(S.topics).reduce((x,t)=>x+t[1],0).toFixed(0),'points attempted'));
+    sl.append(st(document.getElementById('streakN').textContent,'day streak'),st(daysDone.size,'daily sets finished'),st(Object.values(S.topics).reduce((x,t)=>x+t[1],0).toFixed(0),'points attempted'),st(CARDS.filter(c=>fcRec()[c.id]&&fcRec()[c.id].s==='k').length,`of ${CARDS.length} flashcard terms known`));
     a.append(sl);
     a.append(el('div','flabel','Last 4 weeks')); a.lastChild.style.marginTop='14px';
     const cal=el('div','cal'); const today=new Date(); const start=new Date(today); start.setDate(start.getDate()-27);
@@ -910,7 +1078,7 @@ const Progress={confirm:false,
     const act=el('div','actions'); const pm=el('button','btn','Practice missed questions');pm.type='button';pm.disabled=!S.missed.length;pm.addEventListener('click',()=>{Practice.missedOnly=true;Practice.topics=new Set(Object.keys(TOPICS));Practice.kinds=new Set(Object.keys(KINDS));Practice.reset();show('practice')});act.append(pm);c.append(act);
     if(S.mocks.length){c.append(el('div','flabel','Mock tests'));c.lastChild.style.marginTop='16px';const ul=el('ul','qlist');S.mocks.slice(-6).reverse().forEach(m=>{const li=el('li');li.append(el('span','mk',Math.round(m.e/m.p*100)+'%'),el('span','tx',`${m.d} · Div ${m.lv} · ${m.e} / ${m.p} pts`));ul.append(li)});c.append(ul)}
     const rs=el('div','actions'); const rb=el('button','btn ghost small','Reset all progress'); rb.type='button'; rb.addEventListener('click',()=>{Progress.confirm=true;show('progress')}); rs.append(rb); c.append(rs);
-    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, and review pile in this browser. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[]};save();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
+    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, review pile, and flashcard progress in this browser. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{}};save();Cards.reset();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
     g.append(c);
     // bank info
     const d=el('div','panel'); d.append(el('h3',null,'What’s in the bank'));
@@ -928,7 +1096,7 @@ const Progress={confirm:false,
 /* ---------------- boot ---------------- */
 document.getElementById('lv'+S.level).setAttribute('aria-pressed','true');
 document.getElementById('lv'+(S.level==='B'?'C':'B')).setAttribute('aria-pressed','false');
-const startView=['today','practice','lab','mock','progress'].includes(location.hash.slice(1))?location.hash.slice(1):'today';
+const startView=['today','practice','cards','lab','mock','progress'].includes(location.hash.slice(1))?location.hash.slice(1):'today';
 show(startView);
 
 const fc=document.getElementById('forgetCode'); if(fc){ if(!window.FSLOCK) fc.hidden=true; fc.addEventListener('click',()=>{try{localStorage.removeItem('curds-whey-code')}catch(e){} location.reload();}); }
