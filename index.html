@@ -205,6 +205,7 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
 .confirm{margin-top:10px;padding:12px;border-radius:8px;background:var(--bad-soft)}
 @media (prefers-reduced-motion: reduce){ .fat{transition:none} }
 /* lock screen */
+[hidden]{display:none!important}
 .lock{min-height:100vh;display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
 .lock-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:26px 24px}
 .lock-card h1{font-family:var(--f-display);font-weight:800;font-size:32px;line-height:1;margin:0 0 6px}
@@ -936,7 +937,7 @@ const fc=document.getElementById('forgetCode'); if(fc){ if(!window.FSLOCK) fc.hi
 <script>
 (function(){
   var KEY='curds-whey-code', form=document.getElementById('lockForm'), inp=document.getElementById('lockPass'), err=document.getElementById('lockErr'), rem=document.getElementById('lockRem'), btn=document.getElementById('lockBtn');
-  function open(){document.getElementById('lockScreen').hidden=true;document.getElementById('appWrap').hidden=false;window.__fsStart();}
+  function open(){var ls=document.getElementById('lockScreen'),aw=document.getElementById('appWrap');ls.hidden=true;aw.hidden=false;window.scrollTo(0,0);try{window.__fsStart();}catch(x){console.error(x);aw.hidden=true;ls.hidden=false;btn.disabled=true;btn.textContent='Unlock';err.textContent='The app hit an error while loading. Try reloading the page.';}}
   function stop(m){err.textContent=m;btn.disabled=true;}
   if(window.CW&&window.CW.BANK){open();return;}                 /* single-file copy: questions are already inside */
   if(!window.FSLOCK) return stop("Couldn’t load the questions file (data.js). Run build-app.mjs, then upload data.js next to index.html.");
