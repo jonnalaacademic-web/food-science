@@ -200,7 +200,7 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
 .cell{aspect-ratio:1;max-width:100%;border-radius:6px;background:var(--sunk);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;color:var(--muted);position:relative}
 .cell.done{background:var(--butter);color:var(--ink)}
 .cell.part{background:var(--butter-soft);color:var(--ink)}
-.cell.today{outline:2px solid var(--accent);outline-offset:1px}
+.cell.is-today{outline:2px solid var(--accent);outline-offset:1px}
 .bars{display:grid;gap:9px;margin-top:8px}
 .bar{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 52px;gap:10px;align-items:center;font-size:14px}
 .bar .track{height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
@@ -259,6 +259,17 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
 .fc-sum{font-weight:400;color:var(--muted);font-size:14px}
 .fc-filters .filters{padding:2px 14px 14px;margin:0}
 @media (prefers-reduced-motion: reduce){.fc-inner{transition:none}}
+/* sync */
+.sync-banner{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--butter-soft);border-radius:10px;padding:12px 16px;margin:0 0 18px}
+.sync-banner p{margin:0;max-width:72ch}
+.sync-banner .row{gap:8px}
+.sync-code{font-family:var(--f-mono);font-weight:700;letter-spacing:.04em}
+.sync-big{font-size:24px}
+.sync-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 0}
+.sync-row input{font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-width:0;flex:1 1 170px;max-width:300px}
+.sync-msg{font-size:14px;color:var(--muted);margin:6px 0 0;min-height:1.3em}
+.sync-msg.bad{color:var(--bad);font-weight:700} .sync-msg.good{color:var(--good);font-weight:700}
+.sync-status{font-size:14px;color:var(--muted);margin:6px 0 0}
 /* lock screen */
 [hidden]{display:none!important}
 .lock{min-height:100vh;display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
@@ -585,7 +596,9 @@ function genOne(key,r,tag){const q=GEN[key].make(r);q.id='g:'+key+':'+tag;q.gen=
 const KEY='curds-whey-v1';
 let S={level:'C',days:{},topics:{},missed:[],seen:{},mocks:[]};
 try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);S=Object.assign(S,o)}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let syncHook=null;
+function save(){S.savedAt=Date.now();saveLocal();if(syncHook)syncHook()}
 function record(q,frac){
   const pts=ptsOf(q); const t=S.topics[q.t]||[0,0]; t[0]+=frac*pts; t[1]+=pts; S.topics[q.t]=t;
   if(!q.gen){ S.seen[q.id]=(S.seen[q.id]||0)+1;
@@ -974,6 +987,154 @@ document.addEventListener('keydown',e=>{
   else if(Cards.flipped&&(e.key==='ArrowLeft'||e.key==='1')){e.preventDefault();Cards.mark(false)}
 });
 
+/* ---------------- Sync to the team Google Sheet ----------------
+   Each browser gets a sync code (like MILK-4821). Progress is pushed to the captain's
+   Google Sheet a few seconds after each change, and merged back in when the app opens. */
+const SYNC_URL=String(window.CW.SYNC_URL||'').trim();
+function streakCount(){let n=0;const d=new Date();const doneOn=k=>Object.keys(S.days||{}).some(x=>x.startsWith(k+'|')&&S.days[x].done);
+  if(!doneOn(dateKey(d)))d.setDate(d.getDate()-1);while(doneOn(dateKey(d))){n++;d.setDate(d.getDate()-1)}return n}
+function canon(o){if(Array.isArray(o))return '['+o.map(canon).join(',')+']';if(o&&typeof o==='object')return '{'+Object.keys(o).sort().map(k=>JSON.stringify(k)+':'+canon(o[k])).join(',')+'}';return JSON.stringify(o===undefined?null:o)}
+function mergeState(a,b){
+  if(!b) return a; if(!a) return b;
+  const ra=a.resetAt||0, rb=b.resetAt||0;
+  if((b.savedAt||0)<ra) return a;                                   // the sheet copy is older than a reset made here
+  if((a.savedAt||0)<rb) return Object.assign({},b,{level:a.level}); // a reset was made on another device
+  const newer=(a.savedAt||0)>=(b.savedAt||0)?a:b;
+  const m={level:a.level,savedAt:Math.max(a.savedAt||0,b.savedAt||0),resetAt:Math.max(ra,rb)};
+  const n=o=>Object.keys((o&&o.res)||{}).length;
+  m.days=Object.assign({},b.days||{});
+  for(const [k,v] of Object.entries(a.days||{})){const o=m.days[k]; if(!o||(v.done&&!o.done)||(!!v.done===!!o.done&&n(v)>=n(o))) m.days[k]=v;}
+  m.seen=Object.assign({},b.seen||{}); for(const [k,v] of Object.entries(a.seen||{})) m.seen[k]=Math.max(v,m.seen[k]||0);
+  m.topics=Object.assign({},b.topics||{}); for(const [k,v] of Object.entries(a.topics||{})){const o=m.topics[k]; if(!o||v[1]>=o[1]) m.topics[k]=v;}
+  m.fc=Object.assign({},b.fc||{}); for(const [k,v] of Object.entries(a.fc||{})){const o=m.fc[k]; if(!o||(v.n||0)>(o.n||0)||((v.n||0)===(o.n||0)&&newer===a)) m.fc[k]=v;}
+  const mk=x=>x.t?('t'+x.t):(x.d+'|'+x.lv+'|'+x.e+'|'+x.p); const mm=new Map();
+  for(const x of (b.mocks||[])) mm.set(mk(x),x);
+  for(const x of (a.mocks||[])) if(!mm.has(mk(x))||newer===a) mm.set(mk(x),x);
+  m.mocks=[...mm.values()].sort((x,y)=>(x.t||0)-(y.t||0)||String(x.d).localeCompare(String(y.d)));
+  m.missed=((newer.missed)||[]).slice();
+  return m;
+}
+const Sync={SK:'curds-whey-sync',meta:{code:'',name:'',isNew:true,welcomed:false,dirty:false,at:0},state:'idle',err:'',timer:null,busy:false,ver:0,lastPush:0,lastPull:0,
+  on(){return /^https?:\/\/\S+$/.test(SYNC_URL)},
+  loadMeta(){try{const m=JSON.parse(localStorage.getItem(Sync.SK)||'null');if(m)Object.assign(Sync.meta,m)}catch(e){}},
+  saveMeta(){try{localStorage.setItem(Sync.SK,JSON.stringify(Sync.meta))}catch(e){}},
+  newCode(){const W=['MILK','WHEY','CURD','BRIE','FETA','GHEE','SKYR','KEFIR','GOUDA','CREAM','QUESO','COLBY','LASSI'];
+    const a=new Uint32Array(2); if(window.crypto&&crypto.getRandomValues) crypto.getRandomValues(a); else {a[0]=Math.random()*4e9;a[1]=Math.random()*4e9}
+    return W[a[0]%W.length]+'-'+(1000+a[1]%9000)},
+  hasProgress(){return Object.keys(S.days||{}).length>0||Object.keys(S.topics||{}).length>0||Object.keys(S.fc||{}).length>0||(S.mocks||[]).length>0},
+  strip(st){const today=dateKey(),days={};
+    for(const [k,v] of Object.entries(st.days||{})){ if(k.startsWith(today+'|')){days[k]=v;continue}
+      const res={}; for(const [i,r] of Object.entries(v.res||{})) res[i]={frac:r.frac}; days[k]={res,done:!!v.done}; }
+    return Object.assign({},st,{days})},
+  summary(){const done=new Set(Object.keys(S.days||{}).filter(k=>S.days[k].done).map(k=>k.split('|')[0]));
+    const tt=Object.values(S.topics||{}).reduce((a,t)=>[a[0]+t[0],a[1]+t[1]],[0,0]); const last=(S.mocks||[]).slice(-1)[0];
+    return {level:S.level,streak:streakCount(),sets:done.size,points:Math.round(tt[1]),acc:tt[1]?Math.round(tt[0]/tt[1]*100):null,
+      cards:CARDS.filter(c=>fcRec()[c.id]&&fcRec()[c.id].s==='k').length,mocks:(S.mocks||[]).length,lastMock:last&&last.p?Math.round(last.e/last.p*100):null}},
+  body(isNew){return JSON.stringify({code:Sync.meta.code,name:Sync.meta.name||'',isNew:!!isNew,data:JSON.stringify(Sync.strip(S)),summary:Sync.summary()})},
+  changed(){ if(!Sync.on()) return; Sync.ver++; Sync.meta.dirty=true; Sync.saveMeta(); Sync.paint();
+    if(Sync.meta.isNew&&!Sync.hasProgress()) return;
+    clearTimeout(Sync.timer); Sync.timer=setTimeout(()=>Sync.push(),Math.max(5000,20000-(Date.now()-Sync.lastPush))); },
+  async push(){
+    if(!Sync.on()) return; if(Sync.busy){Sync.timer=setTimeout(()=>Sync.push(),3000);return}
+    if(Sync.meta.isNew&&!Sync.hasProgress()) return;
+    Sync.busy=true; clearTimeout(Sync.timer); Sync.state='saving'; Sync.paint();
+    try{
+      for(let tries=0;tries<3;tries++){
+        const v=Sync.ver, isNew=Sync.meta.isNew;
+        const r=await fetch(SYNC_URL,{method:'POST',body:Sync.body(isNew)}); const j=await r.json();
+        if(j.ok){Sync.meta.isNew=false;Sync.meta.dirty=Sync.ver!==v;Sync.meta.at=Date.now();Sync.lastPush=Date.now();Sync.saveMeta();Sync.state='ok';Sync.err='';
+          if(Sync.meta.dirty) Sync.timer=setTimeout(()=>Sync.push(),20000); return}
+        if(j.error==='taken'&&isNew){Sync.meta.code=Sync.newCode();Sync.saveMeta();continue}
+        throw new Error(j.error||'error');
+      }
+    }catch(e){Sync.state='err';Sync.err=navigator.onLine===false?'You’re offline. Progress will save to the team sheet when you’re back online.':'Couldn’t reach the team sheet. Progress is safe on this device; it will try again.';
+      clearTimeout(Sync.timer); Sync.timer=setTimeout(()=>Sync.push(),60000)}
+    finally{Sync.busy=false;Sync.paint()}
+  },
+  beacon(){ if(!Sync.on()||!Sync.meta.dirty||(Sync.meta.isNew&&!Sync.hasProgress())||!navigator.sendBeacon) return;
+    try{navigator.sendBeacon(SYNC_URL,new Blob([Sync.body(Sync.meta.isNew)],{type:'text/plain;charset=utf-8'}))}catch(e){} },
+  async fetchCode(code){const r=await fetch(SYNC_URL+(SYNC_URL.indexOf('?')>=0?'&':'?')+'action=load&code='+encodeURIComponent(code));return r.json()},
+  adopt(remote){
+    const m=mergeState(S,remote);
+    if(canon(m)!==canon(S)){ S=m; saveLocal(); Today.idx=null; Practice.reset(); Cards.reset(); if(current!=='mock') show(current); }
+    if(canon(Sync.strip(m))!==canon(Sync.strip(remote))){ Sync.ver++; Sync.meta.dirty=true; Sync.saveMeta(); Sync.push(); }
+  },
+  async pull(force){
+    if(!Sync.on()||Sync.meta.isNew||!Sync.meta.code) return; if(!force&&Date.now()-Sync.lastPull<30000) return; Sync.lastPull=Date.now();
+    try{ const j=await Sync.fetchCode(Sync.meta.code); if(!j.ok) throw new Error(j.error||'error');
+      if(!j.found){Sync.ver++;Sync.meta.dirty=true;Sync.saveMeta();Sync.push();return}
+      if(j.name&&!Sync.meta.name){Sync.meta.name=j.name;Sync.saveMeta()}
+      Sync.adopt(JSON.parse(j.data)); if(Sync.state!=='saving'){Sync.state='ok';Sync.err=''} if(!Sync.meta.at){Sync.meta.at=Date.now();Sync.saveMeta()}
+    }catch(e){Sync.state='err';Sync.err='Couldn’t reach the team sheet. Progress is safe on this device.'}
+    Sync.paint();
+  },
+  async useCode(raw){
+    let code=String(raw||'').trim().toUpperCase().replace(/\s+/g,'');
+    if(/^[A-Z]{4,5}\d{4}$/.test(code)) code=code.replace(/^([A-Z]+)(\d{4})$/,'$1-$2');
+    if(!/^[A-Z]{4,5}-\d{4}$/.test(code)) return {ok:false,msg:'Codes look like MILK-4821.'};
+    if(code===Sync.meta.code&&!Sync.meta.isNew) return {ok:true,msg:'That’s already this device’s code.'};
+    let j; try{j=await Sync.fetchCode(code)}catch(e){return {ok:false,msg:'Couldn’t reach the team sheet. Check your internet and try again.'}}
+    if(!j||!j.ok) return {ok:false,msg:'Couldn’t reach the team sheet. Try again.'};
+    if(!j.found) return {ok:false,msg:`No saved progress for ${code}. Check the code with your captain.`};
+    Sync.meta.code=code; Sync.meta.isNew=false; Sync.meta.welcomed=true; if(j.name) Sync.meta.name=j.name; Sync.saveMeta();
+    const b=document.querySelector('.sync-banner'); if(b) b.remove();
+    Sync.adopt(JSON.parse(j.data)); Sync.state='ok'; Sync.err=''; Sync.meta.at=Date.now(); Sync.saveMeta(); Sync.paint();
+    return {ok:true,msg:`Progress from ${code} is back on this device.`};
+  },
+  ago(t){const s=(Date.now()-t)/1000; if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+' min ago'; if(s<86400) return Math.floor(s/3600)+' h ago'; return 'on '+new Date(t).toLocaleDateString()},
+  text(){ if(Sync.state==='saving') return 'Saving to the team sheet…'; if(Sync.state==='err') return Sync.err;
+    if(Sync.meta.isNew&&!Sync.hasProgress()) return 'Starts saving after your first answer.';
+    if(Sync.meta.dirty) return 'Saving soon…'; if(Sync.meta.at) return 'Saved to the team sheet '+Sync.ago(Sync.meta.at)+'.'; return 'Saved on this device.'},
+  paint(){const e=document.getElementById('syncStatus'); if(e) e.textContent=Sync.text(); document.querySelectorAll('[data-sync-code]').forEach(x=>x.textContent=Sync.meta.code)},
+  panel(){
+    const p=el('div','panel'); p.append(el('h3',null,'Backup & sync'),el('p','sub','Your progress saves to the team’s Google Sheet by itself. Use your sync code to get it back on a new device or after clearing your browser.'));
+    p.lastChild.style.marginBottom='8px';
+    const cr=el('div','sync-row'); const cd=el('span','sync-code sync-big',Sync.meta.code); cd.setAttribute('data-sync-code','');
+    const cp=el('button','btn ghost small','Copy'); cp.type='button';
+    cp.addEventListener('click',()=>{const t=Sync.meta.code; const done=()=>{cp.textContent='Copied';setTimeout(()=>cp.textContent='Copy',1500)};
+      if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done,()=>{}); else done();});
+    cr.append(el('span','flabel','Your sync code'),cd,cp); cr.firstChild.style.margin='0 6px 0 0'; p.append(cr);
+    const st=el('p','sync-status',Sync.text()); st.id='syncStatus'; st.setAttribute('aria-live','polite'); p.append(st);
+    const nr=el('div','sync-row'); const nl=el('label','flabel','Name or initials (optional, for your captain)'); nl.htmlFor='syncName'; nl.style.width='100%'; nl.style.margin='0';
+    const ni=el('input'); ni.id='syncName'; ni.maxLength=40; ni.autocomplete='off'; ni.value=Sync.meta.name||''; ni.placeholder='e.g. Priya S.';
+    const sv=el('button','btn ghost small','Save name'); sv.type='button';
+    const saveName=()=>{const v=ni.value.trim().slice(0,40); if(v===(Sync.meta.name||'')) return; Sync.meta.name=v; Sync.saveMeta(); Sync.changed(); sv.textContent='Saved'; setTimeout(()=>sv.textContent='Save name',1500)};
+    sv.addEventListener('click',saveName); ni.addEventListener('keydown',e=>{if(e.key==='Enter')saveName()});
+    nr.append(nl,ni,sv); p.append(nr);
+    const rr=el('div','sync-row'); const rl=el('label','flabel','Have a code from another device?'); rl.htmlFor='syncUse'; rl.style.width='100%'; rl.style.margin='8px 0 0';
+    const ri=el('input'); ri.id='syncUse'; ri.placeholder='MILK-4821'; ri.autocomplete='off'; ri.autocapitalize='characters'; ri.spellcheck=false;
+    const rb=el('button','btn small','Bring back my progress'); rb.type='button'; const msg=el('p','sync-msg'); msg.setAttribute('aria-live','polite');
+    const go=async()=>{rb.disabled=true;msg.className='sync-msg';msg.textContent='Looking up '+ri.value.trim().toUpperCase()+'…';const r=await Sync.useCode(ri.value);rb.disabled=false;
+      if(r.ok&&current==='progress') show('progress'); const m2=document.querySelector('.sync-msg'); if(m2){m2.className='sync-msg '+(r.ok?'good':'bad');m2.textContent=r.msg}};
+    rb.addEventListener('click',go); ri.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+    rr.append(rl,ri,rb); p.append(rr,msg);
+    const act=el('div','actions'); const now=el('button','btn ghost small','Save now'); now.type='button'; now.addEventListener('click',()=>{Sync.ver++;Sync.meta.dirty=true;Sync.push()}); act.append(now); p.append(act);
+    return p;
+  },
+  banner(){
+    if(Sync.meta.welcomed||document.querySelector('.sync-banner')) return;
+    const b=el('div','sync-banner'); b.setAttribute('role','status');
+    const t=el('p'); t.innerHTML='<b>Your progress now backs up to the team sheet automatically.</b> Your sync code is <span class="sync-code" data-sync-code></span>. Keep it somewhere safe: it brings your progress back on a new device or after clearing your browser.';
+    t.querySelector('[data-sync-code]').textContent=Sync.meta.code;
+    const r=el('div','row'); const ok=el('button','btn small','Got it'); ok.type='button'; const have=el('button','btn ghost small','I already have a code'); have.type='button';
+    ok.addEventListener('click',()=>{Sync.meta.welcomed=true;Sync.saveMeta();b.remove()});
+    have.addEventListener('click',()=>{show('progress');const i=document.getElementById('syncUse');if(i){i.scrollIntoView({block:'center'});i.focus()}});
+    r.append(have,ok); b.append(t,r); view.parentNode.insertBefore(b,view);
+  },
+  init(){
+    if(!Sync.on()) return;
+    Sync.loadMeta(); if(!Sync.meta.code){Sync.meta.code=Sync.newCode();Sync.meta.isNew=true;Sync.saveMeta()}
+    syncHook=Sync.changed;
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden') Sync.beacon(); else Sync.pull(false)});
+    window.addEventListener('pagehide',()=>Sync.beacon());
+    window.addEventListener('online',()=>{if(Sync.meta.dirty) Sync.push()});
+    const f=document.querySelector('.foot'); if(f) f.innerHTML=f.innerHTML.replace('Progress is saved in this browser only.','Progress is saved in this browser and backed up to the team’s Google Sheet.');
+    Sync.banner();
+    if(Sync.meta.isNew){ if(Sync.hasProgress()){Sync.ver++;Sync.meta.dirty=true;Sync.push()} }
+    else Sync.pull(true).then(()=>{if(Sync.meta.dirty&&!Sync.busy) Sync.push()});
+  }
+};
+
 /* ---------------- Lab calcs ---------------- */
 const FORMULAS={
   lab:[['Babcock fat','mass fat = (% fat ÷ 100) × sample mass'],['Curd yield','% = curd mass ÷ milk mass × 100'],['Overrun (volume)','% = (V ice cream − V mix) ÷ V mix × 100'],['Overrun (weight)','% = (wt mix − wt ice cream) ÷ wt ice cream × 100',1],['Freezing point','ΔTf = i · Kf · m    Kf(water) = 1.86',1]],
@@ -1103,7 +1264,7 @@ const Progress={confirm:false,
     const cal=el('div','cal'); const today=new Date(); const start=new Date(today); start.setDate(start.getDate()-27);
     for(let i=0;i<28;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=dateKey(d);const c=el('div','cell',d.getDate());
       const keys=Object.keys(S.days).filter(x=>x.startsWith(k+'|'));const done=keys.some(x=>S.days[x].done);const some=keys.some(x=>Object.keys(S.days[x].res).length);
-      if(done)c.classList.add('done');else if(some)c.classList.add('part');if(k===dateKey(today))c.classList.add('today');c.title=k+(done?' · finished':some?' · started':'');cal.append(c)}
+      if(done)c.classList.add('done');else if(some)c.classList.add('part');if(k===dateKey(today))c.classList.add('is-today');c.title=k+(done?' · finished':some?' · started':'');cal.append(c)}
     a.append(cal); g.append(a);
     // topics
     const b=el('div','panel'); b.append(el('h3',null,'Accuracy by topic'));
@@ -1118,8 +1279,8 @@ const Progress={confirm:false,
     const act=el('div','actions'); const pm=el('button','btn','Practice missed questions');pm.type='button';pm.disabled=!S.missed.length;pm.addEventListener('click',()=>{Practice.missedOnly=true;Practice.topics=new Set(Object.keys(TOPICS));Practice.kinds=new Set(Object.keys(KINDS));Practice.reset();show('practice')});act.append(pm);c.append(act);
     if(S.mocks.length){c.append(el('div','flabel','Mock tests'));c.lastChild.style.marginTop='16px';const ul=el('ul','qlist');S.mocks.slice(-6).reverse().forEach(m=>{const li=el('li');li.append(el('span','mk',Math.round(m.e/m.p*100)+'%'),el('span','tx',`${m.d} · Div ${m.lv} · ${m.e} / ${m.p} pts`));ul.append(li)});c.append(ul)}
     const rs=el('div','actions'); const rb=el('button','btn ghost small','Reset all progress'); rb.type='button'; rb.addEventListener('click',()=>{Progress.confirm=true;show('progress')}); rs.append(rb); c.append(rs);
-    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, review pile, and flashcard progress in this browser. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{}};save();Cards.reset();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
-    g.append(c);
+    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, review pile, and flashcard progress in this browser'+(Sync.on()?' and on the team sheet':'')+'. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{},resetAt:Date.now()};save();Cards.reset();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
+    g.append(c); if(Sync.on()) g.append(Sync.panel());
     // bank info
     const d=el('div','panel'); d.append(el('h3',null,'What’s in the bank'));
     const counts={};BANK.forEach(q=>{counts[q.k]=(counts[q.k]||0)+1});
@@ -1136,6 +1297,7 @@ const Progress={confirm:false,
 /* ---------------- boot ---------------- */
 document.getElementById('lv'+S.level).setAttribute('aria-pressed','true');
 document.getElementById('lv'+(S.level==='B'?'C':'B')).setAttribute('aria-pressed','false');
+Sync.init();
 const startView=['today','practice','cards','lab','mock','progress'].includes(location.hash.slice(1))?location.hash.slice(1):'today';
 show(startView);
 
