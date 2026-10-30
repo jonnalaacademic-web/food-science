@@ -194,6 +194,27 @@ textarea{width:100%;min-height:110px;font:inherit;font-size:16px;padding:10px 12
 .secscore .n{font-family:var(--f-mono);font-size:20px;font-weight:600}
 .secscore .l{font-size:13px;color:var(--muted)}
 
+/* 2027 invitationals */
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px}
+.inv-card{display:flex;flex-direction:column;gap:12px}
+.inv-card h3{font-size:21px;margin:0}
+.inv-card .sub{margin:0}
+.inv-facts{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:13.5px;color:var(--muted)}
+.inv-facts b{font-family:var(--f-mono);color:var(--ink);font-size:17px;margin-right:4px}
+.inv-hist{font-size:14px;color:var(--muted);margin:0}
+.inv-hist b{color:var(--ink);font-family:var(--f-mono)}
+.inv-card .actions{margin-top:auto}
+.inv-mode{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px}
+.inv-nav{margin:-4px 0 16px}
+.inv-nav summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--muted)}
+.inv-jump{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.inv-jump button{min-width:36px;height:30px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-mono);font-size:12.5px;padding:0 6px}
+.inv-jump button.done{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.inv-jump button.r{background:var(--good-soft);border-color:var(--good)}
+.inv-jump button.p{background:var(--part-soft);border-color:var(--part)}
+.inv-jump button.w{background:var(--bad-soft);border-color:var(--bad)}
+.inv-q{scroll-margin-top:96px}
+
 /* progress */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
@@ -335,13 +356,14 @@ body{margin:0}
       <button class="tab" role="tab" id="tab-cards" data-view="cards">Flashcards</button>
       <button class="tab" role="tab" id="tab-lab" data-view="lab">Lab calcs</button>
       <button class="tab" role="tab" id="tab-mock" data-view="mock">Mock test<span class="tmr" id="tabTimer"></span></button>
+      <button class="tab" role="tab" id="tab-inv" data-view="inv">2027 Invitationals<span class="tmr" id="tabTimerInv"></span></button>
       <button class="tab" role="tab" id="tab-progress" data-view="progress">Progress</button>
     </nav>
   </div>
 
   <main id="view"></main>
 
-  <p class="foot">Question formats follow five real Food Science B tests (2022 SO National Invitational, 2022 UChicago, 2021 UT Austin, 2021 Troy, 2021 BirdSO): 1-point multiple choice, 2-point select-all with partial credit, true/false, one-word answers, scenario free response, and calculations graded on value and significant figures. Dairy content comes from the team study guides, Walstra’s <i>Dairy Science and Technology</i>, and the Tetra Pak <i>Dairy Processing Handbook</i>, following the 2027 Food Science: Dairy topics. Questions live in <code>questions.js</code>. Progress is saved in this browser only.</p>
+  <p class="foot">Question formats follow five real Food Science B tests (2022 SO National Invitational, 2022 UChicago, 2021 UT Austin, 2021 Troy, 2021 BirdSO): 1-point multiple choice, 2-point select-all with partial credit, true/false, one-word answers, scenario free response, and calculations graded on value and significant figures. Dairy content comes from the team study guides, Walstra’s <i>Dairy Science and Technology</i>, and the Tetra Pak <i>Dairy Processing Handbook</i>, following the 2027 Food Science: Dairy topics. The 2027 Invitationals tab has full tests from this season (Georgia Scrimmage, Highlands Virtual Invitational) exactly as written, with their official keys. Questions live in <code>questions.js</code>. Progress is saved in this browser only.</p>
 </div>
 
 <script>/* theme switch (works on the lock screen too) */
@@ -359,7 +381,7 @@ body{margin:0}
 <script src="data.js"></script>
 <script>
 window.__fsStart=function(){
-const {TOPICS,SRC,BANK}=window.CW; const CARDS=window.CW.CARDS||[];
+const {TOPICS,SRC,BANK}=window.CW; const CARDS=window.CW.CARDS||[]; const TESTS=window.CW.TESTS||[];
 
 /* ---------------- utilities ---------------- */
 function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return (h>>>0)}
@@ -402,13 +424,15 @@ function parseNum(s){
   return {v:ex!=null?parseFloat(m[1])*Math.pow(10,parseInt(ex)):parseFloat(m[1]),str:m[1]};
 }
 function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9β\-]/g,'').replace(/-/g,'')}
-function ptsOf(q){return q.k==='short'?q.kp.length:q.k==='multi'?2:1}
+function basePts(q){return q.k==='short'?q.kp.length:q.k==='multi'?2:1}
+function ptsOf(q){return q.pts!=null?q.pts:basePts(q)}  /* full past tests carry their real point values */
 
 /* ---------------- grading ---------------- */
 function grade(q,resp){
   if(resp==null||resp==='') return {frac:0,blank:true};
   switch(q.k){
-    case 'mc': case 'tf': return {frac:resp===q.a?1:0};
+    case 'mc': return {frac:(resp===q.a||(q.alt||[]).includes(resp))?1:0};
+    case 'tf': return {frac:resp===q.a?1:0};
     case 'multi':{let r=0,w=0;resp.forEach(i=>q.a.includes(i)?r++:w++);return {frac:Math.max(0,(r-w)/q.a.length),r,w}}
     case 'fill':{const n=norm(resp);return {frac:q.acc.some(a=>norm(a)===n)?1:0}}
     case 'num':{
@@ -426,7 +450,7 @@ function grade(q,resp){
       if(err<=0.01) return {frac:0.75,sfOk,given,rounding:sfOk&&!exact};
       return {frac:0,sfOk,given,wrongValue:true};
     }
-    case 'short':{if(!resp.hits) return {frac:0};return {frac:resp.hits.filter(Boolean).length/q.kp.length}}
+    case 'short':{if(!resp.hits) return {frac:0};const w=q.kpw||q.kp.map(()=>1),tot=w.reduce((a,b)=>a+b,0);return {frac:resp.hits.reduce((a,h,i)=>a+(h?w[i]:0),0)/tot}}
   }
   return {frac:0};
 }
@@ -594,13 +618,13 @@ function genOne(key,r,tag){const q=GEN[key].make(r);q.id='g:'+key+':'+tag;q.gen=
 
 /* ---------------- storage ---------------- */
 const KEY='curds-whey-v1';
-let S={level:'C',days:{},topics:{},missed:[],seen:{},mocks:[]};
+let S={level:'C',days:{},topics:{},missed:[],seen:{},mocks:[],inv:{}};
 try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);S=Object.assign(S,o)}}catch(e){}
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let syncHook=null;
 function save(){S.savedAt=Date.now();saveLocal();if(syncHook)syncHook()}
 function record(q,frac){
-  const pts=ptsOf(q); const t=S.topics[q.t]||[0,0]; t[0]+=frac*pts; t[1]+=pts; S.topics[q.t]=t;
+  const pts=basePts(q); const t=S.topics[q.t]||[0,0]; t[0]+=frac*pts; t[1]+=pts; S.topics[q.t]=t;
   if(!q.gen){ S.seen[q.id]=(S.seen[q.id]||0)+1;
     const i=S.missed.indexOf(q.id);
     if(frac<1&&i<0) S.missed.push(q.id); if(frac===1&&i>=0) S.missed.splice(i,1); }
@@ -640,7 +664,7 @@ function renderQ(q,o){
       b.setAttribute('aria-pressed',isSel?'true':'false');
       if(review){
         b.disabled=true;
-        const correct=q.k==='multi'?q.a.includes(i):q.a===val;
+        const correct=q.k==='multi'?q.a.includes(i):(q.a===val||(q.alt||[]).includes(val));
         if(correct&&isSel) b.classList.add('ok');
         else if(!correct&&isSel) b.classList.add('no');
         else if(correct) b.classList.add('miss','ok');
@@ -699,9 +723,11 @@ function renderQ(q,o){
 }
 function shortKey(q,hits,onHits){
   const w=el('div','model'); w.append(el('div','lbl','Model answer'), el('div',null,q.m));
-  const kp=el('div','kp'); const lbl=el('div','lbl',onHits?'Tick each key point your answer included (1 pt each)':'Key points (1 pt each)'); lbl.style.marginTop='10px'; w.append(lbl);
+  const each=q.kpw?'':' (1 pt each)';
+  const kp=el('div','kp'); const lbl=el('div','lbl',(onHits?'Tick each key point your answer included':'Key points')+each); lbl.style.marginTop='10px'; w.append(lbl);
   q.kp.forEach((t,i)=>{const l=el('label');const c=el('input');c.type='checkbox';c.id='kp-'+q.id+'-'+i;c.checked=!!(hits&&hits[i]);c.disabled=!onHits;
-    c.addEventListener('change',()=>{const h=[...kp.querySelectorAll('input')].map(x=>x.checked);onHits&&onHits(h)});l.append(c,el('span',null,t));kp.append(l)});
+    c.addEventListener('change',()=>{const h=[...kp.querySelectorAll('input')].map(x=>x.checked);onHits&&onHits(h)});
+    const wt=q.kpw?q.kpw[i]:null; l.append(c,el('span',null,wt!=null?`${t} (${wt} ${wt===1?'pt':'pts'})`:t));kp.append(l)});
   w.append(kp); return w;
 }
 function feedback(q,resp){
@@ -728,6 +754,7 @@ function feedback(q,resp){
     fb.append(el('p',null,'Answer: '+q.ans+'. '+q.x));
   } else if(q.k==='short'){
     /* model shown above */
+    if(q.kpw&&q.x) fb.append(el('p',null,q.x));
   } else fb.append(el('p',null,q.x));
   return fb;
 }
@@ -743,7 +770,7 @@ function show(v){
   current=v; document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v?'true':'false'));
   const tw=document.querySelector('.tabs-wrap'),ts=document.querySelector('.tab[aria-selected="true"]');
   if(tw&&ts){const a=ts.getBoundingClientRect(),w=tw.getBoundingClientRect();if(a.left<w.left)tw.scrollLeft-=w.left-a.left+16;else if(a.right>w.right)tw.scrollLeft+=a.right-w.right+16;}
-  updateStreak(); view.innerHTML=''; ({today:Today.render,practice:Practice.render,lab:Lab.render,mock:Mock.render,progress:Progress.render,cards:Cards.render})[v]();
+  updateStreak(); view.innerHTML=''; ({today:Today.render,practice:Practice.render,lab:Lab.render,mock:Mock.render,inv:Inv.render,progress:Progress.render,cards:Cards.render})[v]();
 }
 function updateStreak(){
   let n=0; const d=new Date();
@@ -1012,6 +1039,10 @@ function mergeState(a,b){
   for(const x of (a.mocks||[])) if(!mm.has(mk(x))||newer===a) mm.set(mk(x),x);
   m.mocks=[...mm.values()].sort((x,y)=>(x.t||0)-(y.t||0)||String(x.d).localeCompare(String(y.d)));
   m.missed=((newer.missed)||[]).slice();
+  m.inv={}; const ia=a.inv||{}, ib=b.inv||{};                        // full invitational test attempts, keyed by start time
+  for(const id of new Set([...Object.keys(ia),...Object.keys(ib)])){const im=new Map();
+    for(const x of (ib[id]||[])) im.set(x.t,x); for(const x of (ia[id]||[])) if(!im.has(x.t)||newer===a) im.set(x.t,x);
+    m.inv[id]=[...im.values()].sort((x,y)=>x.t-y.t);}
   return m;
 }
 const Sync={SK:'curds-whey-sync',meta:{code:'',name:'',isNew:true,welcomed:false,dirty:false,at:0},state:'idle',err:'',timer:null,busy:false,ver:0,lastPush:0,lastPull:0,
@@ -1021,7 +1052,7 @@ const Sync={SK:'curds-whey-sync',meta:{code:'',name:'',isNew:true,welcomed:false
   newCode(){const W=['MILK','WHEY','CURD','BRIE','FETA','GHEE','SKYR','KEFIR','GOUDA','CREAM','QUESO','COLBY','LASSI'];
     const a=new Uint32Array(2); if(window.crypto&&crypto.getRandomValues) crypto.getRandomValues(a); else {a[0]=Math.random()*4e9;a[1]=Math.random()*4e9}
     return W[a[0]%W.length]+'-'+(1000+a[1]%9000)},
-  hasProgress(){return Object.keys(S.days||{}).length>0||Object.keys(S.topics||{}).length>0||Object.keys(S.fc||{}).length>0||(S.mocks||[]).length>0},
+  hasProgress(){return Object.keys(S.days||{}).length>0||Object.keys(S.topics||{}).length>0||Object.keys(S.fc||{}).length>0||(S.mocks||[]).length>0||Object.keys(S.inv||{}).length>0},
   strip(st){const today=dateKey(),days={};
     for(const [k,v] of Object.entries(st.days||{})){ if(k.startsWith(today+'|')){days[k]=v;continue}
       const res={}; for(const [i,r] of Object.entries(v.res||{})) res[i]={frac:r.frac}; days[k]={res,done:!!v.done}; }
@@ -1249,6 +1280,130 @@ const Mock={phase:'intro',qs:[],resps:[],secs:[],endAt:0,tick:null,recordedShort
   }
 };
 
+/* ---------------- 2027 Invitationals: full past tests, taken as written ---------------- */
+const INV_KINDS=[['tf','True / false'],['mc','Multiple choice'],['multi','Mark all correct'],['short','Free response']];
+function invRec(){return S.inv||(S.inv={})}
+function topicRecord(q,frac){const pts=basePts(q);const t=S.topics[q.t]||[0,0];t[0]+=frac*pts;t[1]+=pts;S.topics[q.t]=t}
+function fmtClock(ms){ms=Math.max(0,ms);const m=Math.floor(ms/60000),s=Math.floor(ms%60000/1000);return m+':'+String(s).padStart(2,'0')}
+const r1=x=>Math.round(x*100)/100;
+const Inv={phase:'list',test:null,resps:[],startAt:0,endAt:0,usedMs:0,timed:true,ranTimed:true,tick:null,recordedShort:false,onlyMissed:false,quitAsk:false,
+  byId(id){return TESTS.find(t=>t.id===id)},
+  total(t){return r1(t.qs.reduce((a,q)=>a+ptsOf(q),0))},
+  isAnswered(x){return !(x==null||x===''||(Array.isArray(x)&&!x.length)||(typeof x==='object'&&!Array.isArray(x)&&!String(x.text||'').trim()))},
+  answered(){return Inv.resps.filter(Inv.isAnswered).length},
+  start(id){const t=Inv.byId(id); Inv.test=t; Inv.resps=t.qs.map(()=>null); Inv.startAt=Date.now(); Inv.ranTimed=Inv.timed; Inv.endAt=Inv.timed?Inv.startAt+t.mins*60000:0;
+    Inv.phase='running'; Inv.recordedShort=false; Inv.onlyMissed=false; Inv.quitAsk=false;
+    clearInterval(Inv.tick); Inv.tick=setInterval(Inv.onTick,1000); Inv.onTick()},
+  clockText(){return Inv.ranTimed?fmtClock(Inv.endAt-Date.now()):fmtClock(Date.now()-Inv.startAt)},
+  onTick(){const txt=Inv.clockText(); const c=document.getElementById('invClock'); if(c){c.textContent=txt;c.classList.toggle('low',Inv.ranTimed&&Inv.endAt-Date.now()<5*60000)}
+    const tt=document.getElementById('tabTimerInv'); if(tt) tt.textContent=Inv.phase==='running'?txt:'';
+    if(Inv.ranTimed&&Inv.phase==='running'&&Date.now()>=Inv.endAt) Inv.submit()},
+  submit(){
+    clearInterval(Inv.tick); Inv.usedMs=Math.min(Date.now()-Inv.startAt,Inv.ranTimed?Inv.test.mins*60000:Infinity); Inv.phase='done'; document.getElementById('tabTimerInv').textContent='';
+    Inv.test.qs.forEach((q,i)=>{ if(q.k==='short'){const r=Inv.resps[i];Inv.resps[i]={text:(r&&r.text)||'',hits:q.kp.map(()=>false)}} else topicRecord(q,grade(q,Inv.resps[i]).frac) });
+    Inv.saveScore(); if(current==='inv'){show('inv');window.scrollTo({top:0})}
+  },
+  totals(){const per={};let e=0,p=0;Inv.test.qs.forEach((q,i)=>{const g=grade(q,Inv.resps[i]);const pt=ptsOf(q);const k=per[q.k]||(per[q.k]=[0,0]);k[0]+=g.frac*pt;k[1]+=pt;e+=g.frac*pt;p+=pt});return {e:r1(e),p:r1(p),per}},
+  saveScore(){const t=Inv.totals();const h=invRec()[Inv.test.id]||(invRec()[Inv.test.id]=[]);const old=h.find(x=>x.t===Inv.startAt);
+    const rec={t:Inv.startAt,d:dateKey(new Date(Inv.startAt)),e:t.e,p:t.p,timed:Inv.ranTimed,min:Math.round(Inv.usedMs/60000)};
+    if(old) Object.assign(old,rec); else h.push(rec); save()},
+  jumpNav(items,cls){ /* items: [index] ; cls(i) -> class */
+    const d=el('details','inv-nav'); d.append(el('summary',null,'Jump to a question'));
+    const box=el('div','inv-jump'); items.forEach(i=>{const b=el('button',cls(i),String(i+1));b.type='button';b.id='invn-'+i;b.setAttribute('aria-label','Question '+(i+1));
+      b.addEventListener('click',()=>{const q=document.getElementById('invq-'+i);if(q)q.scrollIntoView({behavior:'smooth',block:'start'})});box.append(b)});
+    d.append(box); return d},
+  render(){
+    const s=el('section');
+    if(Inv.phase==='running') return Inv.renderRunning(s);
+    if(Inv.phase==='done'&&Inv.test) return Inv.renderDone(s);
+    s.append(el('h2',null,'2027 Invitationals'), el('p','sub','Full tests from this season’s invitationals, exactly as written: same questions, same order, same point values, and the official answer key. Take one start to finish, then review every answer.'));
+    if(!TESTS.length){const p=el('div','panel');p.append(el('h3',null,'No invitational tests loaded'),el('p','sub','This copy of the questions file doesn’t have the 2027 invitationals yet. Run build-app.mjs again and upload the new data.js.'));s.append(p);view.append(s);return}
+    const mode=el('div','inv-mode'); mode.append(el('span','seglabel','Clock'));
+    const seg=el('div','seg'); seg.setAttribute('role','group'); seg.setAttribute('aria-label','Timer');
+    [[true,'Timed, like the real test'],[false,'Untimed']].forEach(([v,l])=>{const b=el('button',null,l);b.type='button';b.setAttribute('aria-pressed',Inv.timed===v?'true':'false');b.addEventListener('click',()=>{Inv.timed=v;show('inv')});seg.append(b)});
+    mode.append(seg); s.append(mode);
+    const grid=el('div','inv-grid');
+    TESTS.forEach(t=>{
+      const c=el('article','panel inv-card');
+      const ch=el('div','chips'); ch.append(el('span','chip past',SRC[t.src]?SRC[t.src].label:t.title),el('span','chip lv','Div B'));
+      c.append(ch, el('h3',null,t.name), el('p','sub',t.note));
+      const facts=el('div','inv-facts'); const fact=(n,l)=>{const d=el('span');d.append(el('b',null,n),document.createTextNode(l));return d};
+      facts.append(fact(t.qs.length,'questions'),fact(Inv.total(t),'points'),fact(t.mins,'minutes')); c.append(facts);
+      const kc={}; t.qs.forEach(q=>kc[q.k]=(kc[q.k]||0)+1);
+      c.append(el('p','inv-hist',INV_KINDS.filter(([k])=>kc[k]).map(([k,v])=>`${kc[k]} ${v.toLowerCase()}`).join(' · ')));
+      const h=invRec()[t.id]||[];
+      if(h.length){const best=Math.max(...h.map(x=>x.p?x.e/x.p:0)),last=h[h.length-1];const p=el('p','inv-hist');
+        p.innerHTML=`Best <b>${Math.round(best*100)}%</b> · Last <b>${Math.round(last.e/last.p*100)}%</b> (${last.e} / ${last.p} pts, ${last.d}) · ${h.length} ${h.length===1?'try':'tries'}`;c.append(p)}
+      else c.append(el('p','inv-hist','Not taken yet.'));
+      const act=el('div','actions'); const b=el('button','btn',Inv.timed?`Start the ${t.mins}-minute test`:'Start untimed');b.type='button';
+      b.addEventListener('click',()=>{Inv.start(t.id);show('inv');window.scrollTo({top:0})}); act.append(b);
+      if(Inv.test===t&&Inv.resps.length&&Inv.usedMs){const rv=el('button','btn ghost','Review last attempt');rv.type='button';rv.addEventListener('click',()=>{Inv.phase='done';show('inv');window.scrollTo({top:0})});act.append(rv)}
+      c.append(act); grid.append(c);
+    });
+    s.append(grid);
+    const tip=el('p','hint','Free response is self-graded: after you submit, tick the rubric points your answer hit. Free-response points start at 0 until you do.'); tip.style.marginTop='16px'; s.append(tip);
+    view.append(s);
+  },
+  renderRunning(s){
+    const t=Inv.test, n=t.qs.length;
+    const bar=el('div','timerbar'); const lc=el('div'); const ck=el('span','clock',Inv.clockText()); ck.id='invClock'; lc.append(ck);
+    const st=el('span','tally',`${Inv.answered()} of ${n} answered`); st.id='invCount'; lc.append(document.createTextNode('  '),st,document.createTextNode(Inv.ranTimed?'':'  · untimed'));
+    const sb=el('button','btn','Submit test'); sb.type='button';
+    const conf=el('div','row'); conf.hidden=true; conf.append(el('span',null,'Submit now?'));
+    const y=el('button','btn small','Yes, submit');y.type='button';y.addEventListener('click',()=>Inv.submit());
+    const no=el('button','btn ghost small','Keep working');no.type='button';no.addEventListener('click',()=>{conf.hidden=true;sb.hidden=false});conf.append(y,no);
+    sb.addEventListener('click',()=>{sb.hidden=true;conf.hidden=false});
+    const rt=el('div','row'); rt.append(sb,conf); bar.append(lc,rt); s.append(bar);
+    s.append(el('h2',null,t.title), el('p','sub',t.note));
+    s.append(Inv.jumpNav(t.qs.map((q,i)=>i),i=>Inv.isAnswered(Inv.resps[i])?'done':''));
+    const list=el('div','mocklist');
+    t.qs.forEach((q,i)=>{const w=el('div','inv-q');w.id='invq-'+i;
+      w.append(renderQ(q,{mode:'exam',resp:Inv.resps[i],label:`QUESTION ${i+1}`,onChange:(r)=>{Inv.resps[i]=r;const c=document.getElementById('invCount');if(c)c.textContent=`${Inv.answered()} of ${n} answered`;
+        const nb=document.getElementById('invn-'+i);if(nb)nb.className=Inv.isAnswered(r)?'done':''}}));list.append(w)});
+    s.append(list);
+    const act=el('div','actions'); const sb2=el('button','btn','Submit test'); sb2.type='button'; sb2.addEventListener('click',()=>{window.scrollTo({top:0});sb.click()}); act.append(sb2);
+    const qb=el('button','btn ghost','Quit without saving'); qb.type='button'; act.append(qb);
+    const qc=el('div','row'); qc.hidden=true; qc.append(el('span',null,'Throw away this attempt?'));
+    const qy=el('button','btn small','Yes, quit');qy.type='button';qy.style.background='var(--bad)';qy.addEventListener('click',()=>{clearInterval(Inv.tick);Inv.phase='list';Inv.test=null;Inv.resps=[];Inv.usedMs=0;document.getElementById('tabTimerInv').textContent='';show('inv');window.scrollTo({top:0})});
+    const qn=el('button','btn ghost small','Keep going');qn.type='button';qn.addEventListener('click',()=>{qc.hidden=true;qb.hidden=false});qc.append(qy,qn);
+    qb.addEventListener('click',()=>{qb.hidden=true;qc.hidden=false}); act.append(qc);
+    s.append(act); view.append(s); Inv.onTick();
+  },
+  renderDone(s){
+    const t=Inv.test; const tot=Inv.totals();
+    const p=el('div','panel summary'); p.append(el('h2',null,`${t.title}: results`));
+    const big=el('div','row'); const scoreEl=el('div','bigscore',Math.round(tot.e/tot.p*100)+'%'); const pe=el('div','sub',`${tot.e} of ${tot.p} points`); big.append(scoreEl,pe); p.append(big);
+    const ss=el('div','secscore'); const cells={};
+    INV_KINDS.filter(([k])=>tot.per[k]).forEach(([k,v])=>{const d=el('div');const nn=el('div','n',`${r1(tot.per[k][0])} / ${r1(tot.per[k][1])}`);cells[k]=nn;d.append(nn,el('div','l',v));ss.append(d)}); p.append(ss);
+    const tm=el('p','hint',`${Inv.ranTimed?'Timed':'Untimed'} · finished in ${fmtClock(Inv.usedMs)}${Inv.ranTimed?` of ${t.mins}:00`:''}.`); tm.style.marginTop='12px'; p.append(tm);
+    if(tot.per.short){const note=el('p','hint','Free response starts at 0. Scroll to each free-response question and tick the rubric points you hit; your score updates as you go.');p.append(note)}
+    const act=el('div','actions');
+    const back=el('button','btn ghost','Back to all tests');back.type='button';back.addEventListener('click',()=>{Inv.phase='list';show('inv');window.scrollTo({top:0})});
+    const again=el('button','btn ghost','Retake this test');again.type='button';again.addEventListener('click',()=>{Inv.start(t.id);show('inv');window.scrollTo({top:0})});
+    const om=el('button','fchip',Inv.onlyMissed?'Showing only questions I missed':'Show only questions I missed');om.type='button';om.setAttribute('aria-pressed',Inv.onlyMissed?'true':'false');
+    om.addEventListener('click',()=>{Inv.onlyMissed=!Inv.onlyMissed;show('inv')});
+    act.append(back,again,om); p.append(act); s.append(p);
+    const cls=i=>{const g=grade(t.qs[i],Inv.resps[i]);return g.frac===1?'r':g.frac>0?'p':'w'};
+    const shown=t.qs.map((q,i)=>i).filter(i=>!Inv.onlyMissed||cls(i)!=='r');
+    const navWrap=el('div'); navWrap.style.marginTop='18px'; navWrap.append(Inv.jumpNav(shown,cls)); s.append(navWrap);
+    const refresh=()=>{const tt=Inv.totals();scoreEl.textContent=Math.round(tt.e/tt.p*100)+'%';pe.textContent=`${tt.e} of ${tt.p} points`;
+      Object.entries(cells).forEach(([k,nn])=>nn.textContent=`${r1(tt.per[k][0])} / ${r1(tt.per[k][1])}`)};
+    const list=el('div','mocklist');
+    if(!shown.length){const q=el('div','panel');q.append(el('h3',null,'Nothing missed'),el('p','sub','You got every question fully right. Nice work.'));list.append(q)}
+    shown.forEach(i=>{const q=t.qs[i]; const holder=el('div','inv-q'); holder.id='invq-'+i;
+      const draw=()=>{holder.innerHTML='';holder.append(renderQ(q,{mode:'review',resp:Inv.resps[i],label:`QUESTION ${i+1}`,
+        onHits:q.k==='short'?(h)=>{Inv.resps[i].hits=h;Inv.saveScore();refresh();const g=grade(q,Inv.resps[i]);const fb=holder.querySelector('.fb');
+          if(fb){fb.className='fb '+(g.frac===1?'good':g.frac>0?'part':'bad');fb.querySelector('.verdict').textContent=`Self-graded · ${r1(g.frac*ptsOf(q))} / ${ptsOf(q)} pts`}
+          const nb=document.getElementById('invn-'+i);if(nb)nb.className=cls(i)}:null}))};
+      draw(); list.append(holder)});
+    s.append(list);
+    const shortQs=t.qs.filter(q=>q.k==='short');
+    if(shortQs.length&&!Inv.recordedShort){const a2=el('div','actions');const b=el('button','btn','Save free-response scores to Progress');b.type='button';
+      b.addEventListener('click',()=>{t.qs.forEach((q,i)=>{if(q.k==='short')topicRecord(q,grade(q,Inv.resps[i]).frac)});save();Inv.recordedShort=true;b.disabled=true;b.textContent='Saved to Progress'});a2.append(b);s.append(a2)}
+    view.append(s);
+  }
+};
+
 /* ---------------- Progress ---------------- */
 const Progress={confirm:false,
   render(){
@@ -1277,9 +1432,13 @@ const Progress={confirm:false,
     // missed
     const c=el('div','panel'); c.append(el('h3',null,'Review pile'), el('p','sub',`${S.missed.length} question${S.missed.length===1?'':'s'} you haven’t gotten fully right yet. Getting one right in practice removes it.`));
     const act=el('div','actions'); const pm=el('button','btn','Practice missed questions');pm.type='button';pm.disabled=!S.missed.length;pm.addEventListener('click',()=>{Practice.missedOnly=true;Practice.topics=new Set(Object.keys(TOPICS));Practice.kinds=new Set(Object.keys(KINDS));Practice.reset();show('practice')});act.append(pm);c.append(act);
+    const invDone=TESTS.filter(t=>(invRec()[t.id]||[]).length);
+    if(invDone.length){c.append(el('div','flabel','2027 Invitationals'));c.lastChild.style.marginTop='16px';const ul=el('ul','qlist');
+      invDone.forEach(t=>{const h=invRec()[t.id];const best=Math.max(...h.map(x=>x.p?x.e/x.p:0));const last=h[h.length-1];const li=el('li');
+        li.append(el('span','mk',Math.round(best*100)+'%'),el('span','tx',`${t.title} · best of ${h.length} · last ${last.d}: ${last.e} / ${last.p} pts`));li.style.cursor='pointer';li.addEventListener('click',()=>show('inv'));ul.append(li)});c.append(ul)}
     if(S.mocks.length){c.append(el('div','flabel','Mock tests'));c.lastChild.style.marginTop='16px';const ul=el('ul','qlist');S.mocks.slice(-6).reverse().forEach(m=>{const li=el('li');li.append(el('span','mk',Math.round(m.e/m.p*100)+'%'),el('span','tx',`${m.d} · Div ${m.lv} · ${m.e} / ${m.p} pts`));ul.append(li)});c.append(ul)}
     const rs=el('div','actions'); const rb=el('button','btn ghost small','Reset all progress'); rb.type='button'; rb.addEventListener('click',()=>{Progress.confirm=true;show('progress')}); rs.append(rb); c.append(rs);
-    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, review pile, and flashcard progress in this browser'+(Sync.on()?' and on the team sheet':'')+'. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{},resetAt:Date.now()};save();Cards.reset();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
+    if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, review pile, and flashcard progress in this browser'+(Sync.on()?' and on the team sheet':'')+'. It can’t be undone.'));const r2=el('div','actions');const y=el('button','btn small','Erase everything');y.type='button';y.style.background='var(--bad)';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{},inv:{},resetAt:Date.now()};save();Cards.reset();Progress.confirm=false;Today.idx=null;show('progress')});const n=el('button','btn ghost small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2.append(y,n);cf.append(r2);c.append(cf)}
     g.append(c); if(Sync.on()) g.append(Sync.panel());
     // bank info
     const d=el('div','panel'); d.append(el('h3',null,'What’s in the bank'));
