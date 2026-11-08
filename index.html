@@ -1266,14 +1266,23 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
     nav.append(strip);st.append(nav);
     const c=el('div','card qcard gcard');c.append(cardHead(g.quiz.title+' · '+g.title,null,(i+1)+' / '+n));
     const qb=el('div','gnotes');qb.innerHTML='<p class="qn mono">Q'+q.n+'.</p>'+q.q;c.append(qb);
-    const ans=el('div');const mark=r.quiz[q.n];
+    const ans=el('div');const mark=r.quiz[q.n]; r.ans=r.ans||{}; const shown=mark||Guides._show===g.id+q.n;
+    const ta=el('textarea');ta.placeholder='Type your answer here first…';ta.value=r.ans[q.n]||'';ta.setAttribute('aria-label','Your answer');
+    if(shown){ta.readOnly=true;ta.hidden=true}
+    ta.addEventListener('input',()=>{r.ans[q.n]=ta.value;saveLocal()});
     const go=(v)=>{r.quiz[q.n]=v;save();if(i<n-1)Guides.qi=i+1;show('guides')};
-    if(mark||Guides._show===g.id+q.n){
-      const fb=el('div','fb '+(mark==='k'?'ok':mark==='m'?'miss':'pend'));const v=el('span','verdict',mark==='k'?'Got it':mark==='m'?'Marked as missed':'Answer');const a=el('div','ans gnotes');a.innerHTML=q.a;fb.append(v,a);ans.append(fb);
-      const row=el('div','btns');row.style.marginTop='10px';
-      const k=el('button','btn fc-got','I got it');k.type='button';k.addEventListener('click',()=>go('k'));
+    if(shown){
+      const mine=r.ans[q.n]||'';
+      ans.append(el('div','flabel','Your answer'),el('div','yours',mine.trim()?mine:'(no answer typed)'));
+      const fb=el('div','fb '+(mark==='k'?'ok':mark==='m'?'miss':'pend'));const v=el('span','verdict',mark==='k'?'Correct answer · you marked it right':mark==='m'?'Correct answer · you marked it missed':'Correct answer');const a=el('div','ans gnotes');a.innerHTML=q.a;fb.append(v,a);ans.append(fb);
+      ans.append(el('p','hintline','Compare the two. Did your answer have the key facts, numbers and units?'));
+      const row=el('div','btns');
+      const k=el('button','btn fc-got','I got it right');k.type='button';k.addEventListener('click',()=>go('k'));
       const m=el('button','btn fc-miss','I missed it');m.type='button';m.addEventListener('click',()=>go('m'));row.append(k,m);ans.append(row);
-    }else{const sb=el('button','btn primary','Show answer');sb.type='button';sb.addEventListener('click',()=>{Guides._show=g.id+q.n;show('guides')});ans.append(el('p','hintline','Answer it in your head or on paper first, then check.'),sb)}
+    }else{
+      const sb=el('button','btn primary','Check my answer');sb.type='button';sb.addEventListener('click',()=>{r.ans[q.n]=ta.value;saveLocal();Guides._show=g.id+q.n;show('guides')});
+      ans.append(ta,sb);
+    }
     c.append(ans);
     const nv=el('div','btns');nv.style.marginTop='14px';
     if(i>0){const p=el('button','btn quiet','← Previous');p.type='button';p.addEventListener('click',()=>{Guides.qi=i-1;show('guides')});nv.append(p)}
@@ -1394,7 +1403,7 @@ function mergeState(a,b){
   m.seen=Object.assign({},b.seen||{}); for(const [k,v] of Object.entries(a.seen||{})) m.seen[k]=Math.max(v,m.seen[k]||0);
   m.topics=Object.assign({},b.topics||{}); for(const [k,v] of Object.entries(a.topics||{})){const o=m.topics[k]; if(!o||v[1]>=o[1]) m.topics[k]=v;}
   m.guides={}; { const ga=a.guides||{}, gb=b.guides||{}, un=(x,y)=>newer===a?Object.assign({},y,x):Object.assign({},x,y);
-    for(const id of new Set([...Object.keys(ga),...Object.keys(gb)])){const A=ga[id]||{},B=gb[id]||{};m.guides[id]={read:un(A.read,B.read),quiz:un(A.quiz,B.quiz),test:un(A.test,B.test)};} }
+    for(const id of new Set([...Object.keys(ga),...Object.keys(gb)])){const A=ga[id]||{},B=gb[id]||{};m.guides[id]={read:un(A.read,B.read),quiz:un(A.quiz,B.quiz),test:un(A.test,B.test),ans:un(A.ans,B.ans)};} }
   m.fc=Object.assign({},b.fc||{}); for(const [k,v] of Object.entries(a.fc||{})){const o=m.fc[k]; if(!o||(v.n||0)>(o.n||0)||((v.n||0)===(o.n||0)&&newer===a)) m.fc[k]=v;}
   const mk=x=>x.t?('t'+x.t):(x.d+'|'+x.lv+'|'+x.e+'|'+x.p); const mm=new Map();
   for(const x of (b.mocks||[])) mm.set(mk(x),x);
