@@ -295,6 +295,32 @@ details.more summary{cursor:pointer;font-weight:600}
 .sync-msg.bad{color:var(--miss);font-weight:600} .sync-msg.good{color:var(--ok);font-weight:600}
 .sync-status{font-size:.88rem;color:var(--muted);margin:6px 0 0}
 
+
+/* study guides */
+.gsteps{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.gstep{flex:1 1 160px;display:flex;justify-content:space-between;gap:8px;align-items:baseline;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 12px;font-weight:600}
+.gstep[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.gnotes{overflow-wrap:anywhere;line-height:1.55}
+.gnotes h2{font-family:var(--font-display);font-size:1.2rem;margin:20px 0 6px}
+.gnotes h3{font-size:1.05rem;margin:16px 0 4px}
+.gnotes p{margin:8px 0} .gnotes ul,.gnotes ol{padding-left:22px;margin:8px 0} .gnotes li{margin:4px 0}
+.gnotes img{display:block;max-width:100%;height:auto;margin:12px auto 4px;border-radius:6px;background:#fff}
+.gnotes figure{margin:0} .gnotes figcaption,.gnotes p>em:only-child{font-size:.84rem;color:var(--muted)}
+.gtable{overflow-x:auto;margin:10px 0}
+.gnotes table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+.gnotes th,.gnotes td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.gnotes th{background:var(--accent-soft)}
+.gnotes blockquote.callout{margin:12px 0;padding:8px 12px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.gnotes blockquote.callout p{margin:4px 0}
+.gnotes blockquote.c-remember,.gnotes blockquote.c-tip{border-left-color:var(--ok);background:var(--ok-bg)}
+.gnotes blockquote.c-careful,.gnotes blockquote.c-warning,.gnotes blockquote.c-trap{border-left-color:var(--miss);background:var(--miss-bg)}
+.gnotes blockquote:not(.callout){margin:6px 0 6px 6px;padding:0 0 0 12px;border-left:2px solid var(--line)}
+.opts .gnotes p,.gcard .opt .ot p{margin:0}
+.gcard{max-width:900px}
+.gnotes .qn+p,.gnotes .qn+p:first-child{display:inline}
+.prompt.gnotes>.qn{margin-right:4px}
+.prompt.gnotes>.qn+p{display:inline;margin:0}
+
 /* lock screen */
 .lock{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px 16px;background:var(--bg)}
 .lock-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 22px 22px;box-shadow:0 8px 28px rgba(20,32,51,.08)}
@@ -341,6 +367,7 @@ details.more summary{cursor:pointer;font-weight:600}
     </div>
     <nav class="tabs" role="tablist" aria-label="Practice type">
       <button class="tab" role="tab" id="tab-today" data-mode="today">Daily set</button>
+      <button class="tab" role="tab" id="tab-guides" data-mode="guides">Study guides</button>
       <button class="tab" role="tab" id="tab-cards" data-mode="cards">Flashcards</button>
       <button class="tab" role="tab" id="tab-lab" data-mode="lab">Lab calcs</button>
       <button class="tab" role="tab" id="tab-practice" data-mode="practice">Question bank</button>
@@ -625,7 +652,7 @@ function genOne(key,r,tag){const q=GEN[key].make(r);q.id='g:'+key+':'+tag;q.gen=
 const KEY='curds-whey-v1', RUNKEY='curds-whey-run';
 let S={level:'C',days:{},topics:{},missed:[],seen:{},mocks:[],inv:{},fc:{}};
 try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);S=Object.assign(S,o)}}catch(e){}
-if(!S.inv)S.inv={}; if(!S.fc)S.fc={}; if(!S.mocks)S.mocks=[]; if(!S.missed)S.missed=[];
+if(!S.inv)S.inv={}; if(!S.fc)S.fc={}; if(!S.guides)S.guides={}; if(!S.mocks)S.mocks=[]; if(!S.missed)S.missed=[];
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let syncHook=null;
 function save(){S.savedAt=Date.now();saveLocal();if(syncHook)syncHook();badge()}
@@ -1189,6 +1216,105 @@ const Inv={sel:null,timed:true,filter:'all',
   }
 };
 VIEWS.inv=(p,s)=>Inv.render(p,s);
+/* ================= Study guides: review the notes, then answer each guide's questions ================= */
+const GUIDES=window.CW.GUIDES||[];
+const GP=()=>S.guides||(S.guides={});
+function gRec(id){const g=GP();return g[id]||(g[id]={read:{},quiz:{},test:{}})}
+function gStats(g){
+  const r=GP()[g.id]||{read:{},quiz:{},test:{}}, nr=g.notes.filter((_,i)=>r.read[i]).length, qd=g.quiz.qs.filter(q=>r.quiz[q.n]).length, qk=g.quiz.qs.filter(q=>r.quiz[q.n]==='k').length;
+  let e=0,p=0,td=0; g.test.qs.forEach(q=>{p+=q.pts;const t=r.test[q.n];if(t){td++;e+=t.f*q.pts}});
+  const total=g.notes.length+g.quiz.qs.length+g.test.qs.length, done=nr+qd+td;
+  return {nr,qd,qk,e,p,td,total,done};
+}
+const Guides={gid:null,view:'notes',sec:0,qi:0,
+  cur(){return GUIDES.find(g=>g.id===Guides.gid)||GUIDES[0]},
+  open(id,view,n){Guides.gid=id;Guides.view=view||'notes';Guides.sec=n||0;Guides.qi=0;show('guides');window.scrollTo({top:0})},
+  render(pk,st){
+    if(!GUIDES.length){st.append(el('div','card empty','No study guides are loaded yet. Run build-guides.py, then build-app.mjs.'));return}
+    const g=Guides.cur(); Guides.gid=g.id;
+    pk.append(el('h2',null,'Study guides'),el('p','small','For each guide: read the notes first, then do the quiz, then the practice test.'));
+    const list=el('div','plist');
+    GUIDES.forEach((x,i)=>{const s=gStats(x);list.append(pitem((i+1)+'. '+x.title,s.nr+'/'+x.notes.length+' notes · '+s.qd+'/'+x.quiz.qs.length+' quiz',Math.round(s.done/s.total*100)+'%',x.id===g.id,()=>Guides.open(x.id,'notes'),[[s.done/s.total,'g']]))});
+    pk.append(list);
+    const s=gStats(g), box=el('div','card');
+    const head=cardHead('Study guide · '+(GUIDES.indexOf(g)+1)+' of '+GUIDES.length,g.title,`${Math.round(s.done/s.total*100)}% done`);
+    box.append(head);
+    if(g.intro){const d=el('div','gnotes small');d.innerHTML=g.intro;box.append(d)}
+    const steps=[['notes','1. Notes',s.nr+'/'+g.notes.length],['quiz','2. Quiz',s.qd+'/'+g.quiz.qs.length],['test','3. Practice test',s.td+'/'+g.test.qs.length]];
+    const sw=el('div','gsteps');steps.forEach(([k,l,c])=>{const b=el('button','gstep');b.type='button';b.setAttribute('aria-pressed',Guides.view===k?'true':'false');b.append(el('span',null,l),el('span','mono small',c));b.addEventListener('click',()=>{Guides.view=k;Guides.sec=0;Guides.qi=0;show('guides')});sw.append(b)});
+    box.append(sw);st.append(box);
+    if(Guides.view==='notes') Guides.notes(st,g); else if(Guides.view==='quiz') Guides.quiz(st,g); else Guides.test(st,g);
+  },
+  notes(st,g){
+    const r=gRec(g.id), n=g.notes.length, i=Math.min(Guides.sec,n-1), sec=g.notes[i];
+    const nav=el('div','card');nav.append(el('div','flabel','Sections'));const strip=el('div','strip');
+    g.notes.forEach((x,j)=>{const b=el('button','chip'+(r.read[j]?' g':j===i?' a':''),String(j+1));b.type='button';b.title=x.h;b.addEventListener('click',()=>{Guides.sec=j;show('guides')});strip.append(b)});
+    nav.append(strip);st.append(nav);
+    const c=el('div','card gcard');c.append(cardHead('Notes · section '+(i+1)+' of '+n,sec.h.replace(/^\d+\.\s*/,''),r.read[i]?'✓ read':''));
+    const body=el('div','gnotes');body.innerHTML=sec.html;c.append(body);
+    const act=el('div','btns');act.style.marginTop='16px';
+    if(i>0){const p=el('button','btn','← Previous');p.type='button';p.addEventListener('click',()=>{Guides.sec=i-1;show('guides');window.scrollTo({top:0})});act.append(p)}
+    const last=i===n-1, nx=el('button','btn primary',last?'Done reading → start the quiz':'Mark read & next →');nx.type='button';
+    nx.addEventListener('click',()=>{r.read[i]=1;save();if(last){Guides.view='quiz';Guides.qi=0}else Guides.sec=i+1;show('guides');window.scrollTo({top:0})});act.append(nx);
+    if(!last){const sk=el('button','btn quiet','Skip to quiz');sk.type='button';sk.addEventListener('click',()=>{Guides.view='quiz';show('guides')});act.append(sk)}
+    c.append(act);st.append(c);
+  },
+  quiz(st,g){
+    const r=gRec(g.id), qs=g.quiz.qs, n=qs.length, i=Math.min(Guides.qi,n-1), q=qs[i];
+    const nav=el('div','card');nav.append(el('div','flabel',g.quiz.title+' · tap a number to jump'));const strip=el('div','strip');
+    qs.forEach((x,j)=>{const m=r.quiz[x.n];const b=el('button','chip'+(m==='k'?' g':m==='m'?' r':j===i?' a':''),x.n);b.type='button';b.addEventListener('click',()=>{Guides.qi=j;show('guides')});strip.append(b)});
+    nav.append(strip);st.append(nav);
+    const c=el('div','card qcard gcard');c.append(cardHead(g.quiz.title+' · '+g.title,null,(i+1)+' / '+n));
+    const qb=el('div','gnotes');qb.innerHTML='<p class="qn mono">Q'+q.n+'.</p>'+q.q;c.append(qb);
+    const ans=el('div');const mark=r.quiz[q.n];
+    const go=(v)=>{r.quiz[q.n]=v;save();if(i<n-1)Guides.qi=i+1;show('guides')};
+    if(mark||Guides._show===g.id+q.n){
+      const fb=el('div','fb '+(mark==='k'?'ok':mark==='m'?'miss':'pend'));const v=el('span','verdict',mark==='k'?'Got it':mark==='m'?'Marked as missed':'Answer');const a=el('div','ans gnotes');a.innerHTML=q.a;fb.append(v,a);ans.append(fb);
+      const row=el('div','btns');row.style.marginTop='10px';
+      const k=el('button','btn fc-got','I got it');k.type='button';k.addEventListener('click',()=>go('k'));
+      const m=el('button','btn fc-miss','I missed it');m.type='button';m.addEventListener('click',()=>go('m'));row.append(k,m);ans.append(row);
+    }else{const sb=el('button','btn primary','Show answer');sb.type='button';sb.addEventListener('click',()=>{Guides._show=g.id+q.n;show('guides')});ans.append(el('p','hintline','Answer it in your head or on paper first, then check.'),sb)}
+    c.append(ans);
+    const nv=el('div','btns');nv.style.marginTop='14px';
+    if(i>0){const p=el('button','btn quiet','← Previous');p.type='button';p.addEventListener('click',()=>{Guides.qi=i-1;show('guides')});nv.append(p)}
+    if(i<n-1){const x=el('button','btn quiet','Skip →');x.type='button';x.addEventListener('click',()=>{Guides.qi=i+1;show('guides')});nv.append(x)}
+    else{const t=el('button','btn primary','Quiz done → practice test');t.type='button';t.addEventListener('click',()=>{Guides.view='test';show('guides');window.scrollTo({top:0})});nv.append(t)}
+    c.append(nv);st.append(c);
+  },
+  test(st,g){
+    const r=gRec(g.id), s=gStats(g);
+    const head=el('div','card');head.append(cardHead(g.test.title,null,s.td+' / '+g.test.qs.length+' answered'));
+    const sc=el('div','score');sc.append(document.createTextNode(String(r2(s.e))),el('span','of',' / '+s.p+' points'));head.append(sc);
+    if(g.test.intro){const d=el('div','gnotes small');d.innerHTML=g.test.intro;head.append(d)}
+    if(s.td){const rb=el('button','btn quiet small','Reset this test');rb.type='button';rb.addEventListener('click',()=>{r.test={};save();show('guides')});head.append(rb)}
+    st.append(head);
+    const paper=el('div','card paper');let part=null;
+    g.test.qs.forEach(q=>{
+      if(q.part!==part){part=q.part;paper.append(el('h3','secth',part))}
+      const t=r.test[q.n], d=el('div','mq');const body=el('div','prompt gnotes');body.innerHTML='<span class="qn">'+q.n.replace('T','')+'.</span> '+q.q;d.append(body);
+      const showAns=()=>{const fb=el('div','fb '+(t&&t.f===1?'ok':t&&t.f===0?'miss':'pend'));const a=el('div','ans gnotes');a.innerHTML=q.a;fb.append(a);d.append(fb)};
+      if(q.o){
+        const opts=el('div','opts');
+        q.o.forEach((o,j)=>{const b=el('button','opt');b.type='button';const k=el('span','k',String.fromCharCode(65+j)+')'),tx=el('span','ot');tx.innerHTML=o;b.append(k,tx);
+          if(t){b.disabled=true;if(j===q.c)b.classList.add('right');else if(j===t.r)b.classList.add('wrong')}
+          else b.addEventListener('click',()=>{r.test[q.n]={r:j,f:j===q.c?1:0};save();show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})});opts.append(b)});
+        d.append(opts);if(t)showAns();
+      }else{
+        if(t){showAns();d.append(el('div','small','Your score: '+(t.f===1?'full credit':t.f===0?'no credit':'half credit')))}
+        else{const sb=el('button','btn small','Show answer');sb.type='button';const holder=el('div');
+          sb.addEventListener('click',()=>{sb.hidden=true;showAns();const row=el('div','btns');row.style.marginTop='8px';
+            [['Full credit',1,'fc-got'],['Half',0.5,''],['Missed',0,'fc-miss']].forEach(([l,f,cl])=>{const b=el('button','btn small '+cl,l);b.type='button';b.addEventListener('click',()=>{r.test[q.n]={f};save();show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})});row.append(b)});d.append(row)});
+          d.append(sb)}
+      }
+      d.id='gq-'+q.n;paper.append(d);
+    });
+    if(g.src){const f=el('div','gnotes small');f.innerHTML=g.src;paper.append(f)}
+    st.append(paper);
+    const nx=GUIDES[GUIDES.indexOf(g)+1];
+    if(nx){const b=el('button','btn primary','Next guide: '+nx.title+' →');b.type='button';b.addEventListener('click',()=>Guides.open(nx.id,'notes'));const w=el('div','btns');w.append(b);st.append(w)}
+  }
+};
+VIEWS.guides=(p,s)=>Guides.render(p,s);
 
 /* one clock for both tests; submits a timed test when its time runs out, even on another tab */
 function tick(){const now=Date.now();
@@ -1239,7 +1365,7 @@ const Progress={confirm:false,
     rp.append(el('div','flabel',`What’s in the app (Div ${S.level})`),el('p','small',`${pool.length} question-bank items · ${gensForLevel().length} lab-calc types with endless numbers · ${CARDS.filter(c=>S.level==='C'||c.lv==='B').length} flashcards · ${TESTS.length} full invitational tests`));
     const rs=el('button','btn quiet','Reset all progress');rs.type='button';rs.addEventListener('click',()=>{Progress.confirm=true;show('progress')});rp.append(rs);
     if(Progress.confirm){const cf=el('div','confirm');cf.append(el('p',null,'This erases your streak, scores, review pile, flashcard progress and test results in this browser'+(Sync.on()?' and on the team sheet':'')+'. It can’t be undone.'));
-      const r2b=el('div','btns');const y=el('button','btn danger small','Erase everything');y.type='button';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{},inv:{},resetAt:Date.now()};RUN={mock:null,inv:{}};saveRun();save();Cards.reset();Practice.reset();Review.reset();Progress.confirm=false;Today.idx=null;show('progress')});
+      const r2b=el('div','btns');const y=el('button','btn danger small','Erase everything');y.type='button';y.addEventListener('click',()=>{S={level:S.level,days:{},topics:{},missed:[],seen:{},mocks:[],fc:{},inv:{},guides:{},resetAt:Date.now()};RUN={mock:null,inv:{}};saveRun();save();Cards.reset();Practice.reset();Review.reset();Progress.confirm=false;Today.idx=null;show('progress')});
       const n=el('button','btn small','Cancel');n.type='button';n.addEventListener('click',()=>{Progress.confirm=false;show('progress')});r2b.append(y,n);cf.append(r2b);rp.append(cf)}
     g.append(rp);
     if(Sync.on())g.append(Sync.panel());
@@ -1267,6 +1393,8 @@ function mergeState(a,b){
   for(const [k,v] of Object.entries(a.days||{})){const o=m.days[k]; if(!o||(v.done&&!o.done)||(!!v.done===!!o.done&&n(v)>=n(o))) m.days[k]=v;}
   m.seen=Object.assign({},b.seen||{}); for(const [k,v] of Object.entries(a.seen||{})) m.seen[k]=Math.max(v,m.seen[k]||0);
   m.topics=Object.assign({},b.topics||{}); for(const [k,v] of Object.entries(a.topics||{})){const o=m.topics[k]; if(!o||v[1]>=o[1]) m.topics[k]=v;}
+  m.guides={}; { const ga=a.guides||{}, gb=b.guides||{}, un=(x,y)=>newer===a?Object.assign({},y,x):Object.assign({},x,y);
+    for(const id of new Set([...Object.keys(ga),...Object.keys(gb)])){const A=ga[id]||{},B=gb[id]||{};m.guides[id]={read:un(A.read,B.read),quiz:un(A.quiz,B.quiz),test:un(A.test,B.test)};} }
   m.fc=Object.assign({},b.fc||{}); for(const [k,v] of Object.entries(a.fc||{})){const o=m.fc[k]; if(!o||(v.n||0)>(o.n||0)||((v.n||0)===(o.n||0)&&newer===a)) m.fc[k]=v;}
   const mk=x=>x.t?('t'+x.t):(x.d+'|'+x.lv+'|'+x.e+'|'+x.p); const mm=new Map();
   for(const x of (b.mocks||[])) mm.set(mk(x),x);
@@ -1286,7 +1414,7 @@ const Sync={SK:'curds-whey-sync',meta:{code:'',name:'',isNew:true,welcomed:false
   newCode(){const W=['MILK','WHEY','CURD','BRIE','FETA','GHEE','SKYR','KEFIR','GOUDA','CREAM','QUESO','COLBY','LASSI'];
     const a=new Uint32Array(2); if(window.crypto&&crypto.getRandomValues) crypto.getRandomValues(a); else {a[0]=Math.random()*4e9;a[1]=Math.random()*4e9}
     return W[a[0]%W.length]+'-'+(1000+a[1]%9000)},
-  hasProgress(){return Object.keys(S.days||{}).length>0||Object.keys(S.topics||{}).length>0||Object.keys(S.fc||{}).length>0||(S.mocks||[]).length>0||Object.keys(S.inv||{}).length>0},
+  hasProgress(){return Object.keys(S.days||{}).length>0||Object.keys(S.topics||{}).length>0||Object.keys(S.fc||{}).length>0||(S.mocks||[]).length>0||Object.keys(S.inv||{}).length>0||Object.keys(S.guides||{}).length>0},
   strip(st){const today=dateKey(),days={};
     for(const [k,v] of Object.entries(st.days||{})){ if(k.startsWith(today+'|')){days[k]=v;continue}
       const res={}; for(const [i,r] of Object.entries(v.res||{})) res[i]={frac:r.frac}; days[k]={res,done:!!v.done}; }
