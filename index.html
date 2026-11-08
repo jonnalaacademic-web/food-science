@@ -375,6 +375,7 @@ details.more summary{cursor:pointer;font-weight:600}
       <button class="tab" role="tab" id="tab-mock" data-mode="mock">Mock test <span class="tmr" id="mockTimer"></span></button>
       <button class="tab" role="tab" id="tab-inv" data-mode="inv">2027 Invitationals <span class="tmr" id="invTimer"></span></button>
       <button class="tab" role="tab" id="tab-progress" data-mode="progress">Progress</button>
+      <button class="tab" role="tab" id="tab-team" data-mode="team">Team</button>
     </nav>
   </div>
   <div class="wrap filters">
@@ -1220,8 +1221,9 @@ VIEWS.inv=(p,s)=>Inv.render(p,s);
 const GUIDES=window.CW.GUIDES||[];
 const GP=()=>S.guides||(S.guides={});
 function gRec(id){const g=GP();return g[id]||(g[id]={read:{},quiz:{},test:{}})}
-function gStats(g){
-  const r=GP()[g.id]||{read:{},quiz:{},test:{}}, nr=g.notes.filter((_,i)=>r.read[i]).length, qd=g.quiz.qs.filter(q=>r.quiz[q.n]).length, qk=g.quiz.qs.filter(q=>r.quiz[q.n]==='k').length;
+function gStats(g){return gStatsOf(g,GP()[g.id])}
+function gStatsOf(g,rec){
+  const r=Object.assign({read:{},quiz:{},test:{}},rec||{}), nr=g.notes.filter((_,i)=>r.read[i]).length, qd=g.quiz.qs.filter(q=>r.quiz[q.n]).length, qk=g.quiz.qs.filter(q=>r.quiz[q.n]==='k').length;
   let e=0,p=0,td=0; g.test.qs.forEach(q=>{p+=q.pts;const t=r.test[q.n];if(t){td++;e+=t.f*q.pts}});
   const total=g.notes.length+g.quiz.qs.length+g.test.qs.length, done=nr+qd+td;
   return {nr,qd,qk,e,p,td,total,done};
@@ -1324,6 +1326,70 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
   }
 };
 VIEWS.guides=(p,s)=>Guides.render(p,s);
+/* ================= Team: captain view of every member's progress ================= */
+const Team={rows:null,err:'',loading:false,tried:false,sel:null,sort:'name',at:0,
+  key(){try{return localStorage.getItem('curds-whey-captain')||''}catch(e){return ''}},
+  async load(key){
+    Team.loading=true;Team.err='';Team.tried=true;if(current==='team')show('team');
+    try{
+      const r=await fetch(SYNC_URL,{method:'POST',body:JSON.stringify({action:'team',key})});const j=await r.json();
+      if(!j.ok) throw new Error(j.error||'failed');
+      Team.rows=j.members||[];Team.at=Date.now();try{localStorage.setItem('curds-whey-captain',key)}catch(e){}
+    }catch(e){
+      Team.rows=null;try{localStorage.removeItem('curds-whey-captain')}catch(x){}
+      Team.err=e.message==='not allowed'?'That captain key isn’t right, or no captain key is set in the Google script yet.'
+        :e.message==='bad code'?'The Google script is the old version. Update it with the new Code.gs (see Sync Setup.md), then try again.'
+        :'Couldn’t reach the team Sheet. Check your connection and try again.';
+    }
+    Team.loading=false;if(current==='team')show('team');
+  },
+  guidePct(m){let d=0,t=0;GUIDES.forEach(g=>{const s=gStatsOf(g,(m.guides||{})[g.id]);d+=s.done;t+=s.total});return t?d/t:0},
+  ago(ms){if(!ms)return '—';const d=Math.floor((Date.now()-ms)/864e5);return d<=0?'today':d===1?'yesterday':d+' days ago'},
+  render(pk,st){
+    if(!Sync.on()){st.append(el('div','card empty','Team view needs progress sync turned on (see Sync Setup.md).'));return}
+    const k=Team.key();
+    if(!Team.rows&&!Team.loading&&!Team.tried&&k){Team.load(k);return}
+    if(Team.loading){st.append(el('div','card empty','Loading the team’s progress…'));return}
+    if(!Team.rows){
+      const c=el('div','card');c.append(cardHead('Captain only','Team progress'));
+      c.append(el('p','small','Enter the captain key you set in the Google script. It stays on this device.'));
+      if(Team.err)c.append(el('p','sync-msg bad',Team.err));
+      const row=el('div','sync-row');const inp=el('input');inp.type='password';inp.placeholder='Captain key';inp.autocomplete='off';inp.setAttribute('aria-label','Captain key');
+      const go=el('button','btn primary','Show team progress');go.type='button';const run=()=>{if(inp.value.trim())Team.load(inp.value.trim())};
+      go.addEventListener('click',run);inp.addEventListener('keydown',e=>{if(e.key==='Enter')run()});row.append(inp,go);c.append(row);st.append(c);return}
+    const rows=Team.rows;
+    if(Team.sel!=null&&rows.find(m=>m.code===Team.sel)){Team.detail(st,rows.find(m=>m.code===Team.sel));return}
+    const c=el('div','card');
+    const bar=el('div','btns');const rf=el('button','btn small','Refresh');rf.type='button';rf.addEventListener('click',()=>Team.load(Team.key()));
+    const lo=el('button','btn quiet small','Lock');lo.type='button';lo.addEventListener('click',()=>{try{localStorage.removeItem('curds-whey-captain')}catch(e){}Team.rows=null;Team.tried=true;Team.err='';show('team')});bar.append(rf,lo);
+    c.append(cardHead('Captain view','Team progress',el('span','small',rows.length+' member'+(rows.length===1?'':'s')+' · updated '+new Date(Team.at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))),bar);
+    if(!rows.length){c.append(el('p','empty','Nobody has synced yet. Progress appears here after a teammate answers their first question.'));st.append(c);return}
+    const sorts={name:['Name',(a,b)=>String(a.name||a.code).localeCompare(String(b.name||b.code))],saved:['Last active',(a,b)=>(b.saved||0)-(a.saved||0)],guides:['Guides done',(a,b)=>Team.guidePct(b)-Team.guidePct(a)],acc:['Accuracy',(a,b)=>(b.acc||0)-(a.acc||0)],streak:['Streak',(a,b)=>(b.streak||0)-(a.streak||0)]};
+    const sw=el('div','btns');sw.style.margin='10px 0';sw.append(el('span','small','Sort by'),seg(Object.keys(sorts).map(k=>[k,sorts[k][0]]),Team.sort,v=>{Team.sort=v;show('team')},'Sort members'));c.append(sw);
+    const wrap=el('div','gtable gnotes');const tb=el('table');
+    const hd=el('tr');['Member','Div','Last active','Streak','Daily sets','Accuracy','Flashcards','Guides','Last mock'].forEach(h=>hd.append(el('th',null,h)));{const th=el('thead');th.append(hd);tb.append(th)}
+    const body=el('tbody');rows.slice().sort(sorts[Team.sort][1]).forEach(m=>{
+      const tr=el('tr');tr.style.cursor='pointer';tr.tabIndex=0;const open=()=>{Team.sel=m.code;show('team');window.scrollTo({top:0})};tr.addEventListener('click',open);tr.addEventListener('keydown',e=>{if(e.key==='Enter')open()});
+      const nm=el('td');nm.append(el('b',null,m.name||'(no name)'),el('div','small mono',m.code));tr.append(nm,el('td',null,m.level||''),el('td',null,Team.ago(m.saved?new Date(m.saved).getTime():0)),el('td','mono',String(m.streak||0)),el('td','mono',String(m.sets||0)),
+        el('td','mono',m.acc===''||m.acc==null?'—':m.acc+'%'),el('td','mono',String(m.cards||0)),el('td','mono',Math.round(Team.guidePct(m)*100)+'%'),el('td','mono',m.lastMock===''||m.lastMock==null?'—':m.lastMock+'%'));body.append(tr)});
+    tb.append(body);wrap.append(tb);c.append(wrap);c.append(el('p','small','Select a member to see each guide and topic.'));st.append(c);
+  },
+  detail(st,m){
+    const top=el('div','card');const b=el('button','btn quiet small','← All members');b.type='button';b.addEventListener('click',()=>{Team.sel=null;show('team')});top.append(b);
+    top.append(cardHead('Member · '+(m.level?'Div '+m.level+' · ':'')+m.code,m.name||'(no name)',el('span','small','last active '+Team.ago(m.saved?new Date(m.saved).getTime():0))));
+    const sl=el('div','statline');[[m.streak||0,'day streak'],[m.sets||0,'daily sets'],[m.acc===''||m.acc==null?'—':m.acc+'%','accuracy'],[m.cards||0,'flashcards known'],[Math.round(Team.guidePct(m)*100)+'%','study guides']].forEach(([n,l])=>{const s=el('div','stat');s.append(el('div','n',String(n)),el('div','l',l));sl.append(s)});top.append(sl);st.append(top);
+    const gc=el('div','card');gc.append(el('h3','ph','Study guides'));const wrap=el('div','gtable gnotes');const tb=el('table');const hd=el('tr');['Guide','Notes read','Quiz done','Quiz right','Test points'].forEach(h=>hd.append(el('th',null,h)));{const th=el('thead');th.append(hd);tb.append(th)}const body=el('tbody');
+    GUIDES.forEach(g=>{const s=gStatsOf(g,(m.guides||{})[g.id]),tr=el('tr');tr.append(el('td',null,g.title),el('td','mono',s.nr+'/'+g.notes.length),el('td','mono',s.qd+'/'+g.quiz.qs.length),el('td','mono',s.qd?s.qk+'/'+s.qd:'—'),el('td','mono',s.td?r2(s.e)+'/'+s.p+' ('+s.td+' of '+g.test.qs.length+' answered)':'—'));body.append(tr)});
+    tb.append(body);wrap.append(tb);gc.append(wrap);st.append(gc);
+    const tc=el('div','card');tc.append(el('h3','ph','Accuracy by topic'));const ts=Object.keys(m.topics||{}).filter(k=>TOPICS[k]&&m.topics[k][1]>0).sort((a,b)=>m.topics[a][0]/m.topics[a][1]-m.topics[b][0]/m.topics[b][1]);
+    if(!ts.length)tc.append(el('p','empty','No question-bank answers yet.'));
+    ts.forEach(k=>{const [e,t]=m.topics[k],p=Math.round(e/t*100),row=el('div','hbar');const tr=el('span','track'),i=el('i',p>=80?'hi':p>=60?'mid':'lo');i.style.width=p+'%';tr.append(i);row.append(el('span',null,TOPICS[k]),tr,el('span','v',p+'%'));tc.append(row)});
+    st.append(tc);
+    if((m.mocklist||[]).length){const mc=el('div','card');mc.append(el('h3','ph','Mock tests'));const ul=el('ul','plainlist');m.mocklist.slice().reverse().forEach(x=>ul.append(el('li',null,(x.d||'')+(x.lv?' · Div '+x.lv:'')+' · '+r2(x.e)+' / '+r2(x.p)+' ('+Math.round(x.e/x.p*100)+'%)')));mc.append(ul);st.append(mc)}
+  }
+};
+FULL.team=true;
+VIEWS.team=(p,s)=>Team.render(p,s);
 
 /* one clock for both tests; submits a timed test when its time runs out, even on another tab */
 function tick(){const now=Date.now();
@@ -1578,6 +1644,7 @@ Sync.banner=function(){
 /* ================= boot ================= */
 paintLevel();
 Sync.init(); Sync.head();
+if(!Sync.on()) document.getElementById('tab-team').hidden=true;
 const startView=location.hash.slice(1);
 show(VIEWS[startView]?startView:(TESTS.some(t=>RUN.inv[t.id]&&RUN.inv[t.id].phase==='running')?'inv':(RUN.mock&&RUN.mock.phase==='running')?'mock':'today'));
 tick(); setInterval(tick,1000);
