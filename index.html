@@ -1076,15 +1076,66 @@ function reviewFilterSeg(cur,onPick){return seg([['all','All questions'],['misse
 function passesFilter(f,q,resp){if(f==='all')return true;if(f==='written')return q.k==='short';const m=markOf(q,resp);return m!=='g'}
 
 /* ================= Mock test ================= */
+/* ================= Paper export: a printable Word document + matching answer key ================= */
+const Paper={
+  esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')},
+  wrap(title,body){return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>'+Paper.esc(title)+'</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]--><style>@page{size:8.5in 11in;margin:0.8in}body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.3}h1{font-size:18pt;margin:0 0 2pt}h2{font-size:13pt;margin:16pt 0 4pt;border-bottom:1px solid #000}p{margin:3pt 0}.q{margin:10pt 0 2pt}.opt{margin:0 0 0 24pt;line-height:1.15}.line{border-bottom:1px solid #000;height:20pt;margin:0}.small{font-size:9pt;color:#444}table{border-collapse:collapse;width:100%;table-layout:fixed}td,th{border:1px solid #777;padding:3pt 6pt;vertical-align:top;font-size:10pt;text-align:left}th{background:#e6ecf3}</style></head><body>'+body+'</body></html>'},
+  pts(q){const p=ptsOf(q);return p+(p===1?' pt':' pts')},
+  letters(q){return q.k==='multi'?q.a.map(i=>String.fromCharCode(65+i)).join(', '):String.fromCharCode(65+q.a)},
+  head(o,key){
+    const total=o.secs.reduce((a,s)=>a+s.qs.reduce((b,q)=>b+ptsOf(q),0),0), n=o.secs.reduce((a,s)=>a+s.qs.length,0);
+    let h='<h1>'+Paper.esc(o.title)+(key?' · ANSWER KEY':'')+'</h1><p class="small">'+Paper.esc(o.sub)+'</p>';
+    h+=key?'<p><b>'+n+' questions · '+r2(total)+' points.</b> For graders only.</p>'
+      :'<p>Name: ______________________ &nbsp; Team: ______________ &nbsp; Date: ____________ &nbsp; Score: ______ / '+r2(total)+'</p><p><b>'+o.mins+' minutes · '+n+' questions · '+r2(total)+' points.</b> Answer on this paper. Show your work on calculations and use the correct number of significant figures.</p>';
+    return h;
+  },
+  qHtml(q,n){
+    let h='<p class="q"><b>'+n+'.</b> '+Paper.esc(q.q)+' <span class="small">('+Paper.pts(q)+')</span></p>';
+    if(q.k==='mc'||q.k==='multi'){if(q.k==='multi')h+='<p class="opt small">Mark all correct answers.</p>';q.o.forEach((t,i)=>{h+='<p class="opt">'+String.fromCharCode(65+i)+') '+Paper.esc(t)+'</p>'})}
+    else if(q.k==='tf') h+='<p class="opt">True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False</p>';
+    else if(q.k==='fill') h+='<p class="opt">Answer: ______________________</p>';
+    else if(q.k==='num'){h+='<p class="opt">Answer: ______________ '+Paper.esc(q.u||'')+'</p>';for(let i=0;i<3;i++)h+='<p class="line">&nbsp;</p>'}
+    else {const L=Math.max(3,Math.min(8,Math.round(ptsOf(q)*2)));for(let i=0;i<L;i++)h+='<p class="line">&nbsp;</p>'}
+    return h;
+  },
+  ansHtml(q){
+    if(q.k==='mc'){let t=Paper.letters(q)+') '+Paper.esc(q.o[q.a]);if(q.alt&&q.alt.length)t+='<br><span class="small">Also accepted: '+q.alt.map(i=>String.fromCharCode(65+i)+') '+Paper.esc(q.o[i])).join('; ')+'</span>';return t}
+    if(q.k==='multi') return Paper.letters(q)+'<br><span class="small">'+q.a.map(i=>Paper.esc(q.o[i])).join('<br>')+'</span>';
+    if(q.k==='short'){let t=Paper.esc(q.m);if(q.kp&&q.kp.length)t+='<br><span class="small">Rubric: '+q.kp.map((k,i)=>Paper.esc(k)+' ('+(q.kpw?q.kpw[i]:1)+')').join('; ')+'</span>';return t}
+    let t=Paper.esc(answerText(q));if(q.k==='num'&&q.sf)t+=' <span class="small">('+q.sf+' sig figs)</span>';return t;
+  },
+  doc(o,key){
+    let b=Paper.head(o,key),n=0;
+    o.secs.forEach(s=>{
+      if(s.name)b+='<h2>'+Paper.esc(s.name)+'</h2>';
+      if(key){b+='<table><tr><th width="8%" nowrap>#</th><th width="34%">Answer</th><th width="8%" nowrap>Pts</th><th>Explanation / work</th></tr>';
+        s.qs.forEach(q=>{n++;b+='<tr><td width="8%" nowrap>'+n+'</td><td>'+Paper.ansHtml(q)+'</td><td width="8%" nowrap>'+r2(ptsOf(q))+'</td><td>'+Paper.esc(q.x||'')+'</td></tr>'});b+='</table>'}
+      else s.qs.forEach(q=>{n++;b+=Paper.qHtml(q,n)});
+    });
+    return Paper.wrap(o.title+(key?' answer key':''),b);
+  },
+  download(name,html){const bl=new Blob(['﻿',html],{type:'application/msword'});const u=URL.createObjectURL(bl);const a=document.createElement('a');a.href=u;a.download=name+'.doc';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)},
+  export(o){Paper.download(o.file+'_TEST',Paper.doc(o,false));setTimeout(()=>Paper.download(o.file+'_ANSWER-KEY',Paper.doc(o,true)),600)},
+  /* get() returns {title,sub,mins,secs:[{name,qs}],file}; it runs on each click so a mock test is freshly made */
+  button(get,note){
+    const w=el('div');w.style.marginTop='14px';const b=el('button','btn','Download as a paper test (.doc)');b.type='button';
+    b.addEventListener('click',()=>{try{Paper.export(get())}catch(e){console.error(e)}});
+    w.append(b,el('p','small',note||'Downloads two Word files: the blank test to print, and the answer key. Allow multiple downloads if your browser asks.'));return w;
+  }
+};
+
 const MOCK_MIN=50;
 const Mock={filter:'all',
-  start(){
+  build(){
     const r=rngFor('mock'+Date.now()); const pool=shuffle(poolForLevel().slice(),r); const used=new Set();
     const take=(f,n)=>{const out=[];for(const q of pool){if(out.length>=n)break;if(f(q)&&!used.has(q.id)){out.push(q);used.add(q.id)}}return out};
     const mc=take(q=>q.k==='mc'||q.k==='fill',14), mu=take(q=>q.k==='multi',3), tf=take(q=>q.k==='tf',6), nb=take(q=>q.k==='num',2), sh=take(q=>q.k==='short',2);
     const gk=shuffle(gensForLevel(),r).slice(0,3).map((k,i)=>genOne(k,r,'m'+i+Date.now()));
     const secs=[{name:'Section I · Multiple choice',qs:mc.concat(mu)},{name:'Section II · True or false',qs:tf},{name:'Section III · Lab calculations',qs:nb.concat(gk)},{name:'Section IV · Free response',qs:sh}];
-    const now=Date.now(); RUN.mock={phase:'running',lv:S.level,secs:JSON.parse(JSON.stringify(secs)),resps:{},startAt:now,endAt:now+MOCK_MIN*60000,graded:{}};
+    return secs;
+  },
+  start(){
+    const secs=Mock.build(); const now=Date.now(); RUN.mock={phase:'running',lv:S.level,secs:JSON.parse(JSON.stringify(secs)),resps:{},startAt:now,endAt:now+MOCK_MIN*60000,graded:{}};
     Mock.filter='all'; saveRun();
   },
   all(){return RUN.mock.secs.flatMap(s=>s.qs)},
@@ -1103,6 +1154,7 @@ const Mock={filter:'all',
       const ul=el('ul','plainlist');['30 questions in four sections','Section I · 14 multiple choice or one-word + 3 select-all','Section II · 6 true/false','Section III · 5 lab calculations (sig figs count)','Section IV · 2 free response, graded by you against the expected answer','Your answers save as you go on this device, even if you close the page'].forEach(x=>ul.append(el('li',null,x)));c.append(ul);
       c.append(el('p','small','Tip: on test day partners usually split the booklet. Do Sections I–II fast, then spend real time on III–IV.'));
       const b=el('button','btn primary','Start the 50-minute test');b.type='button';b.style.marginTop='12px';b.addEventListener('click',()=>{Mock.start();show('mock');window.scrollTo({top:0})});c.append(b);
+      c.append(Paper.button(()=>({title:'Food Science Mock Test · Div '+S.level,sub:'Science Olympiad 2026–27 · Food Science: Dairy',mins:MOCK_MIN,secs:Mock.build(),file:'FoodScience_Mock_Div'+S.level+'_'+dateKey()}),'Makes a new random test each time and downloads two Word files: the blank test to print, and its matching answer key. Allow multiple downloads if your browser asks.'));
       if(S.mocks.length){c.append(el('div','flabel','Past mock tests'));const l=el('ul','qlist');S.mocks.slice(-5).reverse().forEach(x=>{const li=el('li');li.append(el('span','mk',Math.round(x.e/x.p*100)+'%'),el('span','tx',`${x.d} · Div ${x.lv} · ${x.e} / ${x.p} pts`));l.append(li)});c.append(l)}
       st.append(c);return;
     }
@@ -1182,6 +1234,7 @@ const Inv={sel:null,timed:true,filter:'all',
     if(t.qs.some(q=>q.alt))c.append(el('p','small','One question on the official key looks wrong; both answers get credit there, and the explanation says why.'));
     c.append(el('div','flabel','Timer'),seg([[true,`${t.mins}-minute timer`],[false,'No timer']],Inv.timed,v=>{Inv.timed=v;show('inv')},'Timer'));
     const b=el('button','btn primary','Start the test');b.type='button';b.style.marginTop='14px';b.style.display='block';b.addEventListener('click',()=>{Inv.start(t.id);show('inv');window.scrollTo({top:0})});c.append(b);
+    c.append(Paper.button(()=>({title:t.title+' · Food Science',sub:t.name+' · Science Olympiad 2026–27',mins:t.mins,secs:[{name:'',qs:t.qs}],file:'FoodScience_'+t.title.replace(/[^A-Za-z0-9]+/g,'_')})));
     const h=S.inv[t.id]||[];if(h.length){c.append(el('div','flabel','Your attempts'));const l=el('ul','qlist');h.slice(-5).reverse().forEach(x=>{const li2=el('li');li2.append(el('span','mk',Math.round(x.e/x.p*100)+'%'),el('span','tx',`${x.d} · ${x.e} / ${x.p} pts · ${x.timed?'timed':'untimed'}${x.min?`, ${x.min} min`:''}`));l.append(li2)});c.append(l)}
     st.append(c);
   },
