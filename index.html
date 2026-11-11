@@ -44,6 +44,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
 img{max-width:100%}
+.qimg{display:block;max-width:min(100%,340px);height:auto;margin:6px 0 14px;background:#fff;border:1px solid var(--line);border-radius:8px}
 [hidden]{display:none!important}
 .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1440px;margin:0 auto}
 button,input,textarea{font:inherit;color:inherit}
@@ -708,6 +709,7 @@ function cardHead(eyebrow,title,right){const h=el('div','card-head');const l=el(
 /* o: {mode:'instant'|'exam'|'review', resp, paper, onAnswer(resp), onChange(resp), onGrade(points)} */
 function qBody(q,o){
   const box=el('div'); const review=o.mode==='review', exam=o.mode==='exam'; let resp=o.resp;
+  if(q.img){const im=el('img','qimg');im.src=q.img;im.alt=q.imgAlt||'Figure for this question';box.append(im)}
   const key=i=>o.paper?String.fromCharCode(65+i)+')':String.fromCharCode(97+i);
   if(q.k==='mc'||q.k==='multi'||q.k==='tf'){
     const opts=q.k==='tf'?['True','False']:q.o;
