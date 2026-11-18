@@ -1285,7 +1285,7 @@ function gStatsOf(g,rec){
 }
 const Guides={gid:null,view:'notes',sec:0,qi:0,
   cur(){return GUIDES.find(g=>g.id===Guides.gid)||GUIDES[0]},
-  open(id,view,n){Guides.gid=id;Guides.view=view||'notes';Guides.sec=n||0;Guides.qi=0;show('guides');window.scrollTo({top:0})},
+  open(id,view,n){Guides.rq=null;Guides.gid=id;Guides.view=view||'notes';Guides.sec=n||0;Guides.qi=0;show('guides');window.scrollTo({top:0})},
   render(pk,st){
     if(!GUIDES.length){st.append(el('div','card empty','No study guides are loaded yet. Run build-guides.py, then build-app.mjs.'));return}
     const g=Guides.cur(); Guides.gid=g.id;
@@ -1298,7 +1298,7 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
     box.append(head);
     if(g.intro){const d=el('div','gnotes small');d.innerHTML=g.intro;box.append(d)}
     const steps=[['notes','1. Notes',s.nr+'/'+g.notes.length],['quiz','2. Quiz',s.qd+'/'+g.quiz.qs.length],['test','3. Practice test',s.td+'/'+g.test.qs.length]];
-    const sw=el('div','gsteps');steps.forEach(([k,l,c])=>{const b=el('button','gstep');b.type='button';b.setAttribute('aria-pressed',Guides.view===k?'true':'false');b.append(el('span',null,l),el('span','mono small',c));b.addEventListener('click',()=>{Guides.view=k;Guides.sec=0;Guides.qi=0;show('guides')});sw.append(b)});
+    const sw=el('div','gsteps');steps.forEach(([k,l,c])=>{const b=el('button','gstep');b.type='button';b.setAttribute('aria-pressed',Guides.view===k?'true':'false');b.append(el('span',null,l),el('span','mono small',c));b.addEventListener('click',()=>{Guides.view=k;Guides.sec=0;Guides.qi=0;Guides.rq=null;show('guides')});sw.append(b)});
     box.append(sw);st.append(box);
     if(Guides.view==='notes') Guides.notes(st,g); else if(Guides.view==='quiz') Guides.quiz(st,g); else Guides.test(st,g);
   },
@@ -1318,16 +1318,25 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
   },
   quiz(st,g){
     const r=gRec(g.id), qs=g.quiz.qs, n=qs.length, i=Math.min(Guides.qi,n-1), q=qs[i];
+    let rq=Guides.rq&&Guides.rq.gid===g.id&&Guides.rq.v==='quiz'?Guides.rq:null;
+    const ord=rq?rq.ns.map(k=>qs.findIndex(x=>x.n===k)):qs.map((x,j)=>j), pi=ord.indexOf(i), nextI=ord[pi+1], prevI=pi>0?ord[pi-1]:null;
+    const fresh=!!(rq&&rq.ns.includes(q.n)&&!rq.done[q.n]);
     const nav=el('div','card');nav.append(el('div','flabel',g.quiz.title+' · tap a number to jump'));const strip=el('div','strip');
     qs.forEach((x,j)=>{const m=r.quiz[x.n];const b=el('button','chip'+(m==='k'?' g':m==='m'?' r':j===i?' a':''),x.n);b.type='button';b.addEventListener('click',()=>{Guides.qi=j;show('guides')});strip.append(b)});
-    nav.append(strip);st.append(nav);
-    const c=el('div','card qcard gcard');c.append(cardHead(g.quiz.title+' · '+g.title,null,(i+1)+' / '+n));
+    nav.append(strip);
+    const missed=qs.filter(x=>r.quiz[x.n]==='m').map(x=>x.n);
+    const rbar=el('div','btns');rbar.style.marginTop='10px';
+    if(rq){rbar.append(el('span','small','Retaking missed · '+Math.min(Math.max(pi,0)+1,ord.length)+' of '+ord.length+' · '));const ex=el('button','btn quiet small','Exit retake');ex.type='button';ex.addEventListener('click',()=>{Guides.rq=null;show('guides')});rbar.append(ex)}
+    else if(missed.length){const rb=el('button','btn small','Retake missed ('+missed.length+')');rb.type='button';rb.addEventListener('click',()=>{Guides.rq={gid:g.id,v:'quiz',ns:missed,done:{}};Guides._show=null;Guides.qi=qs.findIndex(x=>x.n===missed[0]);show('guides');window.scrollTo({top:0})});rbar.append(rb)}
+    if(rbar.childNodes.length)nav.append(rbar);
+    st.append(nav);
+    const c=el('div','card qcard gcard');c.append(cardHead(g.quiz.title+' · '+g.title,null,rq?'Retake':(i+1)+' / '+n));
     const qb=el('div','gnotes');qb.innerHTML='<p class="qn mono">Q'+q.n+'.</p>'+q.q;c.append(qb);
-    const ans=el('div');const mark=r.quiz[q.n]; r.ans=r.ans||{}; const shown=mark||Guides._show===g.id+q.n;
-    const ta=el('textarea');ta.placeholder='Type your answer here first…';ta.value=r.ans[q.n]||'';ta.setAttribute('aria-label','Your answer');
+    const ans=el('div');const mark=fresh?undefined:r.quiz[q.n]; r.ans=r.ans||{}; const shown=mark||Guides._show===g.id+q.n;
+    const ta=el('textarea');ta.placeholder='Type your answer here first…';ta.value=fresh?'':(r.ans[q.n]||'');ta.setAttribute('aria-label','Your answer');
     if(shown){ta.readOnly=true;ta.hidden=true}
     ta.addEventListener('input',()=>{r.ans[q.n]=ta.value;saveLocal()});
-    const go=(v)=>{r.quiz[q.n]=v;save();if(i<n-1)Guides.qi=i+1;show('guides')};
+    const go=(v)=>{r.quiz[q.n]=v;if(rq)rq.done[q.n]=1;save();if(nextI!=null)Guides.qi=nextI;else if(rq)Guides.rq=null;show('guides');window.scrollTo({top:0})};
     if(shown){
       const mine=r.ans[q.n]||'';
       ans.append(el('div','flabel','Your answer'),el('div','yours',mine.trim()?mine:'(no answer typed)'));
@@ -1342,8 +1351,9 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
     }
     c.append(ans);
     const nv=el('div','btns');nv.style.marginTop='14px';
-    if(i>0){const p=el('button','btn quiet','← Previous');p.type='button';p.addEventListener('click',()=>{Guides.qi=i-1;show('guides')});nv.append(p)}
-    if(i<n-1){const x=el('button','btn quiet','Skip →');x.type='button';x.addEventListener('click',()=>{Guides.qi=i+1;show('guides')});nv.append(x)}
+    if(prevI!=null){const p=el('button','btn quiet','← Previous');p.type='button';p.addEventListener('click',()=>{Guides.qi=prevI;show('guides')});nv.append(p)}
+    if(nextI!=null){const x=el('button','btn quiet','Skip →');x.type='button';x.addEventListener('click',()=>{Guides.qi=nextI;show('guides')});nv.append(x)}
+    else if(rq){const t=el('button','btn primary','Finish retake');t.type='button';t.addEventListener('click',()=>{Guides.rq=null;show('guides');window.scrollTo({top:0})});nv.append(t)}
     else{const t=el('button','btn primary','Quiz done → practice test');t.type='button';t.addEventListener('click',()=>{Guides.view='test';show('guides');window.scrollTo({top:0})});nv.append(t)}
     c.append(nv);st.append(c);
   },
@@ -1353,17 +1363,25 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
     const sc=el('div','score');sc.append(document.createTextNode(String(r2(s.e))),el('span','of',' / '+s.p+' points'));head.append(sc);
     if(g.test.intro){const d=el('div','gnotes small');d.innerHTML=g.test.intro;head.append(d)}
     if(s.td){const rb=el('button','btn quiet small','Reset this test');rb.type='button';rb.addEventListener('click',()=>{r.test={};g.test.qs.forEach(q=>{if(r.ans)delete r.ans[q.n]});Guides._chk={};save();show('guides')});head.append(rb)}
+    const trq=Guides.rq&&Guides.rq.gid===g.id&&Guides.rq.v==='test'?Guides.rq:null;
+    const missedT=g.test.qs.filter(q=>{const x=r.test[q.n];return x&&x.f<1}).map(q=>q.n);
+    const rbar=el('div','btns');rbar.style.marginTop='10px';
+    if(trq){const left=trq.ns.filter(k=>!trq.done[k]).length;rbar.append(el('span','small','Retaking missed · '+left+' left · '));const ex=el('button','btn quiet small',left?'Exit retake':'Finish retake');ex.type='button';ex.addEventListener('click',()=>{Guides.rq=null;show('guides');window.scrollTo({top:0})});rbar.append(ex)}
+    else if(missedT.length){const rb=el('button','btn small','Retake missed ('+missedT.length+')');rb.type='button';rb.addEventListener('click',()=>{Guides._chk=Guides._chk||{};missedT.forEach(k=>delete Guides._chk[g.id+k]);Guides.rq={gid:g.id,v:'test',ns:missedT,done:{}};show('guides');window.scrollTo({top:0})});rbar.append(rb)}
+    if(rbar.childNodes.length)head.append(rbar);
     st.append(head);
     const paper=el('div','card paper');let part=null;
     g.test.qs.forEach(q=>{
+      if(trq&&!trq.ns.includes(q.n))return;
       if(q.part!==part){part=q.part;paper.append(el('h3','secth',part))}
-      const t=r.test[q.n], d=el('div','mq');const body=el('div','prompt gnotes');body.innerHTML='<span class="qn">'+q.n.replace('T','')+'.</span> '+q.q;d.append(body);
+      const fresh=!!(trq&&!trq.done[q.n]);
+      const t=fresh?undefined:r.test[q.n], d=el('div','mq');const body=el('div','prompt gnotes');body.innerHTML='<span class="qn">'+q.n.replace('T','')+'.</span> '+q.q;d.append(body);
       const showAns=()=>{const fb=el('div','fb '+(t&&t.f===1?'ok':t&&t.f===0?'miss':'pend'));const a=el('div','ans gnotes');a.innerHTML=q.a;fb.append(a);d.append(fb)};
       if(q.o){
         const opts=el('div','opts');
         q.o.forEach((o,j)=>{const b=el('button','opt');b.type='button';const k=el('span','k',String.fromCharCode(65+j)+')'),tx=el('span','ot');tx.innerHTML=o;b.append(k,tx);
           if(t){b.disabled=true;if(j===q.c)b.classList.add('right');else if(j===t.r)b.classList.add('wrong')}
-          else b.addEventListener('click',()=>{r.test[q.n]={r:j,f:j===q.c?1:0};save();show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})});opts.append(b)});
+          else b.addEventListener('click',()=>{r.test[q.n]={r:j,f:j===q.c?1:0};if(trq)trq.done[q.n]=1;save();show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})});opts.append(b)});
         d.append(opts);if(t)showAns();
       }else{
         r.ans=r.ans||{};Guides._chk=Guides._chk||{};const key=g.id+q.n;
@@ -1375,9 +1393,9 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
           if(t)d.append(el('div','small','Your score: '+(t.f===1?'full credit':t.f===0?'no credit':'half credit')));
           else{d.append(el('p','hintline','Compare the two. Count the key facts, numbers and units you got, then grade yourself.'));
             const row=el('div','btns');
-            [['Full credit',1,'fc-got'],['Half',0.5,''],['Missed',0,'fc-miss']].forEach(([l,f,cl])=>{const b=el('button','btn small '+cl,l);b.type='button';b.addEventListener('click',()=>{r.test[q.n]={f};save();back()});row.append(b)});d.append(row)}
+            [['Full credit',1,'fc-got'],['Half',0.5,''],['Missed',0,'fc-miss']].forEach(([l,f,cl])=>{const b=el('button','btn small '+cl,l);b.type='button';b.addEventListener('click',()=>{r.test[q.n]={f};if(trq)trq.done[q.n]=1;save();back()});row.append(b)});d.append(row)}
         }else{
-          const ta=el('textarea');ta.placeholder='Type your answer, work or data here first…';ta.value=r.ans[q.n]||'';ta.setAttribute('aria-label','Your answer to question '+q.n.replace('T',''));
+          const ta=el('textarea');ta.placeholder='Type your answer, work or data here first…';ta.value=fresh?'':(r.ans[q.n]||'');ta.setAttribute('aria-label','Your answer to question '+q.n.replace('T',''));
           ta.addEventListener('input',()=>{r.ans[q.n]=ta.value;saveLocal()});
           const sb=el('button','btn primary small','Check my answer');sb.type='button';sb.addEventListener('click',()=>{r.ans[q.n]=ta.value;saveLocal();Guides._chk[key]=1;back()});
           d.append(ta,sb)}
