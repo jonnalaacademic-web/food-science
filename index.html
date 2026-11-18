@@ -1352,7 +1352,7 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
     const head=el('div','card');head.append(cardHead(g.test.title,null,s.td+' / '+g.test.qs.length+' answered'));
     const sc=el('div','score');sc.append(document.createTextNode(String(r2(s.e))),el('span','of',' / '+s.p+' points'));head.append(sc);
     if(g.test.intro){const d=el('div','gnotes small');d.innerHTML=g.test.intro;head.append(d)}
-    if(s.td){const rb=el('button','btn quiet small','Reset this test');rb.type='button';rb.addEventListener('click',()=>{r.test={};save();show('guides')});head.append(rb)}
+    if(s.td){const rb=el('button','btn quiet small','Reset this test');rb.type='button';rb.addEventListener('click',()=>{r.test={};g.test.qs.forEach(q=>{if(r.ans)delete r.ans[q.n]});Guides._chk={};save();show('guides')});head.append(rb)}
     st.append(head);
     const paper=el('div','card paper');let part=null;
     g.test.qs.forEach(q=>{
@@ -1366,11 +1366,21 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
           else b.addEventListener('click',()=>{r.test[q.n]={r:j,f:j===q.c?1:0};save();show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})});opts.append(b)});
         d.append(opts);if(t)showAns();
       }else{
-        if(t){showAns();d.append(el('div','small','Your score: '+(t.f===1?'full credit':t.f===0?'no credit':'half credit')))}
-        else{const sb=el('button','btn small','Show answer');sb.type='button';const holder=el('div');
-          sb.addEventListener('click',()=>{sb.hidden=true;showAns();const row=el('div','btns');row.style.marginTop='8px';
-            [['Full credit',1,'fc-got'],['Half',0.5,''],['Missed',0,'fc-miss']].forEach(([l,f,cl])=>{const b=el('button','btn small '+cl,l);b.type='button';b.addEventListener('click',()=>{r.test[q.n]={f};save();show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})});row.append(b)});d.append(row)});
-          d.append(sb)}
+        r.ans=r.ans||{};Guides._chk=Guides._chk||{};const key=g.id+q.n;
+        const back=()=>{show('guides');const e=document.getElementById('gq-'+q.n);if(e)e.scrollIntoView({block:'center'})};
+        if(t||Guides._chk[key]){
+          const mine=r.ans[q.n]||'';
+          d.append(el('div','flabel','Your answer'),el('div','yours',mine.trim()?mine:'(no answer typed)'));
+          showAns();
+          if(t)d.append(el('div','small','Your score: '+(t.f===1?'full credit':t.f===0?'no credit':'half credit')));
+          else{d.append(el('p','hintline','Compare the two. Count the key facts, numbers and units you got, then grade yourself.'));
+            const row=el('div','btns');
+            [['Full credit',1,'fc-got'],['Half',0.5,''],['Missed',0,'fc-miss']].forEach(([l,f,cl])=>{const b=el('button','btn small '+cl,l);b.type='button';b.addEventListener('click',()=>{r.test[q.n]={f};save();back()});row.append(b)});d.append(row)}
+        }else{
+          const ta=el('textarea');ta.placeholder='Type your answer, work or data here first…';ta.value=r.ans[q.n]||'';ta.setAttribute('aria-label','Your answer to question '+q.n.replace('T',''));
+          ta.addEventListener('input',()=>{r.ans[q.n]=ta.value;saveLocal()});
+          const sb=el('button','btn primary small','Check my answer');sb.type='button';sb.addEventListener('click',()=>{r.ans[q.n]=ta.value;saveLocal();Guides._chk[key]=1;back()});
+          d.append(ta,sb)}
       }
       d.id='gq-'+q.n;paper.append(d);
     });
