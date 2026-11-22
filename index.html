@@ -318,6 +318,7 @@ details.more summary{cursor:pointer;font-weight:600}
 .gnotes blockquote:not(.callout){margin:6px 0 6px 6px;padding:0 0 0 12px;border-left:2px solid var(--line)}
 .opts .gnotes p,.gcard .opt .ot p{margin:0}
 .gcard{max-width:900px}
+.picker .gsub{margin:0 0 6px;font-weight:600;color:var(--ink)}
 .gnotes .qn+p,.gnotes .qn+p:first-child{display:inline}
 .prompt.gnotes>.qn{margin-right:4px}
 .prompt.gnotes>.qn+p{display:inline;margin:0}
@@ -1283,18 +1284,24 @@ function gStatsOf(g,rec){
   const total=g.notes.length+g.quiz.qs.length+g.test.qs.length, done=nr+qd+td;
   return {nr,qd,qk,e,p,td,total,done};
 }
-const Guides={gid:null,view:'notes',sec:0,qi:0,
+/* guides with a "group" (textbook chapters) form their own subsection */
+function gGroup(k){return GUIDES.filter(x=>(x.group||'')===k)}
+const Guides={gid:null,view:'notes',sec:0,qi:0,last:{},
   cur(){return GUIDES.find(g=>g.id===Guides.gid)||GUIDES[0]},
   open(id,view,n){Guides.rq=null;Guides.gid=id;Guides.view=view||'notes';Guides.sec=n||0;Guides.qi=0;show('guides');window.scrollTo({top:0})},
   render(pk,st){
     if(!GUIDES.length){st.append(el('div','card empty','No study guides are loaded yet. Run build-guides.py, then build-app.mjs.'));return}
     const g=Guides.cur(); Guides.gid=g.id;
+    const grp=g.group||'', inG=gGroup(grp); Guides.last[grp]=g.id;
     pk.append(el('h2',null,'Study guides'),el('p','small','For each guide: read the notes first, then do the quiz, then the practice test.'));
+    const GR=[...new Set(GUIDES.map(x=>x.group||''))];
+    if(GR.length>1){const sg=seg(GR.map(k=>[k,k?'Textbook':'Team guides']),grp,k=>{const id=Guides.last[k]||gGroup(k)[0].id;Guides.open(id,'notes')},'Guide set');sg.style.margin='4px 0 8px';pk.append(sg)}
+    if(grp)pk.append(el('p','small gsub',grp));
     const list=el('div','plist');
-    GUIDES.forEach((x,i)=>{const s=gStats(x);list.append(pitem((i+1)+'. '+x.title,s.nr+'/'+x.notes.length+' notes · '+s.qd+'/'+x.quiz.qs.length+' quiz',Math.round(s.done/s.total*100)+'%',x.id===g.id,()=>Guides.open(x.id,'notes'),[[s.done/s.total,'g']]))});
+    inG.forEach((x,i)=>{const s=gStats(x);list.append(pitem(grp?x.title:(i+1)+'. '+x.title,s.nr+'/'+x.notes.length+' notes · '+s.qd+'/'+x.quiz.qs.length+' quiz',Math.round(s.done/s.total*100)+'%',x.id===g.id,()=>Guides.open(x.id,'notes'),[[s.done/s.total,'g']]))});
     pk.append(list);
     const s=gStats(g), box=el('div','card');
-    const head=cardHead('Study guide · '+(GUIDES.indexOf(g)+1)+' of '+GUIDES.length,g.title,`${Math.round(s.done/s.total*100)}% done`);
+    const head=cardHead((grp?'Textbook chapter':'Study guide')+' · '+(inG.indexOf(g)+1)+' of '+inG.length,g.title,`${Math.round(s.done/s.total*100)}% done`);
     box.append(head);
     if(g.intro){const d=el('div','gnotes small');d.innerHTML=g.intro;box.append(d)}
     const steps=[['notes','1. Notes',s.nr+'/'+g.notes.length],['quiz','2. Quiz',s.qd+'/'+g.quiz.qs.length],['test','3. Practice test',s.td+'/'+g.test.qs.length]];
@@ -1404,8 +1411,8 @@ const Guides={gid:null,view:'notes',sec:0,qi:0,
     });
     if(g.src){const f=el('div','gnotes small');f.innerHTML=g.src;paper.append(f)}
     st.append(paper);
-    const nx=GUIDES[GUIDES.indexOf(g)+1];
-    if(nx){const b=el('button','btn primary','Next guide: '+nx.title+' →');b.type='button';b.addEventListener('click',()=>Guides.open(nx.id,'notes'));const w=el('div','btns');w.append(b);st.append(w)}
+    const gl=gGroup(g.group||''), nx=gl[gl.indexOf(g)+1];
+    if(nx){const b=el('button','btn primary',(g.group?'Next chapter: ':'Next guide: ')+nx.title+' →');b.type='button';b.addEventListener('click',()=>Guides.open(nx.id,'notes'));const w=el('div','btns');w.append(b);st.append(w)}
   }
 };
 VIEWS.guides=(p,s)=>Guides.render(p,s);
